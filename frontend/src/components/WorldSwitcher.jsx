@@ -21,9 +21,9 @@ export default function WorldSwitcher() {
     <AnimatePresence>
       <motion.nav
         key="world-pill"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, x: "-50%", y: 20 }}
+        animate={{ opacity: 1, x: "-50%", y: 0 }}
+        exit={{ opacity: 0, x: "-50%", y: 20 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         className={`world-pill ${isLight ? "light" : "dark"}`}
         data-testid="world-switcher"

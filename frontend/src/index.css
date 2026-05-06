@@ -187,7 +187,6 @@ body {
   z-index: 60;
   left: 50%;
   bottom: 28px;
-  transform: translateX(-50%);
   display: flex;
   gap: 4px;
   padding: 6px;
