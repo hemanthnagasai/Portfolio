@@ -5,6 +5,7 @@ import { TransitionContext } from "@/context/TransitionContext";
 import { profile } from "@/data/portfolio";
 import { ArrowUpRight } from "lucide-react";
 import useMagnetic from "@/hooks/useMagnetic";
+import LivingPortrait from "@/components/LivingPortrait";
 
 const portals = [
   {
@@ -85,7 +86,6 @@ function Portal({ p, i, onPick }) {
 export default function Gateway() {
   const { setDimension } = useContext(DimensionContext);
   const { trigger } = useContext(TransitionContext);
-  const avatarRef = useMagnetic({ strength: 0.12, radius: 200 });
 
   useEffect(() => {
     setDimension("gateway");
@@ -116,31 +116,17 @@ export default function Gateway() {
 
       <div className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-20 py-28 md:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-20 lg:mb-28">
-          {/* Avatar with magnetic + breathing */}
+          {/* Living Portrait */}
           <motion.div
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.6, ease: [0.2, 0.8, 0.2, 1] }}
             className="lg:col-span-5 flex justify-center lg:justify-start"
           >
-            <motion.div
-              ref={avatarRef}
-              animate={{ scale: [1, 1.012, 1] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-56 h-72 md:w-72 md:h-96 rounded-sm overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-10" />
-              <img
-                alt="Hemanth digital avatar"
-                src="https://customer-assets.emergentagent.com/job_dimension-journey/artifacts/xp16cgna_AI%20avatar.jpeg"
-                className="w-full h-full object-cover contrast-105"
-                data-testid="gateway-avatar"
-              />
-              <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[10px] font-mono uppercase tracking-[0.25em] text-white/70 z-20">
-                <span>A—01</span>
-                <span>Reveal / Layered</span>
-              </div>
-            </motion.div>
+            <LivingPortrait
+              src="https://customer-assets.emergentagent.com/job_dimension-journey/artifacts/xp16cgna_AI%20avatar.jpeg"
+              alt="Hemanth digital avatar"
+            />
           </motion.div>
 
           {/* Heading */}
