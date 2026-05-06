@@ -38,24 +38,26 @@ export default function Typewriter({
   }, [text, speed, delay]);
 
   return (
-    <span className={className} data-testid={testId}>
-      {text.slice(0, n)}
-      {showCursor && (
-        <span
-          aria-hidden
-          className={`inline-block ml-1 align-baseline ${cursorClass}`}
-          style={{
-            width: "0.55ch",
-            height: "0.85em",
-            background: "currentColor",
-            animation: done
-              ? "tw-blink 900ms steps(2,start) infinite"
-              : "none",
-            verticalAlign: "-0.05em",
-          }}
-        />
-      )}
+    <>
+      <span className={className} data-testid={testId}>
+        {text.slice(0, n)}
+        {showCursor && (
+          <span
+            aria-hidden
+            className={`inline-block ml-1 align-baseline ${cursorClass}`}
+            style={{
+              width: "0.55ch",
+              height: "0.85em",
+              background: "currentColor",
+              animation: done
+                ? "tw-blink 900ms steps(2,start) infinite"
+                : "none",
+              verticalAlign: "-0.05em",
+            }}
+          />
+        )}
+      </span>
       <style>{`@keyframes tw-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }`}</style>
-    </span>
+    </>
   );
 }
