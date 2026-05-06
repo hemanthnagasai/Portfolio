@@ -78,8 +78,8 @@ export default function Emotional() {
       </section>
 
       {/* LETTER */}
-      <section className="relative z-10 px-6 md:px-10 max-w-2xl mx-auto py-24 md:py-40">
-        <div className="space-y-24 md:space-y-40">
+      <section className="relative z-10 px-6 md:px-10 max-w-2xl mx-auto py-20 md:py-28">
+        <div className="space-y-14 md:space-y-20">
           {emotional.paragraphs.map((p, i) => (
             <Paragraph key={i} text={p} index={i} />
           ))}
@@ -90,7 +90,7 @@ export default function Emotional() {
             whileInView={{ opacity: 1, scaleX: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1.6, ease: "easeOut" }}
-            className="flex items-center justify-center py-20"
+            className="flex items-center justify-center py-12"
             aria-hidden="true"
           >
             <div className="w-24 h-px bg-[#FFB703]/60" />
@@ -112,4 +112,6 @@ export default function Emotional() {
       </section>
     </main>
   );
+}
+);
 }
