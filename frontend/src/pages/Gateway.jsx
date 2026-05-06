@@ -129,6 +129,7 @@ export default function Gateway() {
             className="lg:col-span-5 flex justify-center lg:justify-start"
           >
             <LivingPortrait
+              src="/avatar.jpeg"
               alt="Hemanth digital avatar"
             />
           </motion.div>
