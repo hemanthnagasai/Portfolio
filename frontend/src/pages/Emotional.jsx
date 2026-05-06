@@ -106,12 +106,10 @@ export default function Emotional() {
             className="font-playfair italic text-center text-3xl md:text-4xl text-[#FFB703]"
             data-testid="emotional-signoff"
           >
-            — H.
+            — Hemanth
           </motion.p>
         </div>
       </section>
     </main>
   );
-}
-);
 }
