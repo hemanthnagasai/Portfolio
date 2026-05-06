@@ -42,7 +42,7 @@ export default function LeaveATrace() {
     setError("");
     const w = word.trim();
     if (!w) return;
-    if (!/^[\w'\-]{1,24}$/u.test(w)) {
+    if (!/^[A-Za-z'\-]{1,24}$/.test(w)) {
       setError("One word, letters only.");
       return;
     }

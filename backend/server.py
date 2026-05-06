@@ -84,7 +84,7 @@ class Trace(BaseModel):
 
 
 import re as _re
-_WORD_RE = _re.compile(r"^[\w'\-]{1,24}$", _re.UNICODE)
+_WORD_RE = _re.compile(r"^[A-Za-z'\-]{1,24}$")
 
 
 @api_router.post("/traces", response_model=Trace)
