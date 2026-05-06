@@ -4,6 +4,8 @@ import { Download, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DimensionContext } from "@/context/DimensionContext";
 import { professional } from "@/data/portfolio";
+import Typewriter from "@/components/Typewriter";
+import useMagnetic from "@/hooks/useMagnetic";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -32,6 +34,7 @@ function SectionLabel({ num, children }) {
 
 export default function Professional() {
   const { setDimension } = useContext(DimensionContext);
+  const dlRef = useMagnetic({ strength: 0.35, radius: 100 });
   useEffect(() => {
     setDimension("professional");
     document.documentElement.style.setProperty("--grain-opacity", "0.07");
@@ -59,17 +62,15 @@ export default function Professional() {
           >
             {professional.kicker}
           </motion.p>
-          <h1 className="font-outfit font-bold leading-[0.95] tracking-tight text-[12vw] md:text-[7vw] lg:text-[5.5vw]">
-            {professional.heading.map((w, i) => (
-              <motion.span
-                key={i}
-                variants={fadeUp} initial="hidden" animate="show" custom={i + 1}
-                className="inline-block mr-4 md:mr-6"
-                data-testid={`prof-heading-${i}`}
-              >
-                {i === 1 ? <em className="italic font-light text-[#00E5FF]">{w}</em> : w}
-              </motion.span>
-            ))}
+          <h1 className="font-outfit font-bold leading-[0.95] tracking-tight text-[12vw] md:text-[7vw] lg:text-[5.5vw] text-[#00E5FF]" data-testid="prof-heading">
+            <Typewriter
+              text="Data. Clarity. Initiative."
+              speed={55}
+              delay={350}
+              cursorClass="bg-[#00E5FF]"
+              className="text-white [&>span]:text-[#00E5FF]"
+              testId="prof-heading-tw"
+            />
           </h1>
           <motion.blockquote
             variants={fadeUp} initial="hidden" animate="show" custom={4}
@@ -87,6 +88,7 @@ export default function Professional() {
 
           <motion.a
             variants={fadeUp} initial="hidden" animate="show" custom={6}
+            ref={dlRef}
             href={`${BACKEND_URL}/api/resume/download`}
             target="_blank" rel="noopener noreferrer"
             data-testid="download-resume-btn"

@@ -1,0 +1,54 @@
+import { useContext, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { TransitionContext } from "@/context/TransitionContext";
+
+export default function TransitionOverlay() {
+  const { state, setState } = useContext(TransitionContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state.phase === "expanding") {
+      const t = setTimeout(() => {
+        navigate(state.to);
+        setState((s) => ({ ...s, phase: "fading" }));
+      }, 700);
+      return () => clearTimeout(t);
+    }
+    if (state.phase === "fading") {
+      const t = setTimeout(() => setState({ phase: "idle" }), 800);
+      return () => clearTimeout(t);
+    }
+  }, [state.phase, state.to, navigate, setState]);
+
+  return (
+    <AnimatePresence>
+      {state.phase === "expanding" && (
+        <motion.div
+          key="expand"
+          className="fixed inset-0 pointer-events-none"
+          style={{ background: state.color, zIndex: 9000 }}
+          data-testid="transition-expand"
+          initial={{
+            clipPath: `circle(0px at ${state.cx}px ${state.cy}px)`,
+          }}
+          animate={{
+            clipPath: `circle(160% at ${state.cx}px ${state.cy}px)`,
+          }}
+          transition={{ duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
+        />
+      )}
+      {state.phase === "fading" && (
+        <motion.div
+          key="fade"
+          className="fixed inset-0 pointer-events-none"
+          style={{ background: state.color, zIndex: 9000 }}
+          data-testid="transition-fade"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+      )}
+    </AnimatePresence>
+  );
+}

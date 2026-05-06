@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { personal } from "@/data/portfolio";
+import HandwrittenReveal from "@/components/HandwrittenReveal";
+import useMagnetic from "@/hooks/useMagnetic";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -14,6 +16,27 @@ const fadeUp = {
 };
 
 const hobbyAnnotations = ["fully.", "a philosophy.", "quiet.", "for wonder."];
+
+function HobbyCard({ h, i }) {
+  const ref = useMagnetic({ strength: 0.18, radius: 90 });
+  return (
+    <motion.article
+      ref={ref}
+      variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
+      custom={i}
+      className="personal-paper p-7 md:p-9 rounded-sm"
+      data-testid={`personal-hobby-${i}`}
+    >
+      <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#D4A373] mb-5">
+        0{i + 1}
+      </p>
+      <h3 className="font-lora text-3xl mb-3 text-[#2C3E2D]">
+        {h.title} <span className="caveat-annotation">· {hobbyAnnotations[i]}</span>
+      </h3>
+      <p className="font-lora text-base leading-[1.8] text-[#5C6A5D]">{h.note}</p>
+    </motion.article>
+  );
+}
 
 export default function Personal() {
   const { setDimension } = useContext(DimensionContext);
@@ -43,17 +66,13 @@ export default function Personal() {
             >
               {personal.kicker}
             </motion.p>
-            <h1 className="font-lora leading-[1] tracking-tight text-[13vw] md:text-[7vw] lg:text-[5.2vw] text-[#2C3E2D]">
-              {personal.heading.map((w, i) => (
-                <motion.span
-                  key={i}
-                  variants={fadeUp} initial="hidden" animate="show" custom={i + 1}
-                  className="inline-block mr-4"
-                  data-testid={`personal-heading-${i}`}
-                >
-                  {i === 1 ? <em className="italic font-medium text-[#D4A373]">{w}</em> : w}
-                </motion.span>
-              ))}
+            <h1 className="font-lora leading-[1] tracking-tight text-[13vw] md:text-[7vw] lg:text-[5.2vw] text-[#2C3E2D]" data-testid="personal-heading">
+              <HandwrittenReveal
+                words={["Warm.", "Deep.", "Human."]}
+                delay={0.3}
+                stagger={0.18}
+                className="block"
+              />
             </h1>
             <motion.blockquote
               variants={fadeUp} initial="hidden" animate="show" custom={5}
@@ -100,23 +119,7 @@ export default function Personal() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {personal.hobbies.map((h, i) => (
-              <motion.article
-                key={i}
-                variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
-                custom={i}
-                whileHover={{ y: -4, rotate: i % 2 === 0 ? -0.6 : 0.6 }}
-                transition={{ type: "spring", stiffness: 140, damping: 18 }}
-                className="personal-paper p-7 md:p-9 rounded-sm"
-                data-testid={`personal-hobby-${i}`}
-              >
-                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#D4A373] mb-5">
-                  0{i + 1}
-                </p>
-                <h3 className="font-lora text-3xl mb-3 text-[#2C3E2D]">
-                  {h.title} <span className="caveat-annotation">· {hobbyAnnotations[i]}</span>
-                </h3>
-                <p className="font-lora text-base leading-[1.8] text-[#5C6A5D]">{h.note}</p>
-              </motion.article>
+              <HobbyCard key={i} h={h} i={i} />
             ))}
           </div>
         </section>

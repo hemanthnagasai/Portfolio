@@ -1,9 +1,10 @@
 import { useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { DimensionContext } from "@/context/DimensionContext";
+import { TransitionContext } from "@/context/TransitionContext";
 import { profile } from "@/data/portfolio";
 import { ArrowUpRight } from "lucide-react";
+import useMagnetic from "@/hooks/useMagnetic";
 
 const portals = [
   {
@@ -13,6 +14,7 @@ const portals = [
     desc: "The analyst · The builder",
     to: "/professional",
     accent: "#00E5FF",
+    flash: "#0A0B0E",
   },
   {
     num: "02",
@@ -21,6 +23,7 @@ const portals = [
     desc: "The human · The friend",
     to: "/personal",
     accent: "#D4A373",
+    flash: "#FDFBF7",
   },
   {
     num: "03",
@@ -29,19 +32,78 @@ const portals = [
     desc: "The heart · The letter",
     to: "/emotional",
     accent: "#FFB703",
+    flash: "#070913",
   },
 ];
 
+function Portal({ p, i, onPick }) {
+  const ref = useMagnetic({ strength: 0.18, radius: 120 });
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, delay: 1.3 + i * 0.15, ease: [0.2, 0.8, 0.2, 1] }}
+    >
+      <button
+        ref={ref}
+        type="button"
+        onClick={(e) => onPick(e, p)}
+        data-testid={`portal-${p.name.toLowerCase()}`}
+        className="portal-card group block p-7 md:p-9 rounded-sm h-full w-full text-left"
+      >
+        <div className="flex justify-between items-start mb-14 md:mb-20">
+          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/40">
+            {p.num} · {p.name}
+          </span>
+          <motion.span
+            className="text-white/50 group-hover:text-white transition-colors"
+            initial={{ x: 0, y: 0 }}
+            whileHover={{ x: 4, y: -4 }}
+          >
+            <ArrowUpRight size={18} strokeWidth={1.2} />
+          </motion.span>
+        </div>
+        <div>
+          <h3 className="font-cormorant font-light text-5xl md:text-6xl mb-2 text-white">
+            <span className="group-hover:hidden">{p.verb}</span>
+            <span
+              className="hidden group-hover:inline italic"
+              style={{ color: p.accent }}
+            >
+              {p.verb}.
+            </span>
+          </h3>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/45">
+            {p.desc}
+          </p>
+        </div>
+      </button>
+    </motion.div>
+  );
+}
+
 export default function Gateway() {
   const { setDimension } = useContext(DimensionContext);
+  const { trigger } = useContext(TransitionContext);
+  const avatarRef = useMagnetic({ strength: 0.12, radius: 200 });
+
   useEffect(() => {
     setDimension("gateway");
     document.documentElement.style.setProperty("--grain-opacity", "0.08");
   }, [setDimension]);
 
+  const handlePick = (e, p) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    trigger({ rect, color: p.flash, to: p.to });
+  };
+
+  const handleRecruiterPick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    trigger({ rect, color: "#FFFFFF", to: "/recruiter" });
+  };
+
   return (
     <main className="gateway-bg min-h-screen relative overflow-hidden" data-testid="gateway-page">
-      {/* decorative top meta */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -53,16 +115,20 @@ export default function Gateway() {
       </motion.div>
 
       <div className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-20 py-28 md:py-32">
-        {/* HERO ROW */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-20 lg:mb-28">
-          {/* Avatar */}
+          {/* Avatar with magnetic + breathing */}
           <motion.div
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.6, ease: [0.2, 0.8, 0.2, 1] }}
             className="lg:col-span-5 flex justify-center lg:justify-start"
           >
-            <div className="relative w-56 h-72 md:w-72 md:h-96 rounded-sm overflow-hidden">
+            <motion.div
+              ref={avatarRef}
+              animate={{ scale: [1, 1.012, 1] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-56 h-72 md:w-72 md:h-96 rounded-sm overflow-hidden"
+            >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-10" />
               <img
                 alt="Hemanth digital avatar"
@@ -74,7 +140,7 @@ export default function Gateway() {
                 <span>A—01</span>
                 <span>Reveal / Layered</span>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Heading */}
@@ -119,52 +185,10 @@ export default function Gateway() {
         {/* PORTALS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {portals.map((p, i) => (
-            <motion.div
-              key={p.num}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 1.3 + i * 0.15, ease: [0.2, 0.8, 0.2, 1] }}
-            >
-              <Link
-                to={p.to}
-                data-testid={`portal-${p.name.toLowerCase()}`}
-                className="portal-card group block p-7 md:p-9 rounded-sm h-full"
-              >
-                <div className="flex justify-between items-start mb-14 md:mb-20">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/40">
-                    {p.num} · {p.name}
-                  </span>
-                  <motion.span
-                    className="text-white/50 group-hover:text-white transition-colors"
-                    initial={{ x: 0, y: 0 }}
-                    whileHover={{ x: 4, y: -4 }}
-                  >
-                    <ArrowUpRight size={18} strokeWidth={1.2} />
-                  </motion.span>
-                </div>
-                <div>
-                  <h3
-                    className="font-cormorant font-light text-5xl md:text-6xl mb-2 transition-colors"
-                    style={{ color: "#F5F5F5" }}
-                  >
-                    <span className="group-hover:hidden">{p.verb}</span>
-                    <span
-                      className="hidden group-hover:inline italic"
-                      style={{ color: p.accent }}
-                    >
-                      {p.verb}.
-                    </span>
-                  </h3>
-                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/45">
-                    {p.desc}
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
+            <Portal key={p.num} p={p} i={i} onPick={handlePick} />
           ))}
         </div>
 
-        {/* footer meta */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -172,13 +196,13 @@ export default function Gateway() {
           className="mt-20 flex justify-between items-center font-mono text-[10px] uppercase tracking-[0.3em] text-white/30"
         >
           <span>Scroll · Click · Linger</span>
-          <Link
-            to="/recruiter"
+          <button
+            onClick={handleRecruiterPick}
             className="hover:text-white/80 transition-colors"
             data-testid="gateway-recruiter-link"
           >
             Recruiter view →
-          </Link>
+          </button>
         </motion.div>
       </div>
     </main>

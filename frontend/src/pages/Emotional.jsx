@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Flame } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { emotional } from "@/data/portfolio";
 
@@ -26,14 +26,32 @@ export default function Emotional() {
   const candleY = useTransform(scrollYProgress, [0, 1], ["0vh", "50vh"]);
   const candleOpacity = useTransform(scrollYProgress, [0, 0.1, 0.95, 1], [0.4, 1, 1, 0.2]);
 
+  const [candlelight, setCandlelight] = useState(false);
+  const overlayRef = useRef(null);
+
   useEffect(() => {
     setDimension("emotional");
     document.documentElement.style.setProperty("--grain-opacity", "0.09");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
+  // Candlelight cursor tracking via CSS variables
+  useEffect(() => {
+    if (!candlelight) return;
+    const onMove = (e) => {
+      if (!overlayRef.current) return;
+      overlayRef.current.style.setProperty("--cx", `${e.clientX}px`);
+      overlayRef.current.style.setProperty("--cy", `${e.clientY}px`);
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [candlelight]);
+
   return (
-    <main className="emotional-bg min-h-screen relative" data-testid="emotional-page">
+    <main
+      className={`emotional-bg min-h-screen relative ${candlelight ? "candlelight-on" : ""}`}
+      data-testid="emotional-page"
+    >
       {/* candle glow follows scroll */}
       <motion.div
         className="emotional-candle"
@@ -68,10 +86,21 @@ export default function Emotional() {
           A letter. <br/><em className="text-[#FFB703]">Unsigned.</em>
         </motion.h1>
 
+        {/* Candlelight toggle */}
+        <motion.button
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.4 }}
+          onClick={() => setCandlelight((v) => !v)}
+          data-testid="candlelight-toggle"
+          className="mt-12 inline-flex items-center gap-3 px-5 py-2.5 border border-[#FFB703]/40 text-[#FFB703] rounded-full font-mono text-[11px] uppercase tracking-[0.25em] hover:bg-[#FFB703]/10 transition-colors"
+        >
+          <Flame size={14} strokeWidth={1.5} />
+          {candlelight ? "Lights on" : "Read by candlelight"}
+        </motion.button>
+
         <motion.p
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 1.6, delay: 1.6 }}
-          className="mt-16 font-mono text-[10px] uppercase tracking-[0.4em] text-white/35"
+          className="mt-12 font-mono text-[10px] uppercase tracking-[0.4em] text-white/35"
         >
           ↓  Scroll to unfold  ↓
         </motion.p>
@@ -110,6 +139,24 @@ export default function Emotional() {
           </motion.p>
         </div>
       </section>
+
+      {/* CANDLELIGHT OVERLAY */}
+      {candlelight && (
+        <div
+          ref={overlayRef}
+          aria-hidden
+          data-testid="candlelight-overlay"
+          className="fixed inset-0 pointer-events-none transition-opacity duration-700"
+          style={{
+            zIndex: 50,
+            background: "rgba(3,5,12,0.92)",
+            WebkitMaskImage:
+              "radial-gradient(circle 240px at var(--cx, 50%) var(--cy, 50%), transparent 0px, rgba(0,0,0,0.4) 180px, black 260px)",
+            maskImage:
+              "radial-gradient(circle 240px at var(--cx, 50%) var(--cy, 50%), transparent 0px, rgba(0,0,0,0.4) 180px, black 260px)",
+          }}
+        />
+      )}
     </main>
   );
 }
