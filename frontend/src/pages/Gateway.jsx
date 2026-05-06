@@ -63,11 +63,11 @@ export default function Gateway() {
             className="lg:col-span-5 flex justify-center lg:justify-start"
           >
             <div className="relative w-56 h-72 md:w-72 md:h-96 rounded-sm overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-black/70 z-10" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-10" />
               <img
                 alt="Hemanth digital avatar"
-                src="https://images.unsplash.com/photo-1770896689026-f5421714f6a5?crop=entropy&cs=srgb&fm=jpg&w=700&q=85"
-                className="w-full h-full object-cover grayscale contrast-110"
+                src="https://customer-assets.emergentagent.com/job_dimension-journey/artifacts/xp16cgna_AI%20avatar.jpeg"
+                className="w-full h-full object-cover contrast-105"
                 data-testid="gateway-avatar"
               />
               <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end text-[10px] font-mono uppercase tracking-[0.25em] text-white/70 z-20">
