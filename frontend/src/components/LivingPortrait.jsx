@@ -187,18 +187,40 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
         {/* Bottom dark gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-20 pointer-events-none" />
 
-        {/* Image with subtle parallax */}
-        <motion.img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover contrast-105"
-          style={{
-            x: imgX,
-            y: imgY,
-            scale: 1.06,
-          }}
-          data-testid="gateway-avatar"
-        />
+        {/* Image with subtle parallax — or initials fallback */}
+        {src ? (
+          <motion.img
+            src={src}
+            alt={alt}
+            className="w-full h-full object-cover contrast-105"
+            style={{ x: imgX, y: imgY, scale: 1.06 }}
+            data-testid="gateway-avatar"
+          />
+        ) : (
+          <motion.div
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              x: imgX,
+              y: imgY,
+              scale: 1.06,
+              background:
+                "radial-gradient(ellipse at 40% 30%, #1a1a2e 0%, #0d0d16 60%, #050508 100%)",
+            }}
+            data-testid="gateway-avatar"
+          >
+            <span
+              className="font-cormorant font-light select-none"
+              style={{
+                fontSize: "clamp(4rem, 12vw, 7rem)",
+                color: "rgba(255,235,180,0.18)",
+                letterSpacing: "0.05em",
+                textShadow: "0 0 60px rgba(255,183,3,0.25), 0 0 120px rgba(255,183,3,0.1)",
+              }}
+            >
+              H
+            </span>
+          </motion.div>
+        )}
 
         {/* breathing wrapper for image */}
         {/* (handled by inline animate below if needed) */}

@@ -129,7 +129,6 @@ export default function Gateway() {
             className="lg:col-span-5 flex justify-center lg:justify-start"
           >
             <LivingPortrait
-              src="https://customer-assets.emergentagent.com/job_dimension-journey/artifacts/xp16cgna_AI%20avatar.jpeg"
               alt="Hemanth digital avatar"
             />
           </motion.div>
