@@ -7,7 +7,7 @@ import {
   useMotionTemplate,
 } from "framer-motion";
 
-const STAR_COUNT = 55;
+const STAR_COUNT = 38;
 
 export default function LivingPortrait({ src, alt = "Digital avatar" }) {
   const wrapRef = useRef(null);
@@ -86,9 +86,9 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
       by: Math.random(),
       ox: 0,
       oy: 0,
-      r: Math.random() * 1.1 + 0.35,
+      r: Math.random() * 0.7 + 0.25,
       tw: Math.random() * Math.PI * 2,
-      twS: 0.02 + Math.random() * 0.04,
+      twS: 0.018 + Math.random() * 0.035,
     }));
 
     let mxN = -1; // normalized 0..1
@@ -125,17 +125,17 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
         }
         const px = s.bx * w + s.ox;
         const py = s.by * h + s.oy;
-        const flicker = (Math.sin(s.tw) + 1) * 0.5 * 0.55 + 0.45;
+        const flicker = (Math.sin(s.tw) + 1) * 0.5 * 0.4 + 0.3;
         // glow
-        const grd = ctx.createRadialGradient(px, py, 0, px, py, s.r * 4);
-        grd.addColorStop(0, `rgba(255,225,180,${flicker * 0.9})`);
+        const grd = ctx.createRadialGradient(px, py, 0, px, py, s.r * 5);
+        grd.addColorStop(0, `rgba(255,225,180,${flicker * 0.55})`);
         grd.addColorStop(1, "rgba(255,225,180,0)");
         ctx.fillStyle = grd;
         ctx.beginPath();
-        ctx.arc(px, py, s.r * 4, 0, Math.PI * 2);
+        ctx.arc(px, py, s.r * 5, 0, Math.PI * 2);
         ctx.fill();
         // core
-        ctx.fillStyle = `rgba(255,245,220,${flicker})`;
+        ctx.fillStyle = `rgba(255,245,220,${flicker * 0.75})`;
         ctx.beginPath();
         ctx.arc(px, py, s.r, 0, Math.PI * 2);
         ctx.fill();
@@ -184,10 +184,11 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
         {/* breathing wrapper for image */}
         {/* (handled by inline animate below if needed) */}
 
-        {/* Starfield overlay */}
+        {/* Starfield overlay — additive only (cannot darken the face) */}
         <canvas
           ref={canvasRef}
           className="absolute inset-0 pointer-events-none z-10"
+          style={{ mixBlendMode: "screen" }}
           aria-hidden
           data-testid="portrait-starfield"
         />
