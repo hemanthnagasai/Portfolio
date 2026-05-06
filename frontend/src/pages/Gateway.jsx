@@ -1,11 +1,13 @@
-import { useContext, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { DimensionContext } from "@/context/DimensionContext";
 import { TransitionContext } from "@/context/TransitionContext";
 import { profile } from "@/data/portfolio";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import useMagnetic from "@/hooks/useMagnetic";
 import LivingPortrait from "@/components/LivingPortrait";
+import { getGreeting, SUBLINE } from "@/utils/greeting";
+import useUnlock, { ensureFirstVisit } from "@/hooks/useUnlock";
 
 const portals = [
   {
@@ -86,10 +88,13 @@ function Portal({ p, i, onPick }) {
 export default function Gateway() {
   const { setDimension } = useContext(DimensionContext);
   const { trigger } = useContext(TransitionContext);
+  const unlocked = useUnlock();
+  const [greeting] = useState(() => getGreeting());
 
   useEffect(() => {
     setDimension("gateway");
     document.documentElement.style.setProperty("--grain-opacity", "0.08");
+    ensureFirstVisit();
   }, [setDimension]);
 
   const handlePick = (e, p) => {
@@ -160,19 +165,75 @@ export default function Gateway() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.2, delay: 1.1 }}
-              className="mt-8 max-w-xl text-base md:text-lg text-white/60 font-spectral italic leading-relaxed"
+              className="mt-8 max-w-xl text-base md:text-lg text-white/80 font-spectral italic leading-relaxed"
               data-testid="gateway-tagline"
             >
-              {profile.tagline}
+              {greeting}
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 1.4 }}
+              className="mt-2 max-w-xl text-sm md:text-[15px] text-white/45 font-spectral italic leading-relaxed"
+              data-testid="gateway-subline"
+            >
+              {SUBLINE}
             </motion.p>
           </div>
         </div>
 
         {/* PORTALS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+        <div className={`grid grid-cols-1 ${unlocked ? "md:grid-cols-4" : "md:grid-cols-3"} gap-4 md:gap-5`}>
           {portals.map((p, i) => (
             <Portal key={p.num} p={p} i={i} onPick={handlePick} />
           ))}
+          <AnimatePresence>
+            {unlocked && (
+              <motion.div
+                key="zero-portal"
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.4, ease: [0.2, 0.8, 0.2, 1] }}
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    trigger({ rect, color: "#050505", to: "/zero" });
+                  }}
+                  data-testid="portal-zero"
+                  className="portal-card group block p-7 md:p-9 rounded-sm h-full w-full text-left relative"
+                  style={{
+                    borderColor: "rgba(255,183,3,0.25)",
+                    background:
+                      "radial-gradient(ellipse at 50% 0%, rgba(255,183,3,0.08), transparent 70%), rgba(255,255,255,0.02)",
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-14 md:mb-20">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-[#FFB703]/80 inline-flex items-center gap-2">
+                      <Sparkles size={12} strokeWidth={1.4} />
+                      00 · Layer Zero
+                    </span>
+                    <span className="text-[#FFB703]/70 group-hover:text-[#FFB703] transition-colors">
+                      <ArrowUpRight size={18} strokeWidth={1.2} />
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-cormorant font-light text-5xl md:text-6xl mb-2 text-white">
+                      <span className="group-hover:hidden">Stay</span>
+                      <span className="hidden group-hover:inline italic text-[#FFB703]">
+                        Stay.
+                      </span>
+                    </h3>
+                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/45">
+                      For those who linger
+                    </p>
+                  </div>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <motion.div

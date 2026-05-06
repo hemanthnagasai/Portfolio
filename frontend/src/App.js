@@ -6,6 +6,7 @@ import Professional from "@/pages/Professional";
 import Personal from "@/pages/Personal";
 import Emotional from "@/pages/Emotional";
 import Recruiter from "@/pages/Recruiter";
+import LayerZero from "@/pages/LayerZero";
 import CustomCursor from "@/components/CustomCursor";
 import NoiseOverlay from "@/components/NoiseOverlay";
 import WorldSwitcher from "@/components/WorldSwitcher";
@@ -40,6 +41,7 @@ function App() {
               <Route path="/personal" element={<Personal />} />
               <Route path="/emotional" element={<Emotional />} />
               <Route path="/recruiter" element={<Recruiter />} />
+              <Route path="/zero" element={<LayerZero />} />
             </Routes>
             <WorldSwitcher />
             <TransitionOverlay />

@@ -71,6 +71,45 @@ async def get_status_checks():
     return status_checks
 
 
+# --------- Traces (Leave a trace guestbook) ---------
+
+class TraceCreate(BaseModel):
+    word: str
+
+
+class Trace(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    word: str
+
+
+import re as _re
+_WORD_RE = _re.compile(r"^[\w'\-]{1,24}$", _re.UNICODE)
+
+
+@api_router.post("/traces", response_model=Trace)
+async def post_trace(input: TraceCreate):
+    from fastapi import HTTPException
+    word = (input.word or "").strip()
+    if not word or not _WORD_RE.match(word):
+        raise HTTPException(status_code=400, detail="One word only, 1-24 letters.")
+    doc = {
+        "id": str(uuid.uuid4()),
+        "word": word,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.traces.insert_one(doc)
+    return Trace(id=doc["id"], word=doc["word"])
+
+
+@api_router.get("/traces", response_model=List[Trace])
+async def get_traces(limit: int = 200):
+    cap = max(1, min(int(limit or 200), 500))
+    cursor = db.traces.find({}, {"_id": 0, "id": 1, "word": 1}).sort("timestamp", -1).limit(cap)
+    docs = await cursor.to_list(cap)
+    return [Trace(id=d["id"], word=d["word"]) for d in docs]
+
+
 # --------- Resume PDF (ATS-friendly) ---------
 
 def _build_resume_pdf() -> bytes:

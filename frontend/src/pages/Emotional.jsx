@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Flame } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { emotional } from "@/data/portfolio";
+import LeaveATrace from "@/components/LeaveATrace";
+import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
 
 function Paragraph({ text, index }) {
   return (
@@ -32,6 +34,8 @@ export default function Emotional() {
   useEffect(() => {
     setDimension("emotional");
     document.documentElement.style.setProperty("--grain-opacity", "0.09");
+    ensureFirstVisit();
+    markVisited("emotional");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
@@ -139,6 +143,9 @@ export default function Emotional() {
           </motion.p>
         </div>
       </section>
+
+      {/* LEAVE A TRACE */}
+      <LeaveATrace />
 
       {/* CANDLELIGHT OVERLAY */}
       {candlelight && (

@@ -6,6 +6,7 @@ import { DimensionContext } from "@/context/DimensionContext";
 import { professional } from "@/data/portfolio";
 import Typewriter from "@/components/Typewriter";
 import useMagnetic from "@/hooks/useMagnetic";
+import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -38,6 +39,8 @@ export default function Professional() {
   useEffect(() => {
     setDimension("professional");
     document.documentElement.style.setProperty("--grain-opacity", "0.07");
+    ensureFirstVisit();
+    markVisited("professional");
     window.scrollTo(0, 0);
   }, [setDimension]);
 

@@ -6,6 +6,7 @@ import { DimensionContext } from "@/context/DimensionContext";
 import { personal } from "@/data/portfolio";
 import HandwrittenReveal from "@/components/HandwrittenReveal";
 import useMagnetic from "@/hooks/useMagnetic";
+import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -43,6 +44,8 @@ export default function Personal() {
   useEffect(() => {
     setDimension("personal");
     document.documentElement.style.setProperty("--grain-opacity", "0.05");
+    ensureFirstVisit();
+    markVisited("personal");
     window.scrollTo(0, 0);
   }, [setDimension]);
 

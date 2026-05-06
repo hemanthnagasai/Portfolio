@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
+  AnimatePresence,
   useMotionValue,
   useSpring,
   useTransform,
@@ -13,6 +14,8 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
   const [hovering, setHovering] = useState(false);
+  const [bursts, setBursts] = useState([]);
+  const [whisperShown, setWhisperShown] = useState(false);
 
   // -1..1 normalized cursor position relative to portrait center
   const mx = useMotionValue(0);
@@ -156,7 +159,23 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
         ref={wrapRef}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
-        className="relative w-56 h-72 md:w-72 md:h-96 rounded-sm overflow-hidden"
+        onClick={() => {
+          const id = Date.now() + Math.random();
+          // 22 directional particles
+          const ps = Array.from({ length: 22 }, (_, k) => ({
+            id: id + k,
+            angle: (k / 22) * Math.PI * 2 + Math.random() * 0.3,
+            dist: 90 + Math.random() * 80,
+            size: 1.5 + Math.random() * 2.5,
+          }));
+          setBursts((b) => [...b, ...ps]);
+          setWhisperShown(true);
+          setTimeout(() => {
+            setBursts((b) => b.filter((p) => !ps.find((q) => q.id === p.id)));
+          }, 1100);
+          setTimeout(() => setWhisperShown(false), 2400);
+        }}
+        className="relative w-56 h-72 md:w-72 md:h-96 rounded-sm overflow-hidden cursor-pointer"
         style={{
           rotateX: rotX,
           rotateY: rotY,
@@ -221,7 +240,54 @@ export default function LivingPortrait({ src, alt = "Digital avatar" }) {
           />
           Live
         </div>
+
+        {/* Click-bloom particles (portrait-bloom) */}
+        <div
+          className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center"
+          data-testid="portrait-bloom"
+        >
+          {bursts.map((p) => (
+            <motion.div
+              key={p.id}
+              initial={{ x: 0, y: 0, opacity: 1 }}
+              animate={{
+                x: Math.cos(p.angle) * p.dist,
+                y: Math.sin(p.angle) * p.dist,
+                opacity: 0,
+              }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              style={{
+                position: "absolute",
+                width: p.size,
+                height: p.size,
+                marginLeft: -p.size / 2,
+                marginTop: -p.size / 2,
+                background: "#FFEFC2",
+                borderRadius: "9999px",
+                boxShadow: `0 0 ${p.size * 4}px #FFE19A, 0 0 ${p.size * 8}px rgba(255,225,154,0.5)`,
+                mixBlendMode: "screen",
+              }}
+            />
+          ))}
+        </div>
       </motion.div>
+
+      {/* Whisper line below */}
+      <AnimatePresence>
+        {whisperShown && (
+          <motion.p
+            key="whisper"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.5 }}
+            data-testid="portrait-whisper"
+            className="mt-4 text-center font-cormorant italic text-sm md:text-base text-[#FFB703]/90"
+          >
+            You found me.
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
