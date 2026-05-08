@@ -114,7 +114,7 @@ export default function LeaveATrace() {
 
         {/* Starfield of words */}
         <div
-          className="relative mt-14 h-[260px] md:h-[320px] w-full rounded-sm overflow-hidden"
+          className="relative mt-14 h-[260px] md:h-[320px] w-full rounded-sm overflow-visible"
           style={{
             background:
               "radial-gradient(ellipse at center, rgba(255,183,3,0.06), transparent 70%)",
@@ -158,7 +158,7 @@ export default function LeaveATrace() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.25 }}
-                      className="absolute left-1/2 -translate-x-1/2 top-4 whitespace-nowrap font-spectral italic text-sm text-white px-2 py-1 rounded bg-black/70 border border-[#FFB703]/30"
+                      className="absolute left-1/2 -translate-x-1/2 bottom-4 whitespace-nowrap font-spectral italic text-sm text-white px-2 py-1 rounded bg-black/70 border border-[#FFB703]/30"
                     >
                       {t.word}
                     </motion.span>
