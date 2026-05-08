@@ -104,14 +104,19 @@ export default function LayerZero() {
           “If you find me here,<br />you've already found enough.”
         </motion.blockquote>
 
-        <motion.p
+        <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: revealStep >= 4 ? 0.5 : 0 }}
+          animate={{ opacity: revealStep >= 4 ? 1 : 0 }}
           transition={{ duration: 2, delay: 1.2 }}
-          className="mt-20 text-center font-mono text-[10px] uppercase tracking-[0.4em] text-white/40"
+          className="mt-20 text-center"
         >
-          ← Return to the worlds when you're ready
-        </motion.p>
+          <Link
+            to="/"
+            className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/40 hover:text-white/80 transition-colors duration-300"
+          >
+            ← Return to the worlds when you're ready
+          </Link>
+        </motion.div>
       </section>
     </main>
   );
