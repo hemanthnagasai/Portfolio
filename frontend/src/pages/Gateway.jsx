@@ -115,7 +115,11 @@ export default function Gateway() {
         transition={{ duration: 1.2, delay: 0.2 }}
         className="absolute top-0 left-0 right-0 flex justify-between items-center px-6 md:px-12 py-6 font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/40"
       >
-        <span>Life Portfolio · 2026</span>
+        <img
+          src="/narra-logo.jpeg"
+          alt="Narra"
+          className="h-7 w-auto opacity-80 invert"
+        />
         <span>Hemanth Naga Sai Chakka</span>
       </motion.div>
 

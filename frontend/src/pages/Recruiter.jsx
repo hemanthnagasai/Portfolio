@@ -131,7 +131,7 @@ export default function Recruiter() {
         <footer className="py-8 border-t border-[#E5E7EB] text-center">
           <p className="font-plex text-xs text-[#4B5563]">
             Full layered portfolio available at{" "}
-            <Link to="/" className="underline hover:text-black">the Gateway</Link>.
+            <Link to="/" className="underline hover:text-black">Narra</Link>.
           </p>
         </footer>
       </div>
