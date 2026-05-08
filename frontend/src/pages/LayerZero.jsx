@@ -89,7 +89,7 @@ export default function LayerZero() {
             loading="lazy"
           />
           <figcaption className="font-caveat text-[#5C6A5D] text-xl text-center mt-3">
-            mangalagiri, an unremarkable tuesday.
+            somewhere, someone is having their best day yet.
           </figcaption>
         </motion.figure>
 
