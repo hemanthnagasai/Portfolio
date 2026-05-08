@@ -84,12 +84,12 @@ export default function LayerZero() {
         >
           <img
             alt="A quiet morning"
-            src="https://images.unsplash.com/photo-1502810365585-a4b76f64a13c?crop=entropy&cs=srgb&fm=jpg&w=520&q=70"
+            src="/mangalagiri.jpeg"
             className="w-64 md:w-80 h-64 md:h-72 object-cover grayscale contrast-105"
             loading="lazy"
           />
           <figcaption className="font-caveat text-[#5C6A5D] text-xl text-center mt-3">
-            somewhere, someone is having their best day yet.
+            mangalagiri, from above.
           </figcaption>
         </motion.figure>
 
