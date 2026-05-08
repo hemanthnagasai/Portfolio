@@ -93,6 +93,12 @@ async def post_trace(input: TraceCreate):
     word = (input.word or "").strip()
     if not word or not _WORD_RE.match(word):
         raise HTTPException(status_code=400, detail="One word only, 1-24 letters.")
+    existing = await db.traces.find_one(
+        {"word": {"$regex": f"^{_re.escape(word)}$", "$options": "i"}},
+        {"_id": 0, "id": 1, "word": 1},
+    )
+    if existing:
+        return Trace(id=existing["id"], word=existing["word"])
     doc = {
         "id": str(uuid.uuid4()),
         "word": word,
