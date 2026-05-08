@@ -2,16 +2,12 @@
 const path = require("path");
 require("dotenv").config();
 
-// Check if we're in development/preview mode (not production build)
-// Craco sets NODE_ENV=development for start, NODE_ENV=production for build
 const isDevServer = process.env.NODE_ENV !== "production";
 
-// Environment variable overrides
 const config = {
   enableHealthCheck: process.env.ENABLE_HEALTH_CHECK === "true",
 };
 
-// Conditionally load health check modules only if enabled
 let WebpackHealthPlugin;
 let setupHealthEndpoints;
 let healthPluginInstance;
@@ -37,21 +33,18 @@ let webpackConfig = {
       '@': path.resolve(__dirname, 'src'),
     },
     configure: (webpackConfig) => {
-
-      // Add ignored patterns to reduce watched directories
-        webpackConfig.watchOptions = {
-          ...webpackConfig.watchOptions,
-          ignored: [
-            '**/node_modules/**',
-            '**/.git/**',
-            '**/build/**',
-            '**/dist/**',
-            '**/coverage/**',
-            '**/public/**',
+      webpackConfig.watchOptions = {
+        ...webpackConfig.watchOptions,
+        ignored: [
+          '**/node_modules/**',
+          '**/.git/**',
+          '**/build/**',
+          '**/dist/**',
+          '**/coverage/**',
+          '**/public/**',
         ],
       };
 
-      // Add health check plugin to webpack if enabled
       if (config.enableHealthCheck && healthPluginInstance) {
         webpackConfig.plugins.push(healthPluginInstance);
       }
@@ -60,38 +53,7 @@ let webpackConfig = {
   },
 };
 
-webpackConfig.devServer = (devServerConfig) => {
-  devServerConfig.host = "0.0.0.0";
-  devServerConfig.port = 5000;
-  devServerConfig.allowedHosts = "all";
-  devServerConfig.proxy = {
-    "/api": {
-      target: "http://localhost:8000",
-      changeOrigin: true,
-    },
-  };
-
-  // Add health check endpoints if enabled
-  if (config.enableHealthCheck && setupHealthEndpoints && healthPluginInstance) {
-    const originalSetupMiddlewares = devServerConfig.setupMiddlewares;
-
-    devServerConfig.setupMiddlewares = (middlewares, devServer) => {
-      // Call original setup if exists
-      if (originalSetupMiddlewares) {
-        middlewares = originalSetupMiddlewares(middlewares, devServer);
-      }
-
-      // Setup health endpoints
-      setupHealthEndpoints(devServer, healthPluginInstance);
-
-      return middlewares;
-    };
-  }
-
-  return devServerConfig;
-};
-
-// Wrap with visual edits (automatically adds babel plugin, dev server, and overlay in dev mode)
+// Apply withVisualEdits FIRST so our devServer setup below takes precedence
 if (isDevServer) {
   try {
     const { withVisualEdits } = require("@emergentbase/visual-edits/craco");
@@ -106,5 +68,31 @@ if (isDevServer) {
     }
   }
 }
+
+// Set devServer AFTER withVisualEdits so the proxy is never overridden
+webpackConfig.devServer = (devServerConfig) => {
+  devServerConfig.host = "0.0.0.0";
+  devServerConfig.port = 5000;
+  devServerConfig.allowedHosts = "all";
+  devServerConfig.proxy = {
+    "/api": {
+      target: "http://localhost:8000",
+      changeOrigin: true,
+    },
+  };
+
+  if (config.enableHealthCheck && setupHealthEndpoints && healthPluginInstance) {
+    const originalSetupMiddlewares = devServerConfig.setupMiddlewares;
+    devServerConfig.setupMiddlewares = (middlewares, devServer) => {
+      if (originalSetupMiddlewares) {
+        middlewares = originalSetupMiddlewares(middlewares, devServer);
+      }
+      setupHealthEndpoints(devServer, healthPluginInstance);
+      return middlewares;
+    };
+  }
+
+  return devServerConfig;
+};
 
 module.exports = webpackConfig;
