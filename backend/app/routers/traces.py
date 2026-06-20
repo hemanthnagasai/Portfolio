@@ -126,11 +126,13 @@ async def get_traces(limit: int = 200):
     return [Trace(id=row["id"], word=row["word"]) for row in rows]
 
 @router.delete("/{word}")
-async def delete_trace(word: str, x_admin_token: str = Header(None, alias="X-Admin-Token")):
+async def delete_trace(word: str, request: Request, x_admin_token: str = Header(None, alias="X-Admin-Token")):
+    client_ip = request.client.host if request.client else "unknown"
     admin_token = os.getenv("ADMIN_TOKEN")
     if not admin_token or x_admin_token != admin_token:
+        logger.warning(f"Unauthorized trace delete attempt: word='{word}' ip={client_ip}")
         raise HTTPException(status_code=401, detail="Unauthorized")
-    
+
     async with get_db_connection() as db:
         cursor = await db.execute(
             "DELETE FROM traces WHERE LOWER(word) = LOWER(?)",
@@ -138,7 +140,9 @@ async def delete_trace(word: str, x_admin_token: str = Header(None, alias="X-Adm
         )
         await db.commit()
         if cursor.rowcount == 0:
+            logger.info(f"Trace delete (not found): word='{word}' ip={client_ip}")
             raise HTTPException(status_code=404, detail="Trace not found")
-            
+
+    logger.info(f"Trace deleted: word='{word}' ip={client_ip} at={datetime.now(timezone.utc).isoformat()}")
     return {"message": f"Trace '{word}' deleted successfully"}
 

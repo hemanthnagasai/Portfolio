@@ -71,7 +71,10 @@ body {
   cursor: none;
 }
 
-@media (max-width: 768px) {
+/* CustomCursor only renders on mousemove, which never fires on touch input. Restore the
+   native cursor for any device without fine pointer/hover capability, regardless of
+   viewport width (a landscape tablet is wider than 768px but still has no mouse). */
+@media (hover: none), (pointer: coarse) {
   body { cursor: auto; }
 }
 

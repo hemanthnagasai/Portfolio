@@ -62,35 +62,6 @@ class TestStatusChecks:
         assert any(i.get("client_name") == client_name and i.get("id") == created["id"] for i in items), \
             "Newly created status_check not found in GET response"
 
-# -------- AI Chatbot (/api/chat) ----------
-class TestChatBot:
-    def test_chat_success(self, api_client):
-        # If no GEMINI_API_KEY is configured in the test environment, skip or verify mock
-        # We try to call it; if it returns 500 because of key missing, it's expected.
-        # If the key is there, it should pass with 200.
-        import os
-        if not os.environ.get("GEMINI_API_KEY"):
-            # If no API key, check that we get a 500 stating client not initialized
-            payload = {
-                "message": "Hi Hemanth, where do you work?",
-                "history": []
-            }
-            r = api_client.post("/api/chat", json=payload)
-            assert r.status_code == 500
-            assert "Gemini API client not initialized" in r.json()["detail"]
-        else:
-            payload = {
-                "message": "Hi Hemanth, where do you work?",
-                "history": [
-                    {"role": "user", "content": "Hello"},
-                    {"role": "model", "content": "Hey there, I'm Hemanth."}
-                ]
-            }
-            r = api_client.post("/api/chat", json=payload)
-            assert r.status_code == 200, r.text
-            data = r.json()
-            assert "response" in data and isinstance(data["response"], str)
-            assert len(data["response"]) > 0
-            resp_lower = data["response"].lower()
-            assert any(x in resp_lower for x in ["ey", "ernst", "young", "analyst", "work"]), \
-                f"Response didn't mention work details: {data['response']}"
+# AI Chatbot (/api/chat) coverage moved to test_chat_api.py: that suite mocks the
+# Gemini client so results don't depend on live network access or API quota
+# (this test previously failed when the real account hit its daily quota).

@@ -123,10 +123,10 @@ Answer the user's message as Hemanth.
         )
         return ChatResponse(response=response.text or "")
     except Exception as e:
-        logger.warning(f"Gemini 2.5 Flash model failed or unavailable: {e}. Trying fallback model gemini-1.5-flash.")
+        logger.warning(f"Gemini 2.5 Flash model failed or unavailable: {e}. Trying fallback model gemini-2.0-flash.")
         try:
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model='gemini-2.0-flash',
                 contents=contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,

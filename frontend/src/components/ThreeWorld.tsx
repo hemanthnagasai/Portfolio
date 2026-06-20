@@ -1,17 +1,60 @@
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
-import { isTouchDevice } from "@/utils/device";
+import {
+  AmbientLight,
+  BoxGeometry,
+  BufferAttribute,
+  BufferGeometry,
+  CatmullRomCurve3,
+  CylinderGeometry,
+  DirectionalLight,
+  EdgesGeometry,
+  FogExp2,
+  GridHelper,
+  Group,
+  Line,
+  LineBasicMaterial,
+  LineDashedMaterial,
+  LineSegments,
+  Material,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  Object3D,
+  OctahedronGeometry,
+  PCFSoftShadowMap,
+  PerspectiveCamera,
+  PlaneGeometry,
+  PointLight,
+  Points,
+  PointsMaterial,
+  Scene,
+  SphereGeometry,
+  TubeGeometry,
+  Vector3,
+  WebGLRenderer,
+} from "three";
+import { isTouchDevice, isWebGLAvailable } from "@/utils/device";
 
 interface ThreeWorldProps {
   type: "professional" | "personal" | "emotional";
   candlelightActive?: boolean;
 }
 
+// Static, WebGL-free background shown when the browser/device can't render the 3D scene
+// (old browsers, disabled GPU, some in-app webviews) instead of a blank or broken page.
+const FALLBACK_GRADIENTS: Record<ThreeWorldProps["type"], string> = {
+  professional: "radial-gradient(circle at 50% 30%, rgba(0,229,255,0.12), #030206 70%)",
+  personal: "radial-gradient(circle at 50% 30%, rgba(34,48,36,0.35), #090d0a 70%)",
+  emotional: "radial-gradient(circle at 50% 30%, rgba(255,183,3,0.1), #030206 70%)",
+};
+
 export default function ThreeWorld({ type, candlelightActive = false }: ThreeWorldProps) {
+  // Computed once per mount; WebGL support doesn't change mid-session.
+  const webglSupportedRef = useRef(isWebGLAvailable());
   const containerRef = useRef<HTMLDivElement>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const rendererRef = useRef<WebGLRenderer | null>(null);
+  const sceneRef = useRef<Scene | null>(null);
+  const cameraRef = useRef<PerspectiveCamera | null>(null);
   const requestRef = useRef<number>(0);
   const stateRef = useRef({
     scroll: 0,
@@ -29,10 +72,10 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !webglSupportedRef.current) return;
 
     // --- Scene Setup ---
-    const scene = new THREE.Scene();
+    const scene = new Scene();
     sceneRef.current = scene;
 
     // Transparent background
@@ -40,10 +83,10 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
 
     // --- Fog (Distant objects fade into background color) ---
     const fogColor = type === "professional" ? 0x030206 : type === "personal" ? 0x090d0a : 0x030206;
-    scene.fog = new THREE.FogExp2(fogColor, 0.015);
+    scene.fog = new FogExp2(fogColor, 0.015);
 
     // --- Camera Setup ---
-    const camera = new THREE.PerspectiveCamera(
+    const camera = new PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
       0.1,
@@ -58,7 +101,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     // drop both there rather than rendering the same scene quality everywhere.
     const lowPowerDevice = isTouchDevice();
 
-    const renderer = new THREE.WebGLRenderer({
+    const renderer = new WebGLRenderer({
       antialias: !lowPowerDevice,
       alpha: true,
       powerPreference: "high-performance",
@@ -69,17 +112,17 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
 
     // Soft shadows only on devices that can afford the extra draw passes
     renderer.shadowMap.enabled = !lowPowerDevice;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
     // --- Lighting Setup ---
     const ambientLightColor = type === "personal" ? 0x223024 : 0xffffff;
     const ambientLightIntensity = type === "personal" ? 0.18 : 0.3;
-    const ambientLight = new THREE.AmbientLight(ambientLightColor, ambientLightIntensity);
+    const ambientLight = new AmbientLight(ambientLightColor, ambientLightIntensity);
     scene.add(ambientLight);
 
     const dirLightIntensity = type === "personal" ? 0.45 : 0.95;
-    const dirLight = new THREE.DirectionalLight(0xffffff, dirLightIntensity);
+    const dirLight = new DirectionalLight(0xffffff, dirLightIntensity);
     dirLight.position.set(20, 40, 20);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
@@ -97,9 +140,9 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     scene.add(dirLight);
 
     // Candlelight local spot/point light for emotional mode
-    let emotionalPointLight: THREE.PointLight | null = null;
+    let emotionalPointLight: PointLight | null = null;
     if (type === "emotional") {
-      emotionalPointLight = new THREE.PointLight(0xffb703, 1.5, 45);
+      emotionalPointLight = new PointLight(0xffb703, 1.5, 45);
       emotionalPointLight.position.set(0, 0, 0);
       scene.add(emotionalPointLight);
       ambientLight.color.setHex(0x111122);
@@ -107,10 +150,10 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     }
 
     // --- Memory Disposables Tracker ---
-    const disposables: (THREE.BufferGeometry | THREE.Material)[] = [];
-    const track = <T extends THREE.Object3D>(obj: T): T => {
+    const disposables: (BufferGeometry | Material)[] = [];
+    const track = <T extends Object3D>(obj: T): T => {
       obj.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
+        if (child instanceof Mesh) {
           if (child.geometry) disposables.push(child.geometry);
           if (child.material) {
             if (Array.isArray(child.material)) {
@@ -125,31 +168,31 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     };
 
     // --- Path Position for Personal World ---
-    const getPersonalPathPosition = (z: number): THREE.Vector3 => {
+    const getPersonalPathPosition = (z: number): Vector3 => {
       const x = Math.sin(z * 0.08) * 8;
       const y = -6 + Math.cos(z * 0.05) * 1.5;
-      return new THREE.Vector3(x, y, z);
+      return new Vector3(x, y, z);
     };
 
     // --- Abstract Memory Tree Creator ---
-    const createMemoryTree = (height: number, radius: number): THREE.Group => {
-      const group = new THREE.Group();
+    const createMemoryTree = (height: number, radius: number): Group => {
+      const group = new Group();
       
       // Thin dark wood trunk
-      const trunkGeo = new THREE.CylinderGeometry(radius * 0.08, radius * 0.12, height, 12);
-      const trunkMat = new THREE.MeshStandardMaterial({
+      const trunkGeo = new CylinderGeometry(radius * 0.08, radius * 0.12, height, 12);
+      const trunkMat = new MeshStandardMaterial({
         color: 0x8c7355, // lighter, softer wood color
         roughness: 0.9,
       });
-      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      const trunk = new Mesh(trunkGeo, trunkMat);
       trunk.position.y = height / 2;
       trunk.castShadow = true;
       trunk.receiveShadow = true;
       group.add(trunk);
 
       // Abstract warm glowing sphere canopy
-      const canopyGeo = new THREE.SphereGeometry(radius, 24, 24);
-      const canopyMat = new THREE.MeshStandardMaterial({
+      const canopyGeo = new SphereGeometry(radius, 24, 24);
+      const canopyMat = new MeshStandardMaterial({
         color: 0xffb703, // glowing gold canopy
         transparent: true,
         opacity: 0.22,
@@ -158,20 +201,20 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
         emissive: 0xffb703,
         emissiveIntensity: 0.2,
       });
-      const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+      const canopy = new Mesh(canopyGeo, canopyMat);
       canopy.position.y = height;
       canopy.castShadow = true;
       canopy.receiveShadow = true;
       group.add(canopy);
 
       // Mini glowing core
-      const coreGeo = new THREE.SphereGeometry(radius * 0.25, 8, 8);
-      const coreMat = new THREE.MeshBasicMaterial({ 
+      const coreGeo = new SphereGeometry(radius * 0.25, 8, 8);
+      const coreMat = new MeshBasicMaterial({ 
         color: 0xffe6a7,
         transparent: true,
         opacity: 0.75, 
       });
-      const core = new THREE.Mesh(coreGeo, coreMat);
+      const core = new Mesh(coreGeo, coreMat);
       core.position.y = height;
       group.add(core);
 
@@ -179,36 +222,36 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     };;
 
     // --- Setup Scene Elements Per World Mode ---
-    let roadPath1: THREE.CatmullRomCurve3 | null = null;
-    const animObjects: { mesh: THREE.Object3D; speed: number; axis: "x" | "y" | "z"; offset?: number }[] = [];
-    let flowLines: THREE.Line[] = [];
+    let roadPath1: CatmullRomCurve3 | null = null;
+    const animObjects: { mesh: Object3D; speed: number; axis: "x" | "y" | "z"; offset?: number }[] = [];
+    let flowLines: Line[] = [];
 
     // ─── 1. DATA SKY HIGHWAY (PROFESSIONAL) ───
     if (type === "professional") {
       const towerColors = [0x00f0ff, 0x00bcff, 0x00e5ff, 0x052e5c];
       
       // Cyber ground grid plane (Solid base, no floating elements)
-      const gridGeo = new THREE.PlaneGeometry(160, 160, 16, 16);
-      const gridMat = new THREE.MeshStandardMaterial({
+      const gridGeo = new PlaneGeometry(160, 160, 16, 16);
+      const gridMat = new MeshStandardMaterial({
         color: 0x00bcff,
         wireframe: true,
         transparent: true,
         opacity: 0.15,
       });
-      const dataLandscape = new THREE.Mesh(gridGeo, gridMat);
+      const dataLandscape = new Mesh(gridGeo, gridMat);
       dataLandscape.rotation.x = -Math.PI / 2;
       dataLandscape.position.y = -8;
       dataLandscape.receiveShadow = true;
       scene.add(track(dataLandscape));
 
       // Solid ground backing so grid doesn't fade into void completely
-      const floorGeo = new THREE.PlaneGeometry(160, 160);
-      const floorMat = new THREE.MeshStandardMaterial({
+      const floorGeo = new PlaneGeometry(160, 160);
+      const floorMat = new MeshStandardMaterial({
         color: 0x030206,
         roughness: 0.8,
         metalness: 0.9,
       });
-      const floor = new THREE.Mesh(floorGeo, floorMat);
+      const floor = new Mesh(floorGeo, floorMat);
       floor.rotation.x = -Math.PI / 2;
       floor.position.y = -8.05;
       floor.receiveShadow = true;
@@ -216,15 +259,15 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
 
       // Towers on solid ground
       const towerCount = 35;
-      const towerGroup = new THREE.Group();
+      const towerGroup = new Group();
       for (let i = 0; i < towerCount; i++) {
         const w = 1.6 + Math.random() * 3.4;
         const h = 5 + Math.random() * 18;
         const d = 1.6 + Math.random() * 3.4;
 
-        const boxGeo = new THREE.BoxGeometry(w, h, d);
+        const boxGeo = new BoxGeometry(w, h, d);
         const color = towerColors[Math.floor(Math.random() * towerColors.length)];
-        const boxMat = new THREE.MeshStandardMaterial({
+        const boxMat = new MeshStandardMaterial({
           color: color,
           roughness: 0.25,
           metalness: 0.8,
@@ -232,7 +275,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
           opacity: 0.15,
         });
 
-        const tower = new THREE.Mesh(boxGeo, boxMat);
+        const tower = new Mesh(boxGeo, boxMat);
         const angle = Math.random() * Math.PI * 2;
         const dist = 12 + Math.random() * 25;
         tower.position.x = Math.cos(angle) * dist;
@@ -241,13 +284,13 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
         tower.castShadow = true;
         tower.receiveShadow = true;
 
-        const edges = new THREE.EdgesGeometry(boxGeo);
-        const lineMat = new THREE.LineBasicMaterial({
+        const edges = new EdgesGeometry(boxGeo);
+        const lineMat = new LineBasicMaterial({
           color: color,
           transparent: true,
           opacity: 0.35,
         });
-        const edgeLines = new THREE.LineSegments(edges, lineMat);
+        const edgeLines = new LineSegments(edges, lineMat);
         tower.add(edgeLines);
 
         towerGroup.add(tower);
@@ -258,16 +301,16 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       const crystalCount = 14;
       for (let i = 0; i < crystalCount; i++) {
         const size = 0.5 + Math.random() * 0.7;
-        const crystalGeo = new THREE.OctahedronGeometry(size);
+        const crystalGeo = new OctahedronGeometry(size);
         const color = i % 2 === 0 ? 0x00e5ff : 0x00f0ff;
-        const crystalMat = new THREE.MeshStandardMaterial({
+        const crystalMat = new MeshStandardMaterial({
           color: color,
           roughness: 0.1,
           metalness: 0.9,
           emissive: color,
           emissiveIntensity: 0.25,
         });
-        const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+        const crystal = new Mesh(crystalGeo, crystalMat);
         crystal.position.set(
           (Math.random() - 0.5) * 45,
           -2 + Math.random() * 12,
@@ -279,33 +322,33 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       }
 
       // Flat Cyber Highway Ribbon
-      roadPath1 = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-35, -5, -35),
-        new THREE.Vector3(-15, -4, -10),
-        new THREE.Vector3(0, -5, 0),
-        new THREE.Vector3(15, -3, 10),
-        new THREE.Vector3(35, -5, 35),
+      roadPath1 = new CatmullRomCurve3([
+        new Vector3(-35, -5, -35),
+        new Vector3(-15, -4, -10),
+        new Vector3(0, -5, 0),
+        new Vector3(15, -3, 10),
+        new Vector3(35, -5, 35),
       ]);
 
-      const roadGeo = new THREE.TubeGeometry(roadPath1, 64, 1.2, 4, false);
-      const roadMat = new THREE.MeshStandardMaterial({
+      const roadGeo = new TubeGeometry(roadPath1, 64, 1.2, 4, false);
+      const roadMat = new MeshStandardMaterial({
         color: 0x081320,
         roughness: 0.4,
         metalness: 0.8,
         transparent: true,
         opacity: 0.7,
       });
-      const highway = new THREE.Mesh(roadGeo, roadMat);
+      const highway = new Mesh(roadGeo, roadMat);
       highway.scale.set(1, 0.05, 1);
       highway.position.y = -8.05;
       highway.receiveShadow = true;
       scene.add(track(highway));
 
       // Data packets
-      const packetGeo = new THREE.SphereGeometry(0.24, 8, 8);
-      const packetMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+      const packetGeo = new SphereGeometry(0.24, 8, 8);
+      const packetMat = new MeshBasicMaterial({ color: 0x00f0ff });
       for (let j = 0; j < 5; j++) {
-        const packet = new THREE.Mesh(packetGeo, packetMat);
+        const packet = new Mesh(packetGeo, packetMat);
         scene.add(track(packet));
         animObjects.push({
           mesh: packet,
@@ -317,14 +360,14 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     }
 
     // ─── 2. WARM MEMORY STEPPING PATH (PERSONAL) ───
-    let cloudsGroup: THREE.Group | null = null;
+    let cloudsGroup: Group | null = null;
     if (type === "personal") {
       // Warm ground backing grid (for alignment/aesthetic depth)
-      const groundGrid = new THREE.GridHelper(160, 40, 0xd4a373, 0xe8e3d9);
+      const groundGrid = new GridHelper(160, 40, 0xd4a373, 0xe8e3d9);
       groundGrid.position.y = -8;
       groundGrid.traverse((child) => {
-        if (child instanceof THREE.LineSegments) {
-          const mat = child.material as THREE.LineBasicMaterial;
+        if (child instanceof LineSegments) {
+          const mat = child.material as LineBasicMaterial;
           mat.transparent = true;
           mat.opacity = 0.04; // extremely faint and subtle
         }
@@ -332,15 +375,15 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       scene.add(groundGrid);
 
       // Create a series of stepping stones winding along Z
-      const stonesGroup = new THREE.Group();
-      const stoneGeo = new THREE.CylinderGeometry(1.4, 1.4, 0.18, 16);
-      const stoneMat = new THREE.MeshStandardMaterial({
+      const stonesGroup = new Group();
+      const stoneGeo = new CylinderGeometry(1.4, 1.4, 0.18, 16);
+      const stoneMat = new MeshStandardMaterial({
         color: 0xe6dec9, // light sandstone cream color
         roughness: 0.95,
       });
 
       for (let z = -60; z <= 60; z += 5) {
-        const stone = new THREE.Mesh(stoneGeo, stoneMat);
+        const stone = new Mesh(stoneGeo, stoneMat);
         const pos = getPersonalPathPosition(z);
         stone.position.copy(pos);
         stone.receiveShadow = true;
@@ -350,7 +393,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       scene.add(track(stonesGroup));
 
       // Abstract Memory Trees placed alongside the path
-      const forestGroup = new THREE.Group();
+      const forestGroup = new Group();
       const treeCount = 18;
       for (let i = 0; i < treeCount; i++) {
         const z = -50 + (i / (treeCount - 1)) * 100 + (Math.random() - 0.5) * 4;
@@ -372,17 +415,17 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       scene.add(track(forestGroup));
 
       // Floating firefly memory particles
-      const firefliesGroup = new THREE.Group();
+      const firefliesGroup = new Group();
       const fireflyCount = 25; // reduced count to reduce visual distraction
       for (let i = 0; i < fireflyCount; i++) {
         const size = 0.08 + Math.random() * 0.12;
-        const geo = new THREE.SphereGeometry(size, 8, 8);
-        const mat = new THREE.MeshBasicMaterial({
+        const geo = new SphereGeometry(size, 8, 8);
+        const mat = new MeshBasicMaterial({
           color: 0xffb703, // bright glowing warm gold fireflies
           transparent: true,
           opacity: 0.55, // clearly visible glowing points in the dark forest
         });
-        const firefly = new THREE.Mesh(geo, mat);
+        const firefly = new Mesh(geo, mat);
 
         const z = (Math.random() - 0.5) * 120;
         const pathPos = getPersonalPathPosition(z);
@@ -402,9 +445,9 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       scene.add(track(firefliesGroup));
 
       // Slow drifting flat translucent clouds
-      cloudsGroup = new THREE.Group();
+      cloudsGroup = new Group();
       const cloudCount = 8;
-      const cloudMat = new THREE.MeshStandardMaterial({
+      const cloudMat = new MeshStandardMaterial({
         color: 0xffffff,
         transparent: true,
         opacity: 0.06,
@@ -414,8 +457,8 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
         const w = 18 + Math.random() * 18;
         const h = 0.4;
         const d = 8 + Math.random() * 8;
-        const cloudGeo = new THREE.BoxGeometry(w, h, d);
-        const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+        const cloudGeo = new BoxGeometry(w, h, d);
+        const cloud = new Mesh(cloudGeo, cloudMat);
         
         cloud.position.set(
           (Math.random() - 0.5) * 60,
@@ -428,10 +471,10 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     }
 
     // ─── 3. NIGHT SKY CONSTELLATION SPIRAL (EMOTIONAL) ───
-    let emotionalCandles: THREE.Group[] = [];
+    let emotionalCandles: Group[] = [];
     if (type === "emotional") {
       const starCount = 2500;
-      const starGeo = new THREE.BufferGeometry();
+      const starGeo = new BufferGeometry();
       const starPos = new Float32Array(starCount * 3);
       for (let i = 0; i < starCount * 3; i += 3) {
         const theta = Math.random() * Math.PI * 2;
@@ -441,67 +484,67 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
         starPos[i+1] = radius * Math.sin(phi) * Math.sin(theta);
         starPos[i+2] = radius * Math.cos(phi);
       }
-      starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
-      const starMat = new THREE.PointsMaterial({
+      starGeo.setAttribute("position", new BufferAttribute(starPos, 3));
+      const starMat = new PointsMaterial({
         color: 0xffffff,
         size: 0.25,
         transparent: true,
         opacity: 0.65,
       });
-      const starfield = new THREE.Points(starGeo, starMat);
+      const starfield = new Points(starGeo, starMat);
       scene.add(track(starfield));
 
-      const spiralPoints: THREE.Vector3[] = [];
+      const spiralPoints: Vector3[] = [];
       const spiralSegmentCount = 120;
       for (let i = 0; i < spiralSegmentCount; i++) {
         const t = i / spiralSegmentCount;
         const theta = t * Math.PI * 6.5;
         const r = 24 - t * 20;
         const y = 25 - t * 50;
-        spiralPoints.push(new THREE.Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r));
+        spiralPoints.push(new Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r));
       }
-      const spiralCurve = new THREE.CatmullRomCurve3(spiralPoints);
+      const spiralCurve = new CatmullRomCurve3(spiralPoints);
       const spiralPts = spiralCurve.getPoints(200);
-      const spiralGeo = new THREE.BufferGeometry().setFromPoints(spiralPts);
-      const spiralMat = new THREE.LineDashedMaterial({
+      const spiralGeo = new BufferGeometry().setFromPoints(spiralPts);
+      const spiralMat = new LineDashedMaterial({
         color: 0xffb703,
         dashSize: 0.6,
         gapSize: 0.4,
         transparent: true,
         opacity: 0.4,
       });
-      const spiralLine = new THREE.Line(spiralGeo, spiralMat);
+      const spiralLine = new Line(spiralGeo, spiralMat);
       spiralLine.computeLineDistances();
       scene.add(track(spiralLine));
 
       // Floating Candle Lanterns along spiral
       const candleCount = 18;
-      const candleGroup = new THREE.Group();
+      const candleGroup = new Group();
       for (let i = 0; i < candleCount; i++) {
         const u = (i + 1) / (candleCount + 1);
         const cPos = spiralCurve.getPointAt(u);
 
-        const candle = new THREE.Group();
+        const candle = new Group();
         candle.position.copy(cPos);
 
-        const baseGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.7, 12);
-        const baseMat = new THREE.MeshStandardMaterial({
+        const baseGeo = new CylinderGeometry(0.3, 0.3, 0.7, 12);
+        const baseMat = new MeshStandardMaterial({
           color: 0x3d2b1f,
           roughness: 0.6,
           metalness: 0.8,
         });
-        const base = new THREE.Mesh(baseGeo, baseMat);
+        const base = new Mesh(baseGeo, baseMat);
         base.castShadow = true;
         base.receiveShadow = true;
         candle.add(base);
 
-        const flameGeo = new THREE.SphereGeometry(0.16, 8, 8);
-        const flameMat = new THREE.MeshBasicMaterial({ color: 0xffb703 });
-        const flame = new THREE.Mesh(flameGeo, flameMat);
+        const flameGeo = new SphereGeometry(0.16, 8, 8);
+        const flameMat = new MeshBasicMaterial({ color: 0xffb703 });
+        const flame = new Mesh(flameGeo, flameMat);
         flame.position.y = 0.45;
         candle.add(flame);
 
-        const candleLight = new THREE.PointLight(0xffb703, 0.5, 6);
+        const candleLight = new PointLight(0xffb703, 0.5, 6);
         candleLight.position.set(0, 0.45, 0);
         candleLight.castShadow = true;
         candle.add(candleLight);
@@ -624,7 +667,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
         }
 
         emotionalCandles.forEach((c, idx) => {
-          const cLight = c.children[2] as THREE.PointLight;
+          const cLight = c.children[2] as PointLight;
           if (cLight) {
             const indFlicker = 1.0 + Math.sin(now * 0.01 + idx) * 0.1;
             cLight.intensity = (0.35 + stateRef.current.candlelightVal * 0.65) * indFlicker;
@@ -683,7 +726,10 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       aria-hidden="true"
       data-testid={`three-world-${type}`}
       className="fixed inset-0 pointer-events-none transition-opacity duration-1000"
-      style={{ zIndex: 0 }}
+      style={{
+        zIndex: 0,
+        background: webglSupportedRef.current ? undefined : FALLBACK_GRADIENTS[type],
+      }}
     />
   );
 }
