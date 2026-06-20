@@ -2,6 +2,8 @@
 
 A premium, interactive, scroll-driven portfolio application that spans across multiple dimensions of professional capabilities, personal memories, and emotional journeys.
 
+**🔗 Live: [portfolio-r2vv.onrender.com](https://portfolio-r2vv.onrender.com/)**
+
 <div align="center">
 
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=Vite&logoColor=white)](https://vitejs.dev/)
@@ -11,6 +13,8 @@ A premium, interactive, scroll-driven portfolio application that spans across mu
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Gemini](https://img.shields.io/badge/Gemini%20AI-8E75FF?style=for-the-badge&logo=google-gemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
+
+[![CI](https://github.com/hemanthnagasai/Portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/hemanthnagasai/Portfolio/actions/workflows/ci.yml)
 
 </div>
 
@@ -26,6 +30,8 @@ Explore Hemanth's life and work through four unique visual dimensions:
 | **💻 Professional** | Cybernetic HUD | 3D film-reel timeline, interactive projects, education tree, skills. | Data Sky Highway |
 | **🍃 Personal** | Scrapbook Journal | Real Polaroid frames, glassmorphic panels, value vertical spine. | Warm Stepping Stones & Fireflies |
 | **🕯️ Emotional** | Candlelight Poetry | Poetic letters, signature, moderated message board ("Leave a Trace"). | Constellation Spiral + Flashlight |
+
+A dedicated **Recruiter view** sits outside the four dimensions: a clean, fast, conversational summary of Hemanth's background with an AI chatbot (grounded in his real portfolio data), resume download, and direct contact links.
 
 ---
 
@@ -53,7 +59,18 @@ This application includes robust security and content moderation features to pre
 - **Rate Limiting:** Protects AI generation quotas and server capacity using an IP-based sliding window rate limiter on key interaction endpoints.
 - **Database Row Capping:** Automatically auto-prunes database tables during write operations to prevent disk space exhaustion from continuous spam.
 - **Payload Constraints:** Enforces strict Pydantic length and validation constraints on client-supplied data inputs.
-- **Secure Admin Deletion:** A protected `DELETE /api/traces/{word}` endpoint is available for manual moderation, secured by an `ADMIN_TOKEN` header check.
+- **CORS Hardening:** Cross-origin requests are restricted to an explicit allowlist (configurable via `CORS_ORIGINS`), not left open to any origin.
+- **Secure Admin Deletion:** A protected `DELETE /api/traces/{word}` endpoint is available for manual moderation, secured by an `ADMIN_TOKEN` header check, with deletions logged for accountability.
+
+---
+
+## ⚡ Performance & Accessibility
+
+- **Adaptive rendering:** the WebGL scenes drop shadows/antialiasing and cap pixel ratio on lower-power and touch devices, instead of forcing the same render cost on every visitor.
+- **Graceful WebGL fallback:** browsers or devices without WebGL support get a static themed background instead of a broken or blank page.
+- **Reduced motion:** all animations (page transitions, cursor effects, 3D camera drift) respect the OS-level `prefers-reduced-motion` setting.
+- **Code-split routes:** each dimension loads its own JS chunk on demand rather than bundling the whole site upfront.
+- **Error boundary:** an unexpected render error shows a recoverable message instead of a blank screen.
 
 ---
 
@@ -150,7 +167,9 @@ Open `http://localhost:8000` to view the live app.
 
 ## 🧪 Running Tests
 
-To run the automated backend test suite, navigate to the `backend/` directory and execute:
+The backend test suite mocks all external calls (Gemini, etc.), so it runs fully offline and deterministically — no API key or quota needed. It also runs automatically on every push/PR via GitHub Actions (see the CI badge above), alongside a frontend typecheck and build.
+
+To run it locally, navigate to the `backend/` directory and execute:
 
 ```bash
 cd backend
