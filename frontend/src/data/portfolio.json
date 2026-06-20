@@ -1,0 +1,132 @@
+{
+  "profile": {
+    "firstName": "Hemanth",
+    "middleName": "Naga Sai",
+    "lastName": "Chakka",
+    "tagline": "A man who reveals himself in layers. Choose a world to begin.",
+    "origin": "Mangalagiri, Guntur"
+  },
+  "professional": {
+    "kicker": "01 · Professional",
+    "heading": ["Data.", "Clarity.", "Initiative."],
+    "quote": "I work at the intersection of data and human understanding, making complex things clear, and finding better ways before anyone asks me to.",
+    "bio": "I'm Hemanth — a Senior Data Analyst at EY, working at the crossroads of data, technology, and people. My journey started in a computer science classroom in Guntur, building projects with friends that weren't impressive by industry standards but taught me something more valuable — that the best work happens when people build things together. Today I translate complexity into clarity, automate what doesn't need to be manual, and quietly explore where technology is heading next.",
+    "experience": [
+      {
+        "company": "Ernst & Young LLP",
+        "role": "Senior Data Analyst",
+        "period": "Dec 2024 — Present",
+        "sub": "Intern · Jun 2024 — Dec 2024",
+        "bullets": [
+          "Validate and reconcile client data across multiple enterprise platforms ensuring accuracy and consistency",
+          "Execute monthly runs for an internally developed analytics and reporting tool used by client teams",
+          "Automate repetitive Excel workflows using Python, reducing manual effort without being asked",
+          "Leverage GenAI tools to simplify complex report findings for non-technical end users"
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "name": "Attendance Management System",
+        "stack": "Python · OpenCV · Facial Recognition",
+        "desc": "Built with friends during BTech. Automated real-time attendance marking using facial capture, reducing manual intervention entirely. The tech was interesting. Building it together was the point."
+      },
+      {
+        "name": "Emotion Detection & Analysis",
+        "stack": "Python · Facial Recognition APIs · Emotion Libraries",
+        "desc": "Designed a model that reads human emotions in real time. Integrated with a drone delivery system to supply items to employees based on emotional state. A small experiment in making technology genuinely care about people."
+      }
+    ],
+    "education": [
+      {
+        "degree": "B.Tech — Computer Science Engineering",
+        "org": "KITS · Guntur",
+        "period": "2021 — 2025",
+        "meta": "CGPA 8.55"
+      },
+      {
+        "degree": "Intermediate (XII) · Science",
+        "org": "Sri Gayathri Jr. College",
+        "period": "2021",
+        "meta": "87.8%"
+      },
+      {
+        "degree": "Secondary (X)",
+        "org": "Ravindra Bharati School",
+        "period": "2019",
+        "meta": "9.50 GPA"
+      }
+    ],
+    "skills": [
+      "Python", "SQL", "Excel", "NumPy", "Pandas", "Matplotlib",
+      "Machine Learning", "NLP", "MongoDB", "GenAI Tools",
+      "Data Validation", "Process Automation", "LLM Exploration"
+    ],
+    "certs": [
+      { "name": "Basic Python", "org": "HackerRank" },
+      { "name": "Artificial Intelligence", "org": "Simplilearn" },
+      { "name": "Generative AI for Everyone", "org": "Coursera" },
+      { "name": "Data Analytics", "org": "Code Crave" },
+      { "name": "IIC Regional Meet — High Recognition", "org": "KL University" },
+      { "name": "Jeevan Kaushal Club Coordinator", "org": "Co-Curricular" },
+      { "name": "Startup Mahakumbh 2024", "org": "DELHI" },
+      { "name": "Data Engineering", "org": "ISI Kolkata" }
+    ]
+  },
+  "personal": {
+    "kicker": "02 · Personal",
+    "heading": ["Warm.", "Deep.", "Human."],
+    "quote": "I'm not the loudest person in the room. But if you stay long enough, you'll never want to leave.",
+    "bio": "I'm Hemanth. From Mangalagiri, Guntur. A small town that taught me big things early. I learned responsibility before I was supposed to. I found joy in the most unexpected places, a friend I met in college who gave me music, a cricket match that felt like a philosophy, a stranger who became someone important within an hour. I reveal myself slowly. But the people who stay find someone intensely loyal, genuinely curious, and powered entirely by the happiness of the people around him.",
+    "hobbies": [
+      {
+        "title": "Singing",
+        "note": "Not professionally. Not perfectly. Just fully. Music is where I go when words aren't enough."
+      },
+      {
+        "title": "Cricket",
+        "note": "Not just a sport, a philosophy. Virat Kohli taught me you can be fierce and still lift others. I try to live that way."
+      },
+      {
+        "title": "Pencil Art",
+        "note": "Quiet, patient, detail-oriented. Everything I am when no one is watching."
+      },
+      {
+        "title": "Exploring AI",
+        "note": "I spend my own time and honestly, my own money on exploring different LLMs and where this technology is taking us. Not for work. For wonder."
+      }
+    ],
+    "values": [
+      "Connection over convenience.",
+      "Depth over surface.",
+      "People over everything."
+    ],
+    "closing": "I feel most alive when the people I love are okay."
+  },
+  "emotional": {
+    "kicker": "03 · Emotional",
+    "heading": "A letter.  Unsigned.",
+    "paragraphs": [
+      "I have loved people who didn't stay.",
+      "Not romantically, not all of them.",
+      "But in the way that matters just as much.",
+      "A girl I called sister before the word was official.\nA friend who put music in me without knowing it.\nPeople who became homes before I realized\nI had moved in completely.",
+      "Some of them are gone now.\nNot dramatically.\nJust quietly.\nThe way some doors close without slamming.",
+      "I heard some of them were hurt.\nAnd even now, in my own silence,\nI hope they are okay.",
+      "That's the part I can't explain to most people:\nhow I can miss someone\nand still want nothing but good things for them.",
+      "I don't know your name yet.\nBut I've been preparing for you\nin ways I didn't even realize.",
+      "Every person who left\ntaught me something about the kind of person\nI want to be for the one who stays.",
+      "And I intend to stay.\nNot because I have to.\nNot because leaving is hard.\nBut because once I am in,\ntruly in,\nleaving stops being a language I speak.",
+      "I'm not someone who loves easily.\nI'm someone who loves completely.",
+      "I won't say it loudly.\nI won't perform it for the world.\nI'll just be there,\nconsistently, quietly, entirely.",
+      "The kind of there that doesn't disappear when things get heavy.\nThe kind that remembers the small things\nbecause to me, nothing about you is small.\nThe kind that shows up,\nnot sometimes, not when it's convenient,\nbut always.",
+      "I'll be honest with you.\nI have overextended myself before.\nHeld on longer than I should have.\nAsked myself \"what did I do wrong\"\nwhen the real answer was simply this:\nsome people cannot meet you\nat the depth you live in.",
+      "I'm still learning where to stop giving.\nStill learning how to protect\nwhat I so freely offer.\nBut I'm not learning to love less.\nNever that.",
+      "I just want someone who stays.\nNot because I tried hard enough.\nNot because they had to.\nBut because they genuinely want to.",
+      "Because I am here,\nfully, permanently, without condition,\nand somewhere out there,\nso are you.",
+      "I don't know if we've met yet.\nI don't know if you're close or still far.\nBut I know this:\nWhen it's you, I'll know.",
+      "And when I know,\nthere will be no version of my life\nthat doesn't have you in it.",
+      "Yours, before you even knew it."
+    ]
+  }
+}
