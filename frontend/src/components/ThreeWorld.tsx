@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { isTouchDevice } from "@/utils/device";
 
 interface ThreeWorldProps {
   type: "professional" | "personal" | "emotional";
@@ -53,17 +54,21 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     scene.add(camera);
 
     // --- Renderer Setup ---
+    // Mobile/touch GPUs struggle most with antialiasing + real-time soft shadows;
+    // drop both there rather than rendering the same scene quality everywhere.
+    const lowPowerDevice = isTouchDevice();
+
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !lowPowerDevice,
       alpha: true,
       powerPreference: "high-performance",
     });
     rendererRef.current = renderer;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPowerDevice ? 1 : 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    
-    // Soft Shadows
-    renderer.shadowMap.enabled = true;
+
+    // Soft shadows only on devices that can afford the extra draw passes
+    renderer.shadowMap.enabled = !lowPowerDevice;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 

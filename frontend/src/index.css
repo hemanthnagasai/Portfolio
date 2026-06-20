@@ -117,6 +117,23 @@ body {
   100% { transform: translate(0, 0); }
 }
 
+/* mix-blend-mode forces continuous full-screen recompositing of every layer beneath it,
+   and the infinite CSS animation repaints it every 0.8s on top of that. Touch devices
+   (phones/tablets) take this hit hardest, so drop both there for a static, near-free grain. */
+@media (pointer: coarse) {
+  .noise-overlay {
+    animation: none;
+    mix-blend-mode: normal;
+    opacity: calc(var(--grain-opacity) * 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noise-overlay {
+    animation: none;
+  }
+}
+
 /* ═══════════════════════════════════════════
    CUSTOM CURSOR
    ═══════════════════════════════════════════ */

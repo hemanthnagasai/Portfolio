@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { useLocation } from "react-router-dom";
+import { isTouchDevice } from "@/utils/device";
 
 export default function SmoothScroll() {
   const { pathname } = useLocation();
@@ -8,6 +9,11 @@ export default function SmoothScroll() {
   useEffect(() => {
     // Disable smooth scroll on recruiter view to avoid breaking standard browser mechanics
     if (pathname === "/recruiter") return;
+
+    // Lenis hijacks scroll with a JS-driven RAF loop that competes with the Three.js
+    // render loop for the main thread. Native touch scrolling is already smooth on
+    // mobile, so skip Lenis there entirely rather than fighting the OS for scroll control.
+    if (isTouchDevice()) return;
 
     const lenis = new Lenis({
       duration: 1.2,

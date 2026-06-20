@@ -2,10 +2,14 @@ import { useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { TransitionContext } from "@/context/TransitionContext";
+import { isTouchDevice } from "@/utils/device";
 
 export default function TransitionOverlay() {
   const { state, setState } = useContext(TransitionContext);
   const navigate = useNavigate();
+  // backdrop-filter is expensive to composite on mobile GPUs even for a single 0.8s
+  // burst, layered on top of the clip-path wipe already running. Skip it on touch.
+  const skipBlurFlash = isTouchDevice();
 
   useEffect(() => {
     if (state.phase === "expanding") {
@@ -39,19 +43,21 @@ export default function TransitionOverlay() {
             }}
             transition={{ duration: 0.8, ease: [0.65, 0, 0.35, 1] }}
           />
-          {/* Motion blur flash */}
-          <motion.div
-            key="blur-flash"
-            className="fixed inset-0 pointer-events-none"
-            style={{
-              zIndex: 9001,
-              backdropFilter: "blur(4px)",
-              WebkitBackdropFilter: "blur(4px)",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.6, 0] }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          />
+          {/* Motion blur flash (desktop only — see skipBlurFlash) */}
+          {!skipBlurFlash && (
+            <motion.div
+              key="blur-flash"
+              className="fixed inset-0 pointer-events-none"
+              style={{
+                zIndex: 9001,
+                backdropFilter: "blur(4px)",
+                WebkitBackdropFilter: "blur(4px)",
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.6, 0] }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            />
+          )}
         </>
       )}
       {state.phase === "fading" && (
