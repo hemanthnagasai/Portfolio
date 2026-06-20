@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-motor
-python-dotenv
-reportlab
-pydantic
-requests
-pytest
-google-genai
