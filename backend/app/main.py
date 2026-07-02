@@ -1,6 +1,7 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
 from contextlib import asynccontextmanager
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from pathlib import Path
 import os
 import logging
@@ -31,11 +32,64 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+# Every external resource the frontend loads must be allowlisted here:
+# Google Fonts (stylesheet + font files), the inline data: SVG noise texture
+# in index.css, and the Unsplash onError fallback image in Personal.tsx.
+# 'unsafe-inline' for styles is required by React/Framer Motion style attributes.
+CONTENT_SECURITY_POLICY = "; ".join([
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: https://images.unsplash.com",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+])
+
+CACHEABLE_STATIC_EXTENSIONS = (".jpeg", ".jpg", ".png", ".webp", ".svg", ".ico", ".txt", ".xml")
+
+@app.middleware("http")
+async def security_and_cache_headers(request: Request, call_next):
+    response = await call_next(request)
+    headers = response.headers
+    headers.setdefault("Content-Security-Policy", CONTENT_SECURITY_POLICY)
+    headers.setdefault("X-Content-Type-Options", "nosniff")
+    headers.setdefault("X-Frame-Options", "DENY")
+    headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
+    # Ignored over plain HTTP (local dev); effective behind Render's HTTPS.
+    headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+
+    path = request.url.path
+    if path.startswith("/api/"):
+        headers.setdefault("Cache-Control", "no-store")
+    elif path.startswith("/assets/"):
+        # Vite emits content-hashed filenames, so these can never go stale.
+        headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
+    elif path.endswith(CACHEABLE_STATIC_EXTENSIONS):
+        # Un-hashed public/ files (avatar, robots.txt, ...) - short-lived cache.
+        headers.setdefault("Cache-Control", "public, max-age=86400")
+    else:
+        # The SPA HTML shell: always revalidate so deploys are picked up.
+        headers.setdefault("Cache-Control", "no-cache")
+    return response
+
 api_router = APIRouter(prefix="/api")
 
 @api_router.get("/")
 async def root():
     return {"message": "Life Portfolio API"}
+
+@api_router.get("/health")
+async def health():
+    # Lightweight liveness probe for uptime monitors / keep-alive pings.
+    # Deliberately touches no DB or external service.
+    return {"status": "ok"}
 
 api_router.include_router(status.router)
 api_router.include_router(traces.router)

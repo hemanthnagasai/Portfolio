@@ -1,6 +1,7 @@
 import os
 import logging
 import asyncio
+import secrets
 from fastapi import APIRouter, HTTPException, Header, Request
 from typing import List
 import re
@@ -129,7 +130,9 @@ async def get_traces(limit: int = 200):
 async def delete_trace(word: str, request: Request, x_admin_token: str = Header(None, alias="X-Admin-Token")):
     client_ip = request.client.host if request.client else "unknown"
     admin_token = os.getenv("ADMIN_TOKEN")
-    if not admin_token or x_admin_token != admin_token:
+    # compare_digest: constant-time comparison so response timing can't be
+    # used to guess the token character by character.
+    if not admin_token or not x_admin_token or not secrets.compare_digest(x_admin_token, admin_token):
         logger.warning(f"Unauthorized trace delete attempt: word='{word}' ip={client_ip}")
         raise HTTPException(status_code=401, detail="Unauthorized")
 
