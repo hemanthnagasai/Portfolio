@@ -1,0 +1,26 @@
+# VCS / CI
+.git
+.github
+
+# Dependencies & build output — reinstalled/rebuilt inside the image.
+# Excluding node_modules also prevents `COPY frontend/ ./` from clobbering
+# the image's clean `npm ci` install with host (Windows) binaries.
+**/node_modules
+frontend/dist
+
+# Python environments & caches
+**/.venv
+**/__pycache__
+**/.pytest_cache
+
+# Local data & secrets
+*.db
+**/.env
+**/.env.*
+
+# Local-only context docs (never ship)
+memory.md
+features.md
+idea description.md
+project.md
+PortfolioDocumentation.md

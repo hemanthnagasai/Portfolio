@@ -17,7 +17,8 @@ RUN npm run build
 # ==========================================
 # Stage 2: Serve Frontend & Backend (FastAPI)
 # ==========================================
-FROM python:3.11-slim AS runner
+# Match the Python version CI tests against (.github/workflows/ci.yml)
+FROM python:3.13-slim AS runner
 WORKDIR /app
 
 # Install system dependencies if needed (e.g. build-essential, etc.)
@@ -42,5 +43,10 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1
 WORKDIR /app/backend
 
-# Run FastAPI backend using uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run FastAPI backend using uvicorn.
+# --proxy-headers is required behind Render's load balancer: without it,
+# request.client.host is the proxy's IP, so per-IP rate limiting lumps all
+# visitors into one bucket and audit logs record the wrong address.
+# --forwarded-allow-ips="*" is safe here because only the platform proxy
+# can reach the container directly.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]

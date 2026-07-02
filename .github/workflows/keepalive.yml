@@ -1,0 +1,23 @@
+name: Keep-alive
+
+# Render's free tier spins the service down after ~15 minutes without
+# traffic, so the next visitor waits 30-50s for a cold start. Pinging the
+# health endpoint every 10 minutes keeps the container warm (well within
+# Render's 750 free instance-hours/month for a single service).
+#
+# Note: GitHub automatically disables scheduled workflows after 60 days
+# without repository activity — re-enable from the Actions tab if so.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        # Generous timeout + retries so a ping that lands on an already-cold
+        # instance (e.g. after a deploy) still succeeds by waking it.
+        run: curl -fsS --max-time 60 --retry 3 --retry-all-errors --retry-delay 5 https://portfolio-r2vv.onrender.com/api/health
