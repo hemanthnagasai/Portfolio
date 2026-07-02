@@ -1,4 +1,6 @@
 import io
+import json
+from xml.sax.saxutils import escape
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -11,7 +13,30 @@ from reportlab.platypus import (
     HRFlowable,
 )
 
+from app.config import PORTFOLIO_JSON_PATH
+
+
+def _load_portfolio() -> dict:
+    # Same portfolio.json the frontend renders and the chatbot is grounded
+    # in — the resume can't drift from the site because they share one
+    # source of truth.
+    with open(PORTFOLIO_JSON_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def build_resume_pdf() -> bytes:
+    data = _load_portfolio()
+    profile = data["profile"]
+    professional = data["professional"]
+    resume = data.get("resume", {})
+
+    full_name = " ".join(
+        part for part in (profile.get("firstName"), profile.get("middleName"), profile.get("lastName")) if part
+    )
+    experience = professional.get("experience", [])
+    current_role = experience[0]["role"] if experience else ""
+    education = professional.get("education", [])
+
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -20,8 +45,8 @@ def build_resume_pdf() -> bytes:
         rightMargin=0.6 * inch,
         topMargin=0.55 * inch,
         bottomMargin=0.55 * inch,
-        title="Hemanth Naga Sai Chakka - Resume",
-        author="Hemanth Naga Sai Chakka",
+        title=f"{full_name} - Resume",
+        author=full_name,
     )
 
     styles = getSampleStyleSheet()
@@ -65,82 +90,73 @@ def build_resume_pdf() -> bytes:
     )
 
     story = []
-    story.append(Paragraph("Hemanth Naga Sai Chakka", name_style))
-    story.append(Paragraph("Senior Data Analyst", title_style))
-    story.append(Paragraph(
-        "Mangalagiri, Guntur, India  &nbsp;|&nbsp;  B.Tech Computer Science Engineering, CGPA 8.55",
-        contact_style,
-    ))
+    story.append(Paragraph(escape(full_name), name_style))
+    if current_role:
+        story.append(Paragraph(escape(current_role), title_style))
+    contact_bits = [f"{profile['origin']}, India"] if profile.get("origin") else []
+    if education:
+        contact_bits.append(f"{education[0]['degree']}, {education[0].get('meta', '')}".strip(", "))
+    if contact_bits:
+        story.append(Paragraph(escape("  |  ".join(contact_bits)), contact_style))
     story.append(HRFlowable(width="100%", thickness=0.6, color=HexColor("#D1D5DB"), spaceAfter=6))
 
-    # Summary
-    story.append(Paragraph("SUMMARY", section_style))
-    story.append(Paragraph(
-        "Senior Data Analyst at EY working at the intersection of data, technology, and people. "
-        "Translate complexity into clarity, automate repetitive workflows, and leverage GenAI to "
-        "simplify complex findings for non-technical stakeholders.",
-        body_style,
-    ))
+    # Summary — resume.summary is the professional-tone variant of the
+    # site's first-person bio.
+    summary = resume.get("summary")
+    if summary:
+        story.append(Paragraph("SUMMARY", section_style))
+        story.append(Paragraph(escape(summary), body_style))
 
     # Experience
-    story.append(Paragraph("EXPERIENCE", section_style))
-    story.append(Paragraph("Senior Data Analyst — Ernst &amp; Young LLP (EY)", role_style))
-    story.append(Paragraph("Dec 2024 – Present  |  Intern: Jun 2024 – Dec 2024", meta_style))
-    for b in [
-        "Validate and reconcile client data across multiple enterprise platforms, ensuring accuracy and consistency.",
-        "Execute monthly runs for an internally developed analytics and reporting tool used by client teams.",
-        "Automate repetitive Excel workflows using Python — reducing manual effort without being asked.",
-        "Leverage GenAI tools to simplify complex report findings for non-technical end users.",
-    ]:
-        story.append(Paragraph(b, bullet_style, bulletText="•"))
+    if experience:
+        story.append(Paragraph("EXPERIENCE", section_style))
+        for job in experience:
+            story.append(Paragraph(escape(f"{job['role']} — {job['company']}"), role_style))
+            period_line = job.get("period", "")
+            if job.get("sub"):
+                period_line = f"{period_line}  |  {job['sub']}" if period_line else job["sub"]
+            if period_line:
+                story.append(Paragraph(escape(period_line), meta_style))
+            for b in job.get("bullets", []):
+                story.append(Paragraph(escape(b), bullet_style, bulletText="•"))
 
-    # Projects
-    story.append(Paragraph("PROJECTS", section_style))
-    story.append(Paragraph("Attendance Management System", role_style))
-    story.append(Paragraph("Python, OpenCV, Facial Recognition", meta_style))
-    story.append(Paragraph(
-        "Built with a team during B.Tech. Automated real-time attendance marking using facial capture, "
-        "eliminating manual intervention.",
-        bullet_style, bulletText="•",
-    ))
-    story.append(Spacer(1, 4))
-    story.append(Paragraph("Emotion Detection &amp; Analysis", role_style))
-    story.append(Paragraph("Python, Facial Recognition APIs, Emotion Libraries", meta_style))
-    story.append(Paragraph(
-        "Designed a model that reads human emotions in real time; integrated with a drone delivery system "
-        "to supply items to employees based on their emotional state.",
-        bullet_style, bulletText="•",
-    ))
+    # Projects — resumeDesc (professional tone) preferred over the site's
+    # more personal desc.
+    projects = professional.get("projects", [])
+    if projects:
+        story.append(Paragraph("PROJECTS", section_style))
+        for i, proj in enumerate(projects):
+            if i > 0:
+                story.append(Spacer(1, 4))
+            story.append(Paragraph(escape(proj["name"]), role_style))
+            if proj.get("stack"):
+                story.append(Paragraph(escape(proj["stack"]), meta_style))
+            desc = proj.get("resumeDesc") or proj.get("desc")
+            if desc:
+                story.append(Paragraph(escape(desc), bullet_style, bulletText="•"))
 
     # Education
-    story.append(Paragraph("EDUCATION", section_style))
-    story.append(Paragraph("B.Tech, Computer Science Engineering — KITS, Guntur", role_style))
-    story.append(Paragraph("2021 – 2025  |  CGPA 8.55", meta_style))
-    story.append(Paragraph("Intermediate (XII), Science — Sri Gayathri Jr. College", role_style))
-    story.append(Paragraph("2021  |  87.8%", meta_style))
-    story.append(Paragraph("Secondary (X) — Ravindra Bharati School", role_style))
-    story.append(Paragraph("2019  |  9.50 GPA", meta_style))
+    if education:
+        story.append(Paragraph("EDUCATION", section_style))
+        for edu in education:
+            story.append(Paragraph(escape(f"{edu['degree']} — {edu['org']}"), role_style))
+            meta_line = "  |  ".join(bit for bit in (edu.get("period"), edu.get("meta")) if bit)
+            if meta_line:
+                story.append(Paragraph(escape(meta_line), meta_style))
 
     # Skills
-    story.append(Paragraph("SKILLS", section_style))
-    skills = [
-        "Python", "SQL", "Excel", "NumPy", "Pandas", "Matplotlib",
-        "Machine Learning", "NLP", "MongoDB", "GenAI Tools",
-        "Data Validation", "Process Automation", "LLM Exploration",
-    ]
-    story.append(Paragraph(" • ".join(skills), body_style))
+    skills = professional.get("skills", [])
+    if skills:
+        story.append(Paragraph("SKILLS", section_style))
+        story.append(Paragraph(escape(" • ".join(skills)), body_style))
 
-    # Certifications
-    story.append(Paragraph("CERTIFICATIONS &amp; ACHIEVEMENTS", section_style))
-    for b in [
-        "Basic Python — HackerRank",
-        "Artificial Intelligence — Simplilearn",
-        "Generative AI for Everyone — Coursera",
-        "Data Analytics — Code Crave, Startup Mahakumbh 2024 (Delhi)",
-        "IIC Regional Meet — High Recognition",
-        "Jeevan Kaushal Club Coordinator (Co-Curricular)",
-    ]:
-        story.append(Paragraph(b, bullet_style, bulletText="•"))
+    # Certifications & achievements
+    certs = professional.get("certs", [])
+    if certs:
+        story.append(Paragraph("CERTIFICATIONS &amp; ACHIEVEMENTS", section_style))
+        for cert in certs:
+            line = f"{cert['name']} — {cert['org']}" if cert.get("org") else cert["name"]
+            story.append(Paragraph(escape(line), bullet_style, bulletText="•"))
 
     doc.build(story)
     buffer.seek(0)

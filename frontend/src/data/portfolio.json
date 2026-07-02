@@ -6,6 +6,9 @@
     "tagline": "A man who reveals himself in layers. Choose a world to begin.",
     "origin": "Mangalagiri, Guntur"
   },
+  "resume": {
+    "summary": "Senior Data Analyst at EY working at the intersection of data, technology, and people. Translates complexity into clarity, automates repetitive workflows, and leverages GenAI to simplify complex findings for non-technical stakeholders."
+  },
   "professional": {
     "kicker": "01 · Professional",
     "heading": ["Data.", "Clarity.", "Initiative."],
@@ -29,12 +32,14 @@
       {
         "name": "Attendance Management System",
         "stack": "Python · OpenCV · Facial Recognition",
-        "desc": "Built with friends during BTech. Automated real-time attendance marking using facial capture, reducing manual intervention entirely. The tech was interesting. Building it together was the point."
+        "desc": "Built with friends during BTech. Automated real-time attendance marking using facial capture, reducing manual intervention entirely. The tech was interesting. Building it together was the point.",
+        "resumeDesc": "Built with a team during B.Tech. Automated real-time attendance marking using facial capture, eliminating manual intervention."
       },
       {
         "name": "Emotion Detection & Analysis",
         "stack": "Python · Facial Recognition APIs · Emotion Libraries",
-        "desc": "Designed a model that reads human emotions in real time. Integrated with a drone delivery system to supply items to employees based on emotional state. A small experiment in making technology genuinely care about people."
+        "desc": "Designed a model that reads human emotions in real time. Integrated with a drone delivery system to supply items to employees based on emotional state. A small experiment in making technology genuinely care about people.",
+        "resumeDesc": "Designed a model that reads human emotions in real time; integrated with a drone delivery system to supply items to employees based on their emotional state."
       }
     ],
     "education": [
