@@ -9,6 +9,7 @@ import Typewriter from "@/components/Typewriter";
 import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
 import { worldContentClass, worldTopBarClass } from "@/constants/worldLayout";
 import { cinematicReveal, fadeUp, staggerContainer } from "@/motion/presets";
+import usePageMeta from "@/hooks/usePageMeta";
 import ThreeWorld from "@/components/ThreeWorld";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
@@ -124,6 +125,10 @@ function ProjectCard({ p, i }: { p: typeof professional.projects[0]; i: number }
    ═══════════════════════════════════════════ */
 export default function Professional() {
   const { setDimension } = useContext(DimensionContext);
+  usePageMeta(
+    "Professional — Hemanth Naga Sai Chakka",
+    "Experience at EY, projects, education, and skills — the professional dimension of Hemanth Naga Sai Chakka.",
+  );
 
   useEffect(() => {
     setDimension("professional");

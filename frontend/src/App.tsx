@@ -18,6 +18,7 @@ const Personal = lazy(() => import("@/pages/Personal"));
 const Emotional = lazy(() => import("@/pages/Emotional"));
 const Recruiter = lazy(() => import("@/pages/Recruiter"));
 const LayerZero = lazy(() => import("@/pages/LayerZero"));
+const Admin = lazy(() => import("@/pages/Admin"));
 
 export default function App() {
   const [dimension, setDimension] = useState<string>("gateway");
@@ -50,6 +51,7 @@ export default function App() {
                   <Route path="/emotional" element={<Emotional />} />
                   <Route path="/recruiter" element={<Recruiter />} />
                   <Route path="/zero" element={<LayerZero />} />
+                  <Route path="/admin" element={<Admin />} />
                 </Routes>
               </Suspense>
               <WorldSwitcher />

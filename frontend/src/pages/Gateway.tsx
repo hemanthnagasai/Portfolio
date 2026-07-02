@@ -9,6 +9,7 @@ import LivingPortrait from "@/components/LivingPortrait";
 import { getGreeting, SUBLINE } from "@/utils/greeting";
 import useUnlock, { ensureFirstVisit } from "@/hooks/useUnlock";
 import { cinematicReveal, filmFrameEnter } from "@/motion/presets";
+import usePageMeta from "@/hooks/usePageMeta";
 
 interface PortalInfo {
   num: string;
@@ -513,6 +514,10 @@ function LayerZeroPortal({ trigger }: LayerZeroPortalProps) {
 
 export default function Gateway() {
   const { setDimension } = useContext(DimensionContext);
+  usePageMeta(
+    "Hemanth Naga Sai Chakka — A Portfolio in Layers",
+    "Explore the professional, personal, and emotional dimensions of Hemanth Naga Sai Chakka — Senior Data Analyst at EY.",
+  );
   const { trigger } = useContext(TransitionContext);
   const unlocked = useUnlock();
   const [greeting] = useState(() => getGreeting());

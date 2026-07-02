@@ -11,7 +11,9 @@
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Hemanth Naga Sai Chakka" />
         <meta property="og:description" content="Hemanth Naga Sai Chakka — Senior Data Analyst · Narra" />
-        <meta property="og:image" content="https://portfolio-r2vv.onrender.com/avatar.jpeg" />
+        <meta property="og:image" content="https://portfolio-r2vv.onrender.com/og-banner.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:url" content="https://portfolio-r2vv.onrender.com/" />
         <link rel="canonical" href="https://portfolio-r2vv.onrender.com/" />
 
@@ -19,13 +21,35 @@
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Hemanth Naga Sai Chakka" />
         <meta name="twitter:description" content="Hemanth Naga Sai Chakka — Senior Data Analyst · Narra" />
-        <meta name="twitter:image" content="https://portfolio-r2vv.onrender.com/avatar.jpeg" />
+        <meta name="twitter:image" content="https://portfolio-r2vv.onrender.com/og-banner.png" />
+
+        <!-- Structured data: how search engines understand who this site is about.
+             A non-executable data block, so CSP script-src does not apply. -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Hemanth Naga Sai Chakka",
+            "jobTitle": "Senior Data Analyst",
+            "worksFor": { "@type": "Organization", "name": "Ernst & Young LLP" },
+            "alumniOf": { "@type": "CollegeOrUniversity", "name": "KITS, Guntur" },
+            "address": { "@type": "PostalAddress", "addressLocality": "Mangalagiri, Guntur", "addressCountry": "IN" },
+            "url": "https://portfolio-r2vv.onrender.com/",
+            "image": "https://portfolio-r2vv.onrender.com/avatar.jpeg",
+            "sameAs": [
+                "https://www.linkedin.com/in/hemanth-chakka-5126111a9/",
+                "https://github.com/hemanthnagasai"
+            ]
+        }
+        </script>
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <!-- Loaded as a non-blocking preload + async stylesheet swap (instead of a CSS @import,
              which forces the browser to fully parse the stylesheet before even discovering this
-             request) so font loading doesn't delay first paint. -->
+             request) so font loading doesn't delay first paint. The media="print" -> "all"
+             swap happens in index.tsx rather than an inline onload handler, which the
+             Content-Security-Policy (script-src 'self') would block. -->
         <link
           rel="preload"
           as="style"
@@ -35,7 +59,7 @@
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
           media="print"
-          onload="this.media='all'"
+          data-async-font
         />
         <noscript>
           <link

@@ -7,6 +7,7 @@ import { emotional } from "@/data/portfolio";
 import LeaveATrace from "@/components/LeaveATrace";
 import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
 import { worldTopBarClass } from "@/constants/worldLayout";
+import usePageMeta from "@/hooks/usePageMeta";
 import ThreeWorld from "@/components/ThreeWorld";
 
 interface ParagraphProps {
@@ -31,6 +32,10 @@ function Paragraph({ text, index }: ParagraphProps) {
 
 export default function Emotional() {
   const { setDimension } = useContext(DimensionContext);
+  usePageMeta(
+    "Emotional — Hemanth Naga Sai Chakka",
+    "Letters, reflections, and a place to leave a trace — the emotional dimension of Hemanth Naga Sai Chakka.",
+  );
   const { scrollYProgress } = useScroll();
   const candleY = useTransform(scrollYProgress, [0, 1], ["0vh", "50vh"]);
   const candleOpacity = useTransform(scrollYProgress, [0, 0.1, 0.95, 1], [0.3, 1, 1, 0.15]);

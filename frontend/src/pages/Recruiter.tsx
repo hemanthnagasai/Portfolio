@@ -3,6 +3,7 @@ import { Download, ArrowLeft, MessageSquare, Send, X, Loader2, Linkedin, Github,
 import { Link } from "react-router-dom";
 import { DimensionContext } from "@/context/DimensionContext";
 import { professional } from "@/data/portfolio";
+import usePageMeta from "@/hooks/usePageMeta";
 import { motion, AnimatePresence } from "framer-motion";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
@@ -14,6 +15,10 @@ interface ChatMessage {
 
 export default function Recruiter() {
   const { setDimension } = useContext(DimensionContext);
+  usePageMeta(
+    "Recruiter View — Hemanth Naga Sai Chakka",
+    "A fast summary for recruiters: experience, projects, resume download, and an AI chat grounded in Hemanth's real background.",
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -50,22 +55,48 @@ export default function Recruiter() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history: messages }),
+        // Only the last 20 messages — the backend truncates to the same
+        // window and its schema rejects histories over 40 outright.
+        body: JSON.stringify({ message: text, history: messages.slice(-20) }),
       });
 
-      if (!response.ok) throw new Error("Failed to get response");
+      if (!response.ok || !response.body) throw new Error("Failed to get response");
 
-      const data = await response.json();
-      setMessages((prev) => [...prev, { role: "model", content: data.response }]);
+      // The backend streams the reply as plain-text chunks: grow the last
+      // message in place so the answer types itself out as it's generated.
+      setIsLoading(false);
+      setMessages((prev) => [...prev, { role: "model", content: "" }]);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let streamed = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        streamed += decoder.decode(value, { stream: true });
+        const current = streamed;
+        setMessages((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = { role: "model", content: current };
+          return next;
+        });
+      }
+      if (!streamed.trim()) throw new Error("Empty response");
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "model",
-          content: "Sorry, I ran into a bit of trouble connecting to my brain. Could you try sending that again?",
-        },
-      ]);
+      const apology =
+        "Sorry, I ran into a bit of trouble connecting to my brain. Could you try sending that again?";
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        // A partial reply that broke mid-stream is worth keeping; only an
+        // empty placeholder gets replaced with the apology.
+        if (last && last.role === "model") {
+          if (last.content.trim()) return next;
+          next[next.length - 1] = { role: "model", content: apology };
+          return next;
+        }
+        return [...next, { role: "model", content: apology }];
+      });
     } finally {
       setIsLoading(false);
     }

@@ -7,6 +7,7 @@ import { personal } from "@/data/portfolio";
 import HandwrittenReveal from "@/components/HandwrittenReveal";
 import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
 import { worldContentClass, worldTopBarClass } from "@/constants/worldLayout";
+import usePageMeta from "@/hooks/usePageMeta";
 import ThreeWorld from "@/components/ThreeWorld";
 
 const fadeUp = {
@@ -67,6 +68,10 @@ function HobbyCard({ h, i }: HobbyCardProps) {
 
 export default function Personal() {
   const { setDimension } = useContext(DimensionContext);
+  usePageMeta(
+    "Personal — Hemanth Naga Sai Chakka",
+    "Hobbies, values, and the people behind the work — the personal dimension of Hemanth Naga Sai Chakka.",
+  );
   useEffect(() => {
     setDimension("personal");
     document.documentElement.style.setProperty("--grain-opacity", "0.05");

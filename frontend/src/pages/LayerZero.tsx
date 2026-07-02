@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
+import usePageMeta from "@/hooks/usePageMeta";
 
 export default function LayerZero() {
   const { setDimension } = useContext(DimensionContext);
+  usePageMeta("Layer Zero — Hemanth Naga Sai Chakka");
   const [revealStep, setRevealStep] = useState(0);
 
   useEffect(() => {
