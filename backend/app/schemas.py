@@ -26,8 +26,12 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=2000)
-    history: List[ChatMessage] = Field(default_factory=list)
+    # Hard cap on history length: without it a single request could carry
+    # thousands of messages, each forwarded to Gemini as tokens (quota/cost
+    # exhaustion). The frontend only ever sends the last 20; 40 leaves slack
+    # so legitimate clients never hit a 422.
+    history: List[ChatMessage] = Field(default_factory=list, max_length=40)
 
-class ChatResponse(BaseModel):
-    response: str
+# Note: /api/chat streams plain text chunks (StreamingResponse), so there is
+# no response schema for it.
 

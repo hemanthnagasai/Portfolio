@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
+import asyncio
 import json
 import logging
 from google import genai
 from google.genai import types
-from app.schemas import ChatRequest, ChatResponse
+from app.schemas import ChatRequest
 from app.config import GEMINI_API_KEY, PORTFOLIO_JSON_PATH
 from app.utils.rate_limiter import check_rate_limit
 
@@ -34,7 +36,7 @@ def get_genai_client():
             logger.error(f"Failed to initialize Gemini Client: {e}")
     return genai_client
 
-@router.post("", response_model=ChatResponse)
+@router.post("")
 async def post_chat(input_data: ChatRequest, request: Request):
     # Limit chat requests to 10 requests per minute per IP to prevent spam/abuse
     check_rate_limit(request.client.host if request.client else "unknown", limit=10, window=60)
@@ -47,7 +49,9 @@ async def post_chat(input_data: ChatRequest, request: Request):
         )
 
     contents = []
-    for msg in input_data.history:
+    # Only the most recent messages are forwarded to Gemini — older context
+    # adds token cost without improving answers for a portfolio chat.
+    for msg in input_data.history[-20:]:
         role = "user" if msg.role == "user" else "model"
         contents.append(
             types.Content(
@@ -112,28 +116,51 @@ Personality & Interaction Guidelines:
 Answer the user's message as Hemanth.
 """
 
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
+    # The genai SDK is synchronous; all its calls run in worker threads via
+    # asyncio.to_thread so the event loop keeps serving other requests during
+    # the multi-second generation (same pattern as moderation in traces.py).
+    def start_stream(model: str):
+        # Pull the first chunk here, before any bytes go to the client:
+        # model failures (quota, 404) surface at this point, so the fallback
+        # model can still take over with a clean response.
+        iterator = client.models.generate_content_stream(
+            model=model,
             contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
                 temperature=0.7,
             )
         )
-        return ChatResponse(response=response.text or "")
+        first = next(iterator, None)
+        return iterator, first
+
+    try:
+        iterator, first = await asyncio.to_thread(start_stream, 'gemini-2.5-flash')
     except Exception as e:
         logger.warning(f"Gemini 2.5 Flash model failed or unavailable: {e}. Trying fallback model gemini-2.0-flash.")
         try:
-            response = client.models.generate_content(
-                model='gemini-2.0-flash',
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.7,
-                )
-            )
-            return ChatResponse(response=response.text or "")
+            iterator, first = await asyncio.to_thread(start_stream, 'gemini-2.0-flash')
         except Exception as e2:
             logger.error(f"All Gemini models failed to generate content: {e2}")
             raise HTTPException(status_code=500, detail=f"Generation failed: {str(e2)}")
+
+    async def token_stream():
+        chunk = first
+        while chunk is not None:
+            if chunk.text:
+                yield chunk.text
+            try:
+                chunk = await asyncio.to_thread(next, iterator, None)
+            except Exception as e:
+                # Mid-stream failure: the client keeps whatever text already
+                # arrived; nothing more useful can be sent at this point.
+                logger.error(f"Gemini stream aborted mid-generation: {e}")
+                break
+
+    return StreamingResponse(
+        token_stream(),
+        media_type="text/plain; charset=utf-8",
+        # Ask intermediary proxies not to buffer, so chunks reach the
+        # browser as they are generated.
+        headers={"X-Accel-Buffering": "no"},
+    )
