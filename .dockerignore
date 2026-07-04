@@ -13,6 +13,13 @@ frontend/dist
 **/__pycache__
 **/.pytest_cache
 
+# Tests (never shipped in the image)
+frontend/e2e
+frontend/playwright.config.ts
+**/test-results
+**/playwright-report
+backend/tests
+
 # Local data & secrets
 *.db
 **/.env
