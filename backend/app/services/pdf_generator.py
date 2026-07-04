@@ -43,8 +43,11 @@ def build_resume_pdf() -> bytes:
         pagesize=LETTER,
         leftMargin=0.6 * inch,
         rightMargin=0.6 * inch,
-        topMargin=0.55 * inch,
-        bottomMargin=0.55 * inch,
+        # Slightly tighter vertical margins + section spacing (below) keep the
+        # whole resume on one page; at 0.55in it spilled the last cert alone
+        # onto page 2, which reads as unfinished.
+        topMargin=0.45 * inch,
+        bottomMargin=0.45 * inch,
         title=f"{full_name} - Resume",
         author=full_name,
     )
@@ -69,7 +72,7 @@ def build_resume_pdf() -> bytes:
     section_style = ParagraphStyle(
         "Section", parent=styles["Normal"], fontName="Helvetica-Bold",
         fontSize=11, leading=14, textColor=accent, alignment=TA_LEFT,
-        spaceBefore=10, spaceAfter=4, textTransform="uppercase",
+        spaceBefore=8, spaceAfter=4, textTransform="uppercase",
     )
     body_style = ParagraphStyle(
         "Body", parent=styles["Normal"], fontName="Helvetica",

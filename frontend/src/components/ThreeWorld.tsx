@@ -546,7 +546,11 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
 
         const candleLight = new PointLight(0xffb703, 0.5, 6);
         candleLight.position.set(0, 0.45, 0);
-        candleLight.castShadow = true;
+        // No castShadow: each shadow-casting light needs its own shadow-map
+        // sampler, and 18 candles + the directional light exceed WebGL's
+        // 16 fragment texture-unit limit (MAX_TEXTURE_IMAGE_UNITS) — the
+        // shaders fail to compile and the scene renders broken. These are
+        // tiny range-6 flames; their shadows were never visible anyway.
         candle.add(candleLight);
 
         candleGroup.add(candle);
