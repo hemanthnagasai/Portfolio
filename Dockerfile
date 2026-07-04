@@ -12,6 +12,15 @@ RUN npm ci --legacy-peer-deps
 COPY frontend/ ./
 # Set backend URL to empty in production so it uses relative path proxied/served by FastAPI
 ENV REACT_APP_BACKEND_URL=""
+# Frontend (Vite) env vars are inlined at BUILD time, so any optional
+# instrumentation must be threaded through as build args here — a runtime
+# env var on the host never reaches the already-compiled bundle. Render
+# exposes service env vars to the Docker build; declaring them as ARG lets
+# Vite pick them up, and a changed value busts this layer's cache.
+ARG REACT_APP_SENTRY_DSN=""
+ARG REACT_APP_GOATCOUNTER=""
+ENV REACT_APP_SENTRY_DSN=$REACT_APP_SENTRY_DSN
+ENV REACT_APP_GOATCOUNTER=$REACT_APP_GOATCOUNTER
 RUN npm run build
 
 # ==========================================
