@@ -36,6 +36,12 @@ COPY backend/ ./backend/
 # Copy built frontend assets from stage 1
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
+# portfolio.json is the single source of truth for the resume PDF and the
+# chatbot grounding (config.PORTFOLIO_JSON_PATH resolves it here). It lives
+# under frontend/src, which is NOT part of dist, so copy it explicitly —
+# without it the resume endpoint 500s in production.
+COPY --from=frontend-builder /app/frontend/src/data/portfolio.json ./frontend/src/data/portfolio.json
+
 # Expose FastAPI port
 EXPOSE 8000
 
