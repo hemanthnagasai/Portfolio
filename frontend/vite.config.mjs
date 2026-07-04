@@ -51,5 +51,19 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     }
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split the big, rarely-changing libraries into their own chunks so
+        // editing app code doesn't bust their (immutable-cached) hash. Three
+        // was previously bundled into ThreeWorld's chunk, so every edit to
+        // that file re-shipped ~535KB of Three to returning visitors.
+        manualChunks(id) {
+          if (id.includes('node_modules/three')) return 'three';
+          if (id.includes('node_modules/framer-motion') || id.includes('node_modules/motion')) return 'motion';
+        },
+      },
+    },
+  },
   envPrefix: 'REACT_APP_', // Keeps support for existing REACT_APP_ variables in .env without renaming
 });
