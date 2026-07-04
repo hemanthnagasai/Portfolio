@@ -18,7 +18,7 @@ RUN npm run build
 # Stage 2: Serve Frontend & Backend (FastAPI)
 # ==========================================
 # Match the Python version CI tests against (.github/workflows/ci.yml)
-FROM python:3.13-slim AS runner
+FROM python:3.14-slim AS runner
 WORKDIR /app
 
 # Install system dependencies if needed (e.g. build-essential, etc.)
