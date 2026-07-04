@@ -620,7 +620,7 @@ export default function Gateway() {
                     initial="hidden"
                     animate="show"
                     custom={2 + i}
-                    className="block gradient-text text-3d pb-[0.25em] -mb-[0.25em]"
+                    className="block hero-ink text-3d pb-[0.25em] -mb-[0.25em]"
                     data-testid={`gateway-name-${i}`}
                   >
                     {wordBlock}

@@ -39,10 +39,12 @@ export default function App() {
         <div className="App">
           <BrowserRouter>
             <ErrorBoundary>
+              <a href="#main-content" className="skip-link">Skip to content</a>
               <SmoothScroll />
               <CinematicIntro />
               <CustomCursor />
               <NoiseOverlay />
+              <div id="main-content">
               <Suspense fallback={<div style={{ position: "fixed", inset: 0, background: "#000" }} />}>
                 <Routes>
                   <Route path="/" element={<Gateway />} />
@@ -54,6 +56,7 @@ export default function App() {
                   <Route path="/admin" element={<Admin />} />
                 </Routes>
               </Suspense>
+              </div>
               <WorldSwitcher />
               <TransitionOverlay />
             </ErrorBoundary>

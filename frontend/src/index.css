@@ -86,6 +86,45 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   KEYBOARD FOCUS (a11y)
+   ═══════════════════════════════════════════ */
+/* Nothing defined :focus-visible before, so keyboard users had no visible
+   focus indicator on the dark worlds. Bright violet reads clearly on the
+   near-black body; the light recruiter/admin surfaces get a dark violet. */
+:focus-visible {
+  outline: 2px solid #c8b6ff;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.recruiter-bg :focus-visible {
+  outline-color: #6d28d9;
+}
+
+/* Skip link: first tab stop, jumps keyboard users past the cinematic intro
+   and decorative nav straight to page content. Off-screen until focused. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 10000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #111827;
+  font-family: var(--font-plex);
+  font-size: 14px;
+  font-weight: 600;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .skip-link { transition: none; }
+}
+
+/* ═══════════════════════════════════════════
    FONT UTILITIES
    ═══════════════════════════════════════════ */
 .font-display { font-family: var(--font-display); }
@@ -814,14 +853,12 @@ body {
     0 8px 30px rgba(0,0,0,0.4);
 }
 
-/* Animated gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #fff 0%, rgba(200,182,255,0.9) 50%, #fff 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 4s ease-in-out infinite;
+/* Hero name treatment: solid near-white with a soft violet halo. Replaced a
+   white->violet gradient-clip fill (a common "AI-generated" tell) — the depth
+   now comes from .text-3d layering plus the glow, not a gradient. */
+.hero-ink {
+  color: #f5f2ff;
+  text-shadow: 0 0 34px rgba(200, 182, 255, 0.28);
 }
 
 /* Holographic shimmer */

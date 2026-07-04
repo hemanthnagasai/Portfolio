@@ -44,6 +44,11 @@ export default function WorldSwitcher() {
               key={w.key}
               to={w.to}
               data-testid={`world-link-${w.key}`}
+              // The label is visually hidden below md, so give the link an
+              // explicit accessible name — otherwise the icon-only mobile
+              // nav announces as a bare "link" to screen readers.
+              aria-label={w.label}
+              aria-current={isActive ? "page" : undefined}
               className="relative flex-1 min-w-0 flex items-center justify-center gap-1.5 text-center px-2 py-2.5 md:flex-none md:px-4 md:py-2 text-[10px] md:text-xs font-mono uppercase tracking-[0.1em] md:tracking-[0.15em] rounded-full transition-all duration-300 whitespace-nowrap"
               style={{
                 color: isActive ? activeText : baseText,
@@ -53,7 +58,7 @@ export default function WorldSwitcher() {
                   : "none",
               }}
             >
-              <Icon size={12} strokeWidth={1.5} style={{ opacity: isActive ? 1 : 0.5 }} />
+              <Icon size={12} strokeWidth={1.5} aria-hidden="true" style={{ opacity: isActive ? 1 : 0.5 }} />
               <span className="hidden md:inline">{w.label}</span>
               {/* Glowing underline */}
               {isActive && (
