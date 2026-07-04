@@ -100,6 +100,31 @@ Create a local environment configuration using the provided examples:
   REACT_APP_BACKEND_URL=
   ```
 
+#### Optional: error tracking & analytics
+
+Both are **off by default** — the app ships no third-party code until these are set.
+
+* **Sentry (error tracking).** Set the backend var (runtime) and/or the frontend var (build-time):
+  ```env
+  # backend/.env
+  SENTRY_DSN=https://<key>@<org>.ingest.sentry.io/<project>
+  # frontend/.env  (inlined at build — rebuild after changing)
+  REACT_APP_SENTRY_DSN=https://<key>@<org>.ingest.sentry.io/<project>
+  ```
+* **GoatCounter (privacy-friendly, cookieless analytics).** Frontend build-time var, set to your counter URL:
+  ```env
+  # frontend/.env
+  REACT_APP_GOATCOUNTER=https://<yourcode>.goatcounter.com/count
+  ```
+* **CSP allowances.** The strict Content-Security-Policy blocks these hosts by default. When enabling either, open the matching directive via space-separated backend env vars:
+  ```env
+  # backend/.env
+  CSP_CONNECT_EXTRA=https://*.sentry.io https://<yourcode>.goatcounter.com
+  CSP_SCRIPT_EXTRA=https://gc.zgo.at
+  ```
+
+> Frontend `REACT_APP_*` vars are inlined at build time (Vite), so on a host like Render, set them in the service's environment and trigger a rebuild. Backend vars take effect on restart.
+
 ---
 
 ### 2️⃣ Backend Server Installation (FastAPI)

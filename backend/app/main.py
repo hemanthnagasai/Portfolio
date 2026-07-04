@@ -16,6 +16,21 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Optional error tracking. Off unless SENTRY_DSN is set — sentry_sdk is only
+# imported when a DSN is present, so it costs nothing when disabled.
+SENTRY_DSN = os.environ.get("SENTRY_DSN")
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1")),
+            environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
+        )
+        logger.info("Sentry error tracking enabled.")
+    except Exception as e:
+        logger.error(f"Sentry init failed: {e}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize local SQLite DB schemas
@@ -38,13 +53,22 @@ app.add_middleware(GZipMiddleware, minimum_size=1024)
 # Google Fonts (stylesheet + font files), the inline data: SVG noise texture
 # in index.css, and the Unsplash onError fallback image in Personal.tsx.
 # 'unsafe-inline' for styles is required by React/Framer Motion style attributes.
+#
+# CSP_SCRIPT_EXTRA / CSP_CONNECT_EXTRA / CSP_IMG_EXTRA (space-separated origins)
+# let deployment opt extra hosts into the matching directive without loosening
+# the tight default — needed when enabling Sentry (connect to *.sentry.io) or
+# GoatCounter analytics (script gc.zgo.at, connect/img the counter host).
+def _csp_extra(name: str) -> str:
+    value = os.environ.get(name, "").strip()
+    return (" " + value) if value else ""
+
 CONTENT_SECURITY_POLICY = "; ".join([
     "default-src 'self'",
-    "script-src 'self'",
+    "script-src 'self'" + _csp_extra("CSP_SCRIPT_EXTRA"),
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https://images.unsplash.com",
-    "connect-src 'self'",
+    "img-src 'self' data: https://images.unsplash.com" + _csp_extra("CSP_IMG_EXTRA"),
+    "connect-src 'self'" + _csp_extra("CSP_CONNECT_EXTRA"),
     "object-src 'none'",
     "frame-ancestors 'none'",
     "base-uri 'self'",

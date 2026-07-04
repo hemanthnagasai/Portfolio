@@ -2,6 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import { initObservability } from "@/observability";
+
+// No-op unless REACT_APP_SENTRY_DSN / REACT_APP_GOATCOUNTER are set.
+initObservability();
 
 // The Google Fonts stylesheet ships with media="print" so it never blocks
 // first paint (see index.html). Flipping it to "all" here applies the fonts;

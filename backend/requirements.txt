@@ -9,3 +9,5 @@ aiosqlite==0.20.0
 pytest==9.0.3
 requests==2.33.1
 httpx==0.28.1
+# Optional error tracking — dormant unless SENTRY_DSN is set (see main.py).
+sentry-sdk[fastapi]==2.44.0
