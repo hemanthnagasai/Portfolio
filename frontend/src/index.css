@@ -41,9 +41,7 @@
   --font-display: 'Syne', sans-serif;
   --font-heading: 'Space Grotesk', sans-serif;
   --font-body: 'Outfit', sans-serif;
-  --font-serif: 'Cormorant Garamond', serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-lora: 'Lora', serif;
   --font-caveat: 'Caveat', cursive;
   --font-playfair: 'Playfair Display', serif;
   --font-spectral: 'Spectral', serif;
@@ -129,10 +127,8 @@ body {
    ═══════════════════════════════════════════ */
 .font-display { font-family: var(--font-display); }
 .font-heading { font-family: var(--font-heading); }
-.font-cormorant { font-family: var(--font-serif); }
 .font-outfit { font-family: var(--font-body); }
 .font-mono { font-family: var(--font-mono); }
-.font-lora { font-family: var(--font-lora); }
 .font-caveat { font-family: var(--font-caveat); }
 .font-playfair { font-family: var(--font-playfair); }
 .font-spectral { font-family: var(--font-spectral); }

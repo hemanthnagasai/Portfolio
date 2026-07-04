@@ -55,11 +55,11 @@ function HobbyCard({ h, i }: HobbyCardProps) {
         </span>
       </div>
 
-      <h3 className="font-lora text-2xl font-medium mb-3 text-[#FAF5EC] group-hover:text-white transition-colors duration-300 relative z-10">
+      <h3 className="font-spectral text-2xl font-medium mb-3 text-[#FAF5EC] group-hover:text-white transition-colors duration-300 relative z-10">
         {h.title}
       </h3>
 
-      <p className="font-lora text-sm md:text-[15px] leading-[1.8] text-[#BFCBC2] group-hover:text-[#FAF5EC] transition-colors duration-500 relative z-10">
+      <p className="font-spectral text-sm md:text-[15px] leading-[1.8] text-[#BFCBC2] group-hover:text-[#FAF5EC] transition-colors duration-500 relative z-10">
         {h.note}
       </p>
     </motion.article>
@@ -117,7 +117,7 @@ export default function Personal() {
               {personal.kicker}
             </motion.p>
 
-            <h1 className="font-lora leading-[1.1] tracking-tight text-[11vw] md:text-[6vw] lg:text-[4.8vw] text-[#FAF5EC]" data-testid="personal-heading">
+            <h1 className="font-spectral leading-[1.1] tracking-tight text-[11vw] md:text-[6vw] lg:text-[4.8vw] text-[#FAF5EC]" data-testid="personal-heading">
               <HandwrittenReveal
                 words={["Warm.", "Deep.", "Human."]}
                 delay={0.3}
@@ -128,7 +128,7 @@ export default function Personal() {
 
             <motion.blockquote
               variants={fadeUp} initial="hidden" animate="show" custom={4}
-              className="mt-10 max-w-xl font-lora italic text-lg md:text-xl leading-relaxed text-[#BFCBC2] relative"
+              className="mt-10 max-w-xl font-spectral italic text-lg md:text-xl leading-relaxed text-[#BFCBC2] relative"
               data-testid="personal-quote"
             >
               <span className="text-[#D4A373]/20 font-serif text-6xl absolute -left-6 -top-5 select-none">“</span>
@@ -181,7 +181,7 @@ export default function Personal() {
           className="max-w-3xl border-l-2 border-[#D4A373]/30 pl-6 md:pl-8 mb-28 relative z-10"
         >
           <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-[#D4A373] mb-4">The Journey</p>
-          <p className="font-lora text-xl md:text-2xl leading-[1.85] text-[#D7E1D9]" data-testid="personal-bio">
+          <p className="font-spectral text-xl md:text-2xl leading-[1.85] text-[#D7E1D9]" data-testid="personal-bio">
             {personal.bio}
           </p>
         </motion.div>
@@ -189,7 +189,7 @@ export default function Personal() {
         {/* HOBBIES */}
         <section className="mb-28 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-            <h2 className="font-lora text-3xl md:text-5xl text-[#FAF5EC]">
+            <h2 className="font-spectral text-3xl md:text-5xl text-[#FAF5EC]">
               Things that <em className="italic text-[#D4A373]">make me, me</em>
             </h2>
             <span className="caveat-annotation text-lg hidden md:inline">in no order —</span>
@@ -233,7 +233,7 @@ export default function Personal() {
                     <span className="font-mono text-[9px] text-[#D4A373]/70 uppercase tracking-[0.2em] block mb-1">
                       Value 0{i + 1} //
                     </span>
-                    <p className="font-lora italic text-xl md:text-2.5xl text-[#e5ded4] group-hover:text-white transition-colors duration-300 leading-snug">
+                    <p className="font-spectral italic text-xl md:text-2.5xl text-[#e5ded4] group-hover:text-white transition-colors duration-300 leading-snug">
                       {v}
                     </p>
                   </div>
@@ -253,7 +253,7 @@ export default function Personal() {
         >
           <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-[#D4A373] mb-6">Final thought</p>
 
-          <blockquote className="font-lora italic text-2xl md:text-4xl text-[#FAF5EC] leading-relaxed relative max-w-2xl mx-auto" data-testid="personal-closing">
+          <blockquote className="font-spectral italic text-2xl md:text-4xl text-[#FAF5EC] leading-relaxed relative max-w-2xl mx-auto" data-testid="personal-closing">
             <span className="text-[#D4A373]/10 font-serif text-8xl absolute -left-10 -top-12 select-none pointer-events-none">“</span>
             <span className="personal-underline px-1">“{personal.closing}”</span>
             <span className="text-[#D4A373]/10 font-serif text-8xl absolute -right-10 -bottom-16 select-none pointer-events-none">”</span>
