@@ -31,7 +31,7 @@ Explore Hemanth's life and work through four unique visual dimensions:
 | **🍃 Personal** | Scrapbook Journal | Real Polaroid frames, glassmorphic panels, value vertical spine. | Warm Stepping Stones & Fireflies |
 | **🕯️ Emotional** | Candlelight Poetry | Poetic letters, signature, moderated message board ("Leave a Trace"). | Constellation Spiral + Flashlight |
 
-A dedicated **Recruiter view** sits outside the four dimensions: a clean, fast, conversational summary of Hemanth's background with an AI chatbot (grounded in his real portfolio data), resume download, and direct contact links.
+A dedicated **Recruiter view** sits outside the four dimensions: a clean, fast, conversational summary of Hemanth's background with an AI chatbot that **streams replies token-by-token** (grounded in his real portfolio data), a one-click résumé PDF, and direct contact links. Each route also ships its own `<title>`/meta description and a JSON-LD `Person` schema for search and link previews.
 
 ---
 
@@ -43,10 +43,10 @@ graph TD
     FE -->|WebGL Background Canvas| Canvas[Three.js Engine]
     FE -->|Queries /api| BE[FastAPI Backend]
     BE -->|Saves Traces| DB[(SQLite Database)]
-    BE -->|Generates PDF| PDF[ReportLab Resume Engine]
-    BE -->|Requests Generation| Gemini[Gemini 2.5 Flash API]
-    Gemini -->|Returns Response| BE
-    BE -->|Sends Response| FE
+    BE -->|Builds PDF from portfolio.json| PDF[ReportLab Resume Engine]
+    BE -->|Requests Generation| Gemini[Gemini 2.5 Flash · 2.0 fallback]
+    Gemini -->|Streams tokens| BE
+    BE -->|Streams reply| FE
 ```
 
 ---
@@ -60,7 +60,8 @@ This application includes robust security and content moderation features to pre
 - **Database Row Capping:** Automatically auto-prunes database tables during write operations to prevent disk space exhaustion from continuous spam.
 - **Payload Constraints:** Enforces strict Pydantic length and validation constraints on client-supplied data inputs.
 - **CORS Hardening:** Cross-origin requests are restricted to an explicit allowlist (configurable via `CORS_ORIGINS`), not left open to any origin.
-- **Secure Admin Deletion:** A protected `DELETE /api/traces/{word}` endpoint is available for manual moderation, secured by an `ADMIN_TOKEN` header check, with deletions logged for accountability.
+- **Security Headers:** every response carries a strict Content-Security-Policy (`script-src 'self'`, extendable per-host via env), plus HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`.
+- **Secure Admin Deletion:** A protected `DELETE /api/traces/{word}` endpoint is available for manual moderation, secured by a **constant-time** `ADMIN_TOKEN` header check, with deletions logged for accountability. Real client IPs are honored behind the platform proxy so rate limiting is per-visitor, not per-load-balancer.
 
 ---
 
@@ -69,7 +70,11 @@ This application includes robust security and content moderation features to pre
 - **Adaptive rendering:** the WebGL scenes drop shadows/antialiasing and cap pixel ratio on lower-power and touch devices, instead of forcing the same render cost on every visitor.
 - **Graceful WebGL fallback:** browsers or devices without WebGL support get a static themed background instead of a broken or blank page.
 - **Reduced motion:** all animations (page transitions, cursor effects, 3D camera drift) respect the OS-level `prefers-reduced-motion` setting.
-- **Code-split routes:** each dimension loads its own JS chunk on demand rather than bundling the whole site upfront.
+- **Code-split routes & stable vendor chunks:** each dimension loads its own JS chunk on demand, and large libraries (Three.js, Framer Motion) are split into their own hashed chunks so editing app code doesn't force returning visitors to re-download them.
+- **HTTP caching & compression:** content-hashed assets are served `immutable` for a year, HTML always revalidates, and responses are gzipped.
+- **Keyboard & screen-reader support:** a visible focus ring on every interactive element, a skip-to-content link, `prefers-reduced-motion` throughout, and labelled navigation.
+- **Streaming chat:** the Recruiter chatbot renders its reply token-by-token instead of blocking on the full generation.
+- **Always warm:** a lightweight `/api/health` endpoint is pinged on a schedule (GitHub Actions) to keep the free-tier host from cold-starting between visitors.
 - **Error boundary:** an unexpected render error shows a recoverable message instead of a blank screen.
 
 ---
@@ -77,8 +82,8 @@ This application includes robust security and content moderation features to pre
 ## ⚙️ Setup & Local Development
 
 ### 📋 Prerequisites
-- **Node.js** (v18+)
-- **Python** (v3.11+)
+- **Node.js** (v18+; CI uses 20)
+- **Python** (v3.11+; CI and the production image run 3.13)
 - **Gemini API Key** (Required for the interactive Recruiter chatbot)
 
 ---
@@ -192,17 +197,22 @@ Open `http://localhost:8000` to view the live app.
 
 ## 🧪 Running Tests
 
-The backend test suite mocks all external calls (Gemini, etc.), so it runs fully offline and deterministically — no API key or quota needed. It also runs automatically on every push/PR via GitHub Actions (see the CI badge above), alongside a frontend typecheck and build.
+Continuous integration runs **four jobs** on every push/PR (see the CI badge above):
 
-To run it locally, navigate to the `backend/` directory and execute:
+| Job | What it checks |
+| :--- | :--- |
+| **Backend tests** | `pytest`, with all external calls (Gemini, etc.) mocked — fully offline and deterministic, no API key or quota needed. |
+| **Frontend typecheck & build** | `tsc --noEmit` plus a production Vite build. |
+| **E2E smoke tests** | Playwright drives the real rendered app (served by the backend, production-shape) through its key flows — landing, world navigation, chat widget, résumé endpoint, admin console. |
+| **Docker image smoke test** | Builds the **actual production image**, runs the container, and verifies the endpoints serve (health, résumé PDF, SPA shell) — catches "works in source, broken in the image" bugs the other jobs can't see. |
+
+Run locally:
 
 ```bash
-cd backend
+# Backend unit tests — from backend/
+.\.venv\Scripts\pytest         # Windows PowerShell
+pytest                          # macOS / Linux (venv activated)
 
-# Windows PowerShell:
-.\.venv\Scripts\pytest
-
-# macOS / Linux:
-source .venv/bin/activate
-pytest
+# End-to-end — from frontend/ (builds the app, boots it, drives a browser)
+npm run test:e2e
 ```
