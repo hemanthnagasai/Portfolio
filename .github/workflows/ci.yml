@@ -71,3 +71,36 @@ jobs:
       - name: Run smoke tests
         working-directory: frontend
         run: npm run test:e2e
+
+  docker-smoke:
+    name: Docker image smoke test
+    runs-on: ubuntu-latest
+    # Builds and runs the ACTUAL production image, then hits the endpoints.
+    # This is the only job that catches "works in source, missing/broken in
+    # the image" bugs (e.g. a runtime file the Dockerfile didn't COPY) —
+    # the source-tree pytest/e2e jobs cannot see them.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build -t portfolio-ci .
+      - name: Run container
+        run: docker run -d --name portfolio -p 8000:8000 portfolio-ci
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/api/health; then echo " -> healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "container never became healthy"; docker logs portfolio; exit 1
+      - name: Resume endpoint serves a real PDF
+        run: |
+          code=$(curl -s -o resume.pdf -w "%{http_code}" http://localhost:8000/api/resume/download)
+          echo "status: $code"
+          test "$code" = "200"
+          head -c 4 resume.pdf | grep -q "%PDF"
+          echo "resume OK ($(wc -c < resume.pdf) bytes)"
+      - name: SPA shell is served
+        run: curl -sf http://localhost:8000/ | grep -q '<div id="root">'
+      - name: Teardown
+        if: always()
+        run: docker rm -f portfolio || true
