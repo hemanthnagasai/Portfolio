@@ -29,7 +29,16 @@ export default function Recruiter() {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  // Whether the user is pinned to the bottom of the chat. Streaming appends
+  // dozens of updates per reply; auto-scrolling must never fight someone
+  // who scrolled up to reread an earlier answer.
+  const stickToBottomRef = useRef(true);
+
+  const busy = isLoading || isStreaming;
 
   useEffect(() => {
     setDimension("recruiter");
@@ -38,19 +47,46 @@ export default function Recruiter() {
   }, [setDimension]);
 
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    const el = messagesRef.current;
+    if (el && stickToBottomRef.current) {
+      // Instant, not smooth: smooth scrolling queues animations on every
+      // streamed chunk and turns the pane to jelly.
+      el.scrollTop = el.scrollHeight;
     }
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    if (isOpen) {
+      // Focus after the open transition so the pane doesn't jump mid-animation.
+      const t = setTimeout(() => inputRef.current?.focus(), 240);
+      return () => clearTimeout(t);
+    }
+  }, [isOpen]);
+
+  const handleMessagesScroll = () => {
+    const el = messagesRef.current;
+    if (el) {
+      stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    }
+  };
+
+  const closeChat = () => {
+    setIsOpen(false);
+    toggleRef.current?.focus();
+  };
+
   const handleSendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    // `busy` also blocks a second send while a reply is still streaming —
+    // two concurrent streams would both write into the last message.
+    if (!text.trim() || busy) return;
 
     const userMessage: ChatMessage = { role: "user", content: text };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
+    stickToBottomRef.current = true;
 
+    let streamed = "";
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -62,43 +98,51 @@ export default function Recruiter() {
 
       if (!response.ok || !response.body) throw new Error("Failed to get response");
 
-      // The backend streams the reply as plain-text chunks: grow the last
-      // message in place so the answer types itself out as it's generated.
-      setIsLoading(false);
-      setMessages((prev) => [...prev, { role: "model", content: "" }]);
+      // The backend streams the reply as plain-text chunks. The reply bubble
+      // is created on the first chunk (not before), so the typing indicator
+      // hands off to real text with no empty-bubble moment.
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let streamed = "";
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        streamed += decoder.decode(value, { stream: true });
-        const current = streamed;
-        setMessages((prev) => {
-          const next = [...prev];
-          next[next.length - 1] = { role: "model", content: current };
-          return next;
-        });
+        const chunk = decoder.decode(value, { stream: true });
+        if (!chunk) continue;
+        if (!streamed) {
+          setIsLoading(false);
+          setIsStreaming(true);
+          streamed = chunk;
+          setMessages((prev) => [...prev, { role: "model", content: chunk }]);
+        } else {
+          streamed += chunk;
+          const current = streamed;
+          setMessages((prev) => {
+            const next = [...prev];
+            next[next.length - 1] = { role: "model", content: current };
+            return next;
+          });
+        }
       }
       if (!streamed.trim()) throw new Error("Empty response");
     } catch (error) {
       console.error(error);
-      const apology =
-        "Sorry, I ran into a bit of trouble connecting to my brain. Could you try sending that again?";
-      setMessages((prev) => {
-        const next = [...prev];
-        const last = next[next.length - 1];
-        // A partial reply that broke mid-stream is worth keeping; only an
-        // empty placeholder gets replaced with the apology.
-        if (last && last.role === "model") {
-          if (last.content.trim()) return next;
-          next[next.length - 1] = { role: "model", content: apology };
-          return next;
-        }
-        return [...next, { role: "model", content: apology }];
-      });
+      // A partial reply that broke mid-stream is worth keeping as-is. If
+      // nothing arrived, apologize and restore the question so retrying is
+      // one keypress, not a retype.
+      if (!streamed.trim()) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "model",
+            content:
+              "Sorry, I ran into a bit of trouble connecting to my brain. Could you try sending that again?",
+          },
+        ]);
+        setInputValue(text);
+      }
     } finally {
       setIsLoading(false);
+      setIsStreaming(false);
     }
   };
 
@@ -338,11 +382,16 @@ export default function Recruiter() {
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="w-[calc(100vw-32px)] sm:w-96 h-[520px] max-h-[75vh] bg-white border border-[#E5E7EB] shadow-2xl rounded-2xl flex flex-col overflow-hidden mb-4"
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="origin-bottom-right w-[calc(100vw-32px)] sm:w-96 h-[520px] max-h-[75vh] bg-white ring-1 ring-black/5 shadow-2xl rounded-2xl flex flex-col overflow-hidden mb-4"
+              role="dialog"
+              aria-label="Chat with Hemanth"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") closeChat();
+              }}
               data-testid="chatbot-window"
             >
               {/* Chat Header */}
@@ -354,56 +403,77 @@ export default function Recruiter() {
               >
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-9 h-9 rounded-full bg-neutral-800 flex items-center justify-center font-plex font-bold text-sm tracking-wider border border-neutral-700">
-                      H
-                    </div>
+                    <img
+                      src="/avatar.jpeg"
+                      alt=""
+                      className="w-9 h-9 rounded-full object-cover border border-neutral-700"
+                    />
+                    <span
+                      className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#10B981] border-2 border-[#151d2b]"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
-                    <h3 className="font-plex font-semibold text-sm leading-tight">Chat with me</h3>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span
-                        className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"
-                        style={{ boxShadow: "0 0 8px #10B981" }}
-                      />
-                      <p className="text-[11px] text-neutral-400 font-medium leading-none">Active</p>
-                    </div>
+                    <h3 className="font-plex font-semibold text-sm leading-tight">Hemanth</h3>
+                    <p className="text-[11px] text-neutral-400 font-medium leading-none mt-1">
+                      AI · answers from my real story
+                    </p>
                   </div>
                 </div>
                 <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-1.5 hover:bg-neutral-800 rounded-full transition-colors"
+                  onClick={closeChat}
+                  className="p-2 -m-0.5 hover:bg-white/10 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                   aria-label="Close chat"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#FAFAFA]">
+              <div
+                ref={messagesRef}
+                onScroll={handleMessagesScroll}
+                role="log"
+                aria-label="Conversation"
+                className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAFAFA] light-scroll"
+              >
                 {messages.map((msg, i) => (
-                  <div
+                  <motion.div
                     key={i}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
                     className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
                   >
                     <div
-                      className={`px-4 py-2.5 rounded-2xl text-sm font-plex max-w-[85%] leading-relaxed ${
+                      className={`px-4 py-2.5 rounded-2xl text-sm font-plex max-w-[85%] leading-relaxed whitespace-pre-wrap break-words ${
                         msg.role === "user"
-                          ? "bg-[#111827] text-white rounded-br-none"
-                          : "bg-white border border-[#E5E7EB] text-[#111827] rounded-bl-none shadow-sm"
-                      }`}
+                          ? "bg-[#111827] text-white rounded-br-md"
+                          : "bg-white border border-[#E5E7EB] text-[#111827] rounded-bl-md shadow-sm"
+                      } ${isStreaming && msg.role === "model" && i === messages.length - 1 ? "stream-caret" : ""}`}
                     >
                       {msg.content}
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
 
                 {isLoading && (
-                  <div className="flex items-center gap-2 text-[#4B5563] text-xs font-plex italic mt-2">
-                    <Loader2 size={12} className="animate-spin" />
-                    Hemanth is thinking...
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="flex items-start"
+                  >
+                    <div
+                      className="px-4 py-3.5 rounded-2xl rounded-bl-md bg-white border border-[#E5E7EB] shadow-sm flex items-center gap-1"
+                      aria-label="Hemanth is typing"
+                    >
+                      <span className="typing-dot" />
+                      <span className="typing-dot" />
+                      <span className="typing-dot" />
+                    </div>
+                  </motion.div>
                 )}
-                <div ref={chatEndRef} />
               </div>
 
               {/* Suggestions */}
@@ -413,7 +483,8 @@ export default function Recruiter() {
                     <button
                       key={i}
                       onClick={() => handleSendMessage(sug)}
-                      className="text-xs font-plex px-2.5 py-1.5 bg-white border border-[#E5E7EB] rounded-full hover:bg-neutral-50 hover:border-neutral-400 transition-colors text-[#4B5563]"
+                      disabled={busy}
+                      className="text-xs font-plex px-3 py-2 bg-white border border-[#E5E7EB] rounded-full hover:bg-neutral-50 hover:border-neutral-400 transition-colors text-[#4B5563] disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/25"
                     >
                       {sug}
                     </button>
@@ -430,23 +501,27 @@ export default function Recruiter() {
                 className="p-3 border-t border-[#E5E7EB] flex gap-2 items-center bg-white"
               >
                 <input
+                  ref={inputRef}
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask me anything..."
-                  className="flex-1 px-3.5 py-2 border border-[#D1D5DB] rounded-xl text-sm focus:outline-none focus:border-black font-plex transition-colors"
-                  disabled={isLoading}
+                  placeholder="Ask about my work, projects, cricket…"
+                  maxLength={2000}
+                  aria-label="Your message"
+                  className="flex-1 min-w-0 px-3.5 py-2.5 border border-[#D1D5DB] rounded-xl text-base sm:text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/10 font-plex transition-[border-color,box-shadow] disabled:bg-neutral-50 disabled:text-neutral-400"
+                  disabled={busy}
                 />
                 <button
                   type="submit"
-                  disabled={!inputValue.trim() || isLoading}
-                  className={`p-2.5 rounded-xl transition-all ${
-                    inputValue.trim() && !isLoading
-                      ? "bg-[#111827] text-white hover:bg-black hover:shadow-lg"
+                  disabled={!inputValue.trim() || busy}
+                  aria-label="Send message"
+                  className={`w-11 h-11 shrink-0 flex items-center justify-center rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/30 ${
+                    inputValue.trim() && !busy
+                      ? "bg-[#111827] text-white hover:bg-black"
                       : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
                   }`}
                 >
-                  <Send size={16} />
+                  {busy ? <Loader2 size={17} className="animate-spin motion-reduce:animate-none" /> : <Send size={17} />}
                 </button>
               </form>
             </motion.div>
@@ -455,17 +530,19 @@ export default function Recruiter() {
 
         {/* Toggle Button */}
         <motion.button
+          ref={toggleRef}
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] text-white hover:bg-black rounded-full shadow-2xl transition-all duration-200"
+          aria-expanded={isOpen}
+          className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] text-white hover:bg-black rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/40 focus-visible:ring-offset-2"
           style={{
             boxShadow: "0 8px 32px -8px rgba(0,0,0,0.3)",
           }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           data-testid="chatbot-toggle-btn"
         >
           {isOpen ? <X size={20} /> : <MessageSquare size={20} />}
-          <span className="font-plex font-medium text-sm">Ask Hemanth</span>
+          <span className="font-plex font-medium text-sm">{isOpen ? "Close" : "Ask Hemanth"}</span>
         </motion.button>
       </div>
     </main>
