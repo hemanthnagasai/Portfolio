@@ -41,3 +41,27 @@ test("admin console loads read-only with a token field", async ({ page }) => {
   await expect(page.getByTestId("admin-page")).toBeVisible();
   await expect(page.getByTestId("admin-token-input")).toBeVisible();
 });
+
+test("query console boots sqlite (wasm under real CSP) and runs SQL", async ({ page }) => {
+  await page.goto("/query");
+  await expect(page).toHaveTitle(/Query My Life/);
+  // The Run button enables once the wasm database has initialized — this
+  // exercises WebAssembly under the backend's actual CSP headers.
+  const run = page.getByTestId("query-run");
+  await expect(run).toBeEnabled({ timeout: 20_000 });
+  await page.getByTestId("query-input").fill("SELECT skill FROM skills LIMIT 3;");
+  await run.click();
+  const results = page.getByTestId("query-results");
+  await expect(results.first()).toBeVisible();
+  await expect(results.locator("tbody tr")).toHaveCount(3);
+});
+
+test("how-i-built-this and now pages render", async ({ page }) => {
+  await page.goto("/how-i-built-this");
+  await expect(page).toHaveTitle(/How I Built This/);
+  await expect(page.getByTestId("how-page")).toBeVisible();
+
+  await page.goto("/now");
+  await expect(page).toHaveTitle(/Now —/);
+  await expect(page.getByTestId("now-item-0")).toBeVisible();
+});

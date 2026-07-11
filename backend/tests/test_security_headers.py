@@ -32,8 +32,9 @@ class TestSecurityHeaders:
         assert "https://fonts.googleapis.com" in csp
         assert "https://fonts.gstatic.com" in csp
         assert "frame-ancestors 'none'" in csp
-        # No inline/eval scripts allowed anywhere
-        assert "unsafe-eval" not in csp
+        # wasm compilation only (sql.js on /query) — never JS eval or inline
+        assert "'wasm-unsafe-eval'" in csp
+        assert "'unsafe-eval'" not in csp
         assert "script-src 'self' 'unsafe-inline'" not in csp
 
 

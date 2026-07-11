@@ -19,6 +19,9 @@ const Emotional = lazy(() => import("@/pages/Emotional"));
 const Recruiter = lazy(() => import("@/pages/Recruiter"));
 const LayerZero = lazy(() => import("@/pages/LayerZero"));
 const Admin = lazy(() => import("@/pages/Admin"));
+const Query = lazy(() => import("@/pages/Query"));
+const HowIBuiltThis = lazy(() => import("@/pages/HowIBuiltThis"));
+const Now = lazy(() => import("@/pages/Now"));
 
 export default function App() {
   const [dimension, setDimension] = useState<string>("gateway");
@@ -54,6 +57,9 @@ export default function App() {
                   <Route path="/recruiter" element={<Recruiter />} />
                   <Route path="/zero" element={<LayerZero />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/query" element={<Query />} />
+                  <Route path="/how-i-built-this" element={<HowIBuiltThis />} />
+                  <Route path="/now" element={<Now />} />
                 </Routes>
               </Suspense>
               </div>

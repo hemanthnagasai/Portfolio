@@ -64,7 +64,9 @@ def _csp_extra(name: str) -> str:
 
 CONTENT_SECURITY_POLICY = "; ".join([
     "default-src 'self'",
-    "script-src 'self'" + _csp_extra("CSP_SCRIPT_EXTRA"),
+    # 'wasm-unsafe-eval' permits WebAssembly compilation ONLY (not JS eval):
+    # the /query page runs sql.js (SQLite compiled to wasm) in the browser.
+    "script-src 'self' 'wasm-unsafe-eval'" + _csp_extra("CSP_SCRIPT_EXTRA"),
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https://images.unsplash.com" + _csp_extra("CSP_IMG_EXTRA"),

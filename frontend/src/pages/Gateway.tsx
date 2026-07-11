@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { DimensionContext } from "@/context/DimensionContext";
 import { TransitionContext } from "@/context/TransitionContext";
@@ -776,16 +777,27 @@ export default function Gateway() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 2 }}
-          className="mt-16 flex justify-between items-center font-mono text-[10px] uppercase tracking-[0.3em] text-white/20"
+          className="mt-16 flex justify-between items-center gap-4 flex-wrap font-mono text-[10px] uppercase tracking-[0.3em] text-white/20"
         >
           <span>Scroll · Click · Linger</span>
-          <button
-            onClick={handleRecruiterPick}
-            className="hover:text-white/60 transition-colors glass-pill px-3 py-1.5"
-            data-testid="gateway-recruiter-link"
-          >
-            Recruiter view →
-          </button>
+          <div className="flex items-center gap-4 md:gap-5 flex-wrap">
+            <Link to="/query" className="hover:text-white/60 transition-colors" data-testid="gateway-query-link">
+              Query my data
+            </Link>
+            <Link to="/how-i-built-this" className="hover:text-white/60 transition-colors" data-testid="gateway-how-link">
+              How it's built
+            </Link>
+            <Link to="/now" className="hover:text-white/60 transition-colors" data-testid="gateway-now-link">
+              Now
+            </Link>
+            <button
+              onClick={handleRecruiterPick}
+              className="hover:text-white/60 transition-colors glass-pill px-3 py-1.5"
+              data-testid="gateway-recruiter-link"
+            >
+              Recruiter view →
+            </button>
+          </div>
         </motion.div>
       </div>
     </main>

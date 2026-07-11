@@ -9,6 +9,28 @@
   "resume": {
     "summary": "Senior Data Analyst at EY working at the intersection of data, technology, and people. Translates complexity into clarity, automates repetitive workflows, and leverages GenAI to simplify complex findings for non-technical stakeholders."
   },
+  "now": {
+    "updated": "July 2026",
+    "intro": "What I'm actually focused on these days. Updated whenever it changes — inspired by the /now page movement.",
+    "items": [
+      {
+        "title": "Senior Data Analyst at EY",
+        "note": "Validating client data, running monthly analytics cycles, and automating the Excel work nobody asked me to automate."
+      },
+      {
+        "title": "Going deeper into LLMs",
+        "note": "On my own time and my own money — building with them, not just reading about them. This site, and the AI version of me you can talk to on it, is one of those experiments."
+      },
+      {
+        "title": "Keeping this portfolio alive",
+        "note": "It isn't a launch-and-forget project. The chatbot, the guestbook, and the small details keep getting better."
+      },
+      {
+        "title": "Cricket, pencil sketches, singing",
+        "note": "The constants. Some things don't need to change."
+      }
+    ]
+  },
   "professional": {
     "kicker": "01 · Professional",
     "heading": ["Data.", "Clarity.", "Initiative."],

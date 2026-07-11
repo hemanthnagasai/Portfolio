@@ -8,6 +8,17 @@ def api_client():
     with TestClient(app) as client:
         yield client
 
+
+@pytest.fixture(autouse=True)
+def offline_moderation(monkeypatch):
+    # Null the module-level Gemini client so moderation always takes the
+    # local-profanity fast path. Without this, every POST here made a LIVE
+    # Gemini call when a real GEMINI_API_KEY was present locally — burning
+    # free-tier quota and flaking whenever the API throttled (a 429 with an
+    # empty response is treated as "inappropriate" -> unexpected 400).
+    import app.routers.traces as traces_module
+    monkeypatch.setattr(traces_module, "genai_client", None)
+
 class TestTracesPostValid:
     def test_post_valid_word_returns_id(self, api_client):
         unique = "t" + "".join([c for c in uuid.uuid4().hex if c.isalpha()])[:6]
