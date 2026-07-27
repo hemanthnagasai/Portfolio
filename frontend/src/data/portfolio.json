@@ -40,8 +40,8 @@
       {
         "company": "Ernst & Young LLP",
         "role": "Senior Data Analyst",
-        "period": "Dec 2024 — Present",
-        "sub": "Intern · Jun 2024 — Dec 2024",
+        "period": "Jan 2026 — Present",
+        "sub": "Intern · Jun 2025 — Dec 2025",
         "bullets": [
           "Validate and reconcile client data across multiple enterprise platforms ensuring accuracy and consistency",
           "Execute monthly runs for an internally developed analytics and reporting tool used by client teams",
@@ -94,9 +94,9 @@
       { "name": "Artificial Intelligence", "org": "Simplilearn" },
       { "name": "Generative AI for Everyone", "org": "Coursera" },
       { "name": "Data Analytics", "org": "Code Crave" },
-      { "name": "IIC Regional Meet — High Recognition", "org": "KL University" },
-      { "name": "Jeevan Kaushal Club Coordinator", "org": "Co-Curricular" },
-      { "name": "Startup Mahakumbh 2024", "org": "DELHI" },
+      { "name": "IIC Regional Meet — High Recognition", "org": "KL University", "type": "achievement" },
+      { "name": "Jeevan Kaushal Club Coordinator", "org": "Co-Curricular", "type": "achievement" },
+      { "name": "Startup Mahakumbh 2024", "org": "DELHI", "type": "achievement" },
       { "name": "Data Engineering", "org": "ISI Kolkata" }
     ]
   },

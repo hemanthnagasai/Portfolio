@@ -2,11 +2,17 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { Download, ArrowLeft, MessageSquare, Send, X, Loader2, Linkedin, Github, Mail, Phone, GraduationCap, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DimensionContext } from "@/context/DimensionContext";
-import { professional } from "@/data/portfolio";
+import { professional, resume } from "@/data/portfolio";
 import usePageMeta from "@/hooks/usePageMeta";
 import { motion, AnimatePresence } from "framer-motion";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
+
+// Both lists come from portfolio.json (the same file the résumé PDF and the
+// chatbot read), split by the `type` flag — so adding a credential in one
+// place updates the page, the PDF, and the bot together.
+const certifications = professional.certs.filter((c) => c.type !== "achievement");
+const achievements = professional.certs.filter((c) => c.type === "achievement");
 
 interface ChatMessage {
   role: "user" | "model";
@@ -231,9 +237,7 @@ export default function Recruiter() {
         <section className="py-8">
           <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-3">Summary</h2>
           <p className="font-plex text-[15px] leading-relaxed text-[#111827]">
-            Senior Data Analyst at EY working at the intersection of data, technology, and people.
-            Translate complexity into clarity, automate repetitive workflows, and leverage GenAI to
-            simplify complex findings for non-technical stakeholders.
+            {resume.summary}
           </p>
         </section>
 
@@ -331,13 +335,7 @@ export default function Recruiter() {
         <section className="py-8 border-t border-[#E5E7EB]">
           <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Certifications</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              { name: "Basic Python", org: "HackerRank" },
-              { name: "Artificial Intelligence", org: "Simplilearn" },
-              { name: "Generative AI for Everyone", org: "Coursera" },
-              { name: "Data Analytics", org: "Code Crave" },
-              { name: "Data Engineering", org: "ISI Kolkata" },
-            ].map((c, i) => (
+            {certifications.map((c, i) => (
               <div key={i} className="flex items-start gap-2.5 p-3 rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB] transition-colors" data-testid={`recruiter-cert-${i}`}>
                 <GraduationCap size={15} className="text-[#6B7280] mt-0.5 flex-shrink-0" />
                 <div>
@@ -353,11 +351,7 @@ export default function Recruiter() {
         <section className="py-8 border-t border-[#E5E7EB]">
           <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Achievements</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              { name: "IIC Regional Meet — High Recognition", org: "KL University" },
-              { name: "Startup Mahakumbh 2024", org: "DELHI" },
-              { name: "Jeevan Kaushal Club Coordinator", org: "Co-Curricular" },
-            ].map((a, i) => (
+            {achievements.map((a, i) => (
               <div key={i} className="flex items-start gap-2.5 p-3 rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB] transition-colors" data-testid={`recruiter-ach-${i}`}>
                 <Award size={15} className="text-[#D97706] mt-0.5 flex-shrink-0" />
                 <div>

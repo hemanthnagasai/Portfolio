@@ -18,6 +18,8 @@ export interface ProjectEntry {
   name: string;
   stack: string;
   desc: string;
+  /** Professional-tone variant used by the résumé PDF; falls back to desc. */
+  resumeDesc?: string;
 }
 
 export interface EducationEntry {
@@ -30,6 +32,12 @@ export interface EducationEntry {
 export interface CertEntry {
   name: string;
   org: string;
+  /** "achievement" splits it out of Certifications on the recruiter page. */
+  type?: "achievement";
+}
+
+export interface ResumeMeta {
+  summary: string;
 }
 
 export interface Professional {
