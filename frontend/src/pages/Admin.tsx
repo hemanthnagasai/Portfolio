@@ -200,7 +200,7 @@ export default function Admin() {
                   disabled={busyWord !== null}
                   title={`Delete "${t.word}"`}
                   aria-label={`Delete "${t.word}"`}
-                  className="p-1.5 rounded-full text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#DC2626]/10 transition-colors disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]/40"
+                  className="p-1.5 rounded-full text-[#6B7280] hover:text-[#DC2626] hover:bg-[#DC2626]/10 transition-colors disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]/40"
                   data-testid={`admin-delete-${t.word}`}
                 >
                   {busyWord === t.word ? (

@@ -167,7 +167,7 @@ export default function Query() {
       data-testid="query-page"
     >
       <div className="max-w-5xl mx-auto px-6 md:px-10 py-16 relative">
-        <div className="flex justify-between items-center mb-12 font-mono text-[10px] uppercase tracking-[0.3em] text-white/25">
+        <div className="flex justify-between items-center mb-12 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
           <Link
             to="/"
             className="inline-flex items-center gap-2 hover:text-white/60 transition-colors"
@@ -175,7 +175,7 @@ export default function Query() {
           >
             <ArrowLeft size={11} /> Gateway
           </Link>
-          <span className="text-[#00E5FF]/50">sqlite · in your browser · nothing leaves the page</span>
+          <span className="text-[#00E5FF]/70">sqlite · in your browser · nothing leaves the page</span>
         </div>
 
         <motion.header
@@ -186,7 +186,7 @@ export default function Query() {
           <h1 className="font-heading text-4xl md:text-5xl tracking-tight text-[#f5f2ff]">
             Query my life<span className="text-[#00E5FF]">_</span>
           </h1>
-          <p className="font-outfit text-white/45 mt-4 max-w-[62ch] leading-relaxed">
+          <p className="font-outfit text-white/60 mt-4 max-w-[62ch] leading-relaxed">
             I'm a data analyst — a page of adjectives felt wrong. So here's the data instead: a
             real SQLite database of my work, education, skills, and life, running entirely in your
             browser. It's your own private copy; even <code className="font-mono text-[13px] text-[#00E5FF]/80">DROP TABLE</code> only
@@ -225,12 +225,12 @@ export default function Query() {
                 spellCheck={false}
                 rows={5}
                 aria-label="SQL query"
-                className="w-full bg-transparent font-mono text-[13px] leading-relaxed text-[#d6f6ff] p-4 resize-y focus:outline-none placeholder:text-white/25"
+                className="w-full bg-transparent font-mono text-[13px] leading-relaxed text-[#d6f6ff] p-4 resize-y focus:outline-none placeholder:text-white/50"
                 placeholder="SELECT * FROM skills;"
                 data-testid="query-input"
               />
               <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
-                <span className="font-mono text-[10px] text-white/25 uppercase tracking-[0.2em]">
+                <span className="font-mono text-[10px] text-white/50 uppercase tracking-[0.2em]">
                   {ready ? "Ctrl+Enter to run" : loadError ? "unavailable" : "loading database…"}
                 </span>
                 <button
@@ -257,7 +257,7 @@ export default function Query() {
                 </p>
               )}
               {results && results.length === 0 && !queryError && (
-                <p className="font-mono text-[12px] text-white/35 p-1" data-testid="query-empty">
+                <p className="font-mono text-[12px] text-white/60 p-1" data-testid="query-empty">
                   ok — no rows returned{elapsed !== null ? ` · ${elapsed.toFixed(1)}ms` : ""}
                 </p>
               )}
@@ -279,7 +279,7 @@ export default function Query() {
                           <tr key={i} className="odd:bg-white/[0.015] align-top">
                             {row.map((cell, j) => (
                               <td key={j} className="px-3.5 py-2.5 text-white/70 border-b border-white/5 min-w-[80px] max-w-[420px]">
-                                {cell === null ? <span className="text-white/25">NULL</span> : String(cell)}
+                                {cell === null ? <span className="text-white/50">NULL</span> : String(cell)}
                               </td>
                             ))}
                           </tr>
@@ -287,7 +287,7 @@ export default function Query() {
                       </tbody>
                     </table>
                   </div>
-                  <p className="font-mono text-[10px] text-white/25 mt-2 uppercase tracking-[0.15em]">
+                  <p className="font-mono text-[10px] text-white/50 mt-2 uppercase tracking-[0.15em]">
                     {res.values.length} row{res.values.length === 1 ? "" : "s"}
                     {elapsed !== null && ri === results.length - 1 ? ` · ${elapsed.toFixed(1)}ms` : ""}
                   </p>
@@ -298,7 +298,7 @@ export default function Query() {
 
           {/* Schema panel */}
           <aside className="rounded-lg border border-white/10 bg-[#07070e] p-4 md:sticky md:top-6" data-testid="query-schema">
-            <h2 className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30 mb-3 flex items-center gap-2">
+            <h2 className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50 mb-3 flex items-center gap-2">
               <Table2 size={11} /> Schema
             </h2>
             <ul className="space-y-3">
@@ -312,7 +312,7 @@ export default function Query() {
                   >
                     {t.table}
                   </button>
-                  <p className="font-mono text-[10px] text-white/25 leading-relaxed mt-0.5">
+                  <p className="font-mono text-[10px] text-white/50 leading-relaxed mt-0.5">
                     {t.columns.join(" · ")}
                   </p>
                 </li>
@@ -321,11 +321,11 @@ export default function Query() {
           </aside>
         </div>
 
-        <footer className="mt-16 pt-8 border-t border-white/5 font-mono text-[10px] uppercase tracking-[0.25em] text-white/20 flex gap-6 flex-wrap">
-          <Link to="/how-i-built-this" className="hover:text-white/50 transition-colors">
+        <footer className="mt-16 pt-8 border-t border-white/5 font-mono text-[10px] uppercase tracking-[0.25em] text-white/50 flex gap-6 flex-wrap">
+          <Link to="/how-i-built-this" className="hover:text-white/80 transition-colors">
             How this site was built →
           </Link>
-          <Link to="/professional" className="hover:text-white/50 transition-colors">
+          <Link to="/professional" className="hover:text-white/80 transition-colors">
             The human-readable version →
           </Link>
         </footer>

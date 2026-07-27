@@ -96,7 +96,7 @@ export default function Emotional() {
       />
 
       {/* TOP BAR */}
-      <div className={`${worldTopBarClass} text-white/30 relative z-10`} style={{ zIndex: 45 }}>
+      <div className={`${worldTopBarClass} text-white/50 relative z-10`} style={{ zIndex: 45 }}>
         <Link to="/" className="hover:text-white transition-colors flex items-center gap-2" data-testid="emotional-back-link">
           <ArrowLeft size={12} /> Gateway
         </Link>
@@ -143,7 +143,7 @@ export default function Emotional() {
         <motion.p
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 1.6, delay: 1.6 }}
-          className="mt-12 font-mono text-[10px] uppercase tracking-[0.4em] text-white/20"
+          className="mt-12 font-mono text-[10px] uppercase tracking-[0.4em] text-white/50"
         >
           ↓  Scroll to unfold  ↓
         </motion.p>

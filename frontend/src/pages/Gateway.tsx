@@ -311,7 +311,7 @@ function LayerZeroHoverBg() {
     <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-30 transition-opacity duration-700 z-0">
       <div className="absolute inset-0 bg-gradient-to-b from-[#c8b6ff]/5 via-transparent to-transparent" />
       {/* Floating code / binary columns (shifted to the right) */}
-      <div className="absolute inset-0 flex justify-end gap-12 pr-6 text-[#c8b6ff]/10 font-mono text-[9px] select-none">
+      <div aria-hidden="true" className="absolute inset-0 flex justify-end gap-12 pr-6 text-[#c8b6ff]/10 font-mono text-[9px] select-none">
         {Array.from({ length: 6 }).map((_, colIdx) => (
           <motion.div
             key={colIdx}
@@ -367,7 +367,7 @@ function Portal({ p, i, onPick }: PortalProps) {
         <div className="flex justify-between items-start w-full z-10 relative">
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] transition-all duration-500"
                 style={{
-                  color: hovered ? p.accent : 'rgba(200, 182, 255, 0.6)',
+                  color: hovered ? p.accent : 'rgba(200, 182, 255, 0.7)',
                   textShadow: hovered ? `0 0 10px ${p.accent}40` : undefined
                 }}>
             {p.num} · {p.name}
@@ -404,7 +404,7 @@ function Portal({ p, i, onPick }: PortalProps) {
         <div className="z-10 relative w-full">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-500"
              style={{
-               color: hovered ? `${p.accent}cc` : 'rgba(255, 255, 255, 0.35)',
+               color: hovered ? `${p.accent}cc` : 'rgba(255, 255, 255, 0.55)',
                textShadow: hovered ? `0 0 10px ${p.accent}30` : undefined
              }}>
             {p.desc}
@@ -462,13 +462,13 @@ function LayerZeroPortal({ trigger }: LayerZeroPortalProps) {
         <div className="flex justify-between items-start w-full z-10 relative">
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] inline-flex items-center gap-1.5 transition-all duration-500"
                 style={{
-                  color: hovered ? "#c8b6ff" : 'rgba(200, 182, 255, 0.6)',
+                  color: hovered ? "#c8b6ff" : 'rgba(200, 182, 255, 0.7)',
                   textShadow: hovered ? `0 0 10px rgba(200,182,255,0.4)` : undefined
                 }}>
             <Sparkles size={11} strokeWidth={1.4} />
             00 · Layer Zero
           </span>
-          <span className="text-[#c8b6ff]/50 group-hover:text-[#c8b6ff] transition-colors">
+          <span className="text-[#c8b6ff]/70 group-hover:text-[#c8b6ff] transition-colors">
             <ArrowUpRight size={16} strokeWidth={1.2} />
           </span>
         </div>
@@ -493,7 +493,7 @@ function LayerZeroPortal({ trigger }: LayerZeroPortalProps) {
         <div className="z-10 relative w-full">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-500"
              style={{
-               color: hovered ? "rgba(200, 182, 255, 0.8)" : 'rgba(255, 255, 255, 0.35)',
+               color: hovered ? "rgba(200, 182, 255, 0.8)" : 'rgba(255, 255, 255, 0.55)',
                textShadow: hovered ? `0 0 10px rgba(200,182,255,0.3)` : undefined
              }}>
             For those who linger
@@ -575,7 +575,7 @@ export default function Gateway() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, delay: 0.2 }}
-        className="absolute top-0 left-0 right-0 flex justify-between items-center px-6 md:px-12 py-6 font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/30"
+        className="absolute top-0 left-0 right-0 flex justify-between items-center px-6 md:px-12 py-6 font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/50"
         style={{ zIndex: 5 }}
       >
         <span className="flex items-center gap-2">
@@ -607,7 +607,7 @@ export default function Gateway() {
                 initial="hidden"
                 animate="show"
                 custom={1}
-                className="font-mono text-xs uppercase tracking-[0.3em] text-white/35 mb-6"
+                className="font-mono text-xs uppercase tracking-[0.3em] text-white/60 mb-6"
                 data-testid="gateway-kicker"
               >
                 Choose a world to enter — each is a different side of the same person
@@ -644,7 +644,7 @@ export default function Gateway() {
                 initial="hidden"
                 animate="show"
                 custom={5}
-                className="mt-2 max-w-xl text-sm md:text-[15px] text-white/35 font-spectral italic leading-relaxed"
+                className="mt-2 max-w-xl text-sm md:text-[15px] text-white/60 font-spectral italic leading-relaxed"
                 data-testid="gateway-subline"
               >
                 {SUBLINE}
@@ -664,11 +664,11 @@ export default function Gateway() {
           <div className="flex items-center justify-between mb-6 px-2">
             <div className="flex items-center gap-4">
               <Sparkles size={14} strokeWidth={1.2} className="text-[#c8b6ff] animate-pulse" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/40">
+              <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/60">
                 Explore Worlds · Direct Entry
               </span>
             </div>
-            <span className="font-mono text-[9px] text-white/20 uppercase tracking-[0.2em] hidden sm:inline">
+            <span className="font-mono text-[9px] text-white/50 uppercase tracking-[0.2em] hidden sm:inline">
               Select a dimension below
             </span>
           </div>
@@ -699,12 +699,12 @@ export default function Gateway() {
           {/* Section header */}
           <div className="flex items-center justify-between mb-8 px-2">
             <div className="flex items-center gap-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/40">
+              <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/60">
                 Chronological Path
               </span>
               <div className="h-px w-20 bg-white/5" />
             </div>
-            <span className="font-mono text-[9px] text-white/20 uppercase tracking-[0.2em]">
+            <span className="font-mono text-[9px] text-white/50 uppercase tracking-[0.2em]">
               Milestones
             </span>
           </div>
@@ -736,7 +736,7 @@ export default function Gateway() {
                       <span className="font-mono text-xs font-semibold tracking-wider text-[#c8b6ff]">
                         {m.year}
                       </span>
-                      <span className="font-mono text-[9px] text-white/25 whitespace-nowrap">
+                      <span className="font-mono text-[9px] text-white/50 whitespace-nowrap">
                         [0{i + 1}]
                       </span>
                     </div>
@@ -765,7 +765,7 @@ export default function Gateway() {
 
             {/* Help Indicator */}
             <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none opacity-40">
-              <span className="font-mono text-[8px] text-white/30 uppercase tracking-widest">
+              <span className="font-mono text-[8px] text-white/50 uppercase tracking-widest">
                 Swipe or drag to explore path →
               </span>
             </div>
@@ -777,7 +777,7 @@ export default function Gateway() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 2 }}
-          className="mt-16 flex justify-between items-center gap-4 flex-wrap font-mono text-[10px] uppercase tracking-[0.3em] text-white/20"
+          className="mt-16 flex justify-between items-center gap-4 flex-wrap font-mono text-[10px] uppercase tracking-[0.3em] text-white/50"
         >
           <span>Scroll · Click · Linger</span>
           <div className="flex items-center gap-4 md:gap-5 flex-wrap">

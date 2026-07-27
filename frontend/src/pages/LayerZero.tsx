@@ -72,7 +72,7 @@ export default function LayerZero() {
 
       {/* TOP BAR */}
       <div
-        className="relative z-10 flex justify-between items-center px-6 md:px-12 py-6 font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/25"
+        className="relative z-10 flex justify-between items-center px-6 md:px-12 py-6 font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/50"
       >
         <Link to="/" className="hover:text-white transition-colors" data-testid="zero-back-link">
           <span className="inline-flex items-center gap-2">
@@ -88,7 +88,7 @@ export default function LayerZero() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: revealStep >= 1 ? 1 : 0, y: revealStep >= 1 ? 0 : 8 }}
           transition={{ duration: 1.4, ease: [0.2, 0.8, 0.2, 1] }}
-          className="font-mono text-[11px] uppercase tracking-[0.4em] text-white/30 mb-12"
+          className="font-mono text-[11px] uppercase tracking-[0.4em] text-white/50 mb-12"
         >
           You stayed.
         </motion.p>
@@ -174,7 +174,7 @@ export default function LayerZero() {
         >
           <Link
             to="/"
-            className="glass-pill px-4 py-2 font-mono text-[10px] uppercase tracking-[0.4em] text-white/30 hover:text-white/60 transition-colors duration-300"
+            className="glass-pill px-4 py-2 font-mono text-[10px] uppercase tracking-[0.4em] text-white/50 hover:text-white/60 transition-colors duration-300"
           >
             ← Return to the worlds when you're ready
           </Link>

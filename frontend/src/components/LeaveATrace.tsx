@@ -89,7 +89,7 @@ export default function LeaveATrace() {
               onChange={(e) => setWord(e.target.value)}
               placeholder="one word"
               maxLength={24}
-              className="bg-transparent border-b border-[#FFB703]/40 focus:border-[#FFB703] outline-none px-2 py-2 text-center font-spectral italic text-white text-lg w-44 placeholder:text-white/30"
+              className="bg-transparent border-b border-[#FFB703]/40 focus:border-[#FFB703] outline-none px-2 py-2 text-center font-spectral italic text-white text-lg w-44 placeholder:text-white/50"
               data-testid="trace-input"
             />
             <button
@@ -171,7 +171,7 @@ export default function LeaveATrace() {
             );
           })}
           {traces.length === 0 && (
-            <p className="absolute inset-0 flex items-center justify-center font-spectral italic text-white/30 text-sm">
+            <p className="absolute inset-0 flex items-center justify-center font-spectral italic text-white/50 text-sm">
               be the first to leave a word.
             </p>
           )}

@@ -31,7 +31,7 @@ export default function Now() {
       data-testid="now-page"
     >
       <div className="max-w-2xl mx-auto px-6 md:px-10 py-16 relative">
-        <div className="flex justify-between items-center mb-14 font-mono text-[10px] uppercase tracking-[0.3em] text-white/25">
+        <div className="flex justify-between items-center mb-14 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
           <Link
             to="/"
             className="inline-flex items-center gap-2 hover:text-white/60 transition-colors"
@@ -48,7 +48,7 @@ export default function Now() {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <h1 className="font-playfair text-5xl md:text-6xl text-[#f5f2ff]">Now</h1>
-          <p className="font-spectral italic text-lg text-white/45 mt-4 leading-relaxed max-w-[60ch]">
+          <p className="font-spectral italic text-lg text-white/60 mt-4 leading-relaxed max-w-[60ch]">
             {now.intro}
           </p>
         </motion.header>
@@ -71,11 +71,11 @@ export default function Now() {
           ))}
         </section>
 
-        <footer className="mt-20 pt-8 border-t border-white/5 font-mono text-[10px] uppercase tracking-[0.25em] text-white/20 flex gap-6 flex-wrap">
-          <Link to="/how-i-built-this" className="hover:text-white/50 transition-colors">
+        <footer className="mt-20 pt-8 border-t border-white/5 font-mono text-[10px] uppercase tracking-[0.25em] text-white/50 flex gap-6 flex-wrap">
+          <Link to="/how-i-built-this" className="hover:text-white/80 transition-colors">
             How this site was built →
           </Link>
-          <Link to="/query" className="hover:text-white/50 transition-colors">
+          <Link to="/query" className="hover:text-white/80 transition-colors">
             Query my data →
           </Link>
         </footer>

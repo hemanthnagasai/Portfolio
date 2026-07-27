@@ -42,7 +42,7 @@ export default function HowIBuiltThis() {
       data-testid="how-page"
     >
       <div className="max-w-2xl mx-auto px-6 md:px-10 py-16 relative">
-        <div className="flex justify-between items-center mb-14 font-mono text-[10px] uppercase tracking-[0.3em] text-white/25">
+        <div className="flex justify-between items-center mb-14 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
           <Link
             to="/"
             className="inline-flex items-center gap-2 hover:text-white/60 transition-colors"
@@ -61,7 +61,7 @@ export default function HowIBuiltThis() {
           <h1 className="font-playfair text-4xl md:text-6xl leading-[1.15] text-[#f5f2ff]">
             How I built this
           </h1>
-          <p className="font-spectral italic text-lg text-white/45 mt-5 leading-relaxed max-w-[58ch]">
+          <p className="font-spectral italic text-lg text-white/60 mt-5 leading-relaxed max-w-[58ch]">
             A data analyst, an AI pair, and a portfolio that reveals itself in layers. The honest
             version — including the parts that broke.
           </p>
@@ -75,7 +75,7 @@ export default function HowIBuiltThis() {
           {FACTS.map((f) => (
             <div key={f.label} className="bg-[#08080f] px-4 py-5">
               <div className="font-heading text-2xl text-[#c8b6ff]">{f.value}</div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-white/35 mt-1.5 leading-relaxed">
+              <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-white/60 mt-1.5 leading-relaxed">
                 {f.label}
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function HowIBuiltThis() {
           </motion.section>
         </div>
 
-        <footer className="mt-20 pt-8 border-t border-white/5 flex items-center gap-6 flex-wrap font-mono text-[10px] uppercase tracking-[0.25em] text-white/25">
+        <footer className="mt-20 pt-8 border-t border-white/5 flex items-center gap-6 flex-wrap font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
           <a
             href="https://github.com/hemanthnagasai/Portfolio"
             target="_blank"

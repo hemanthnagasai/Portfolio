@@ -131,9 +131,9 @@ export default function Personal() {
               className="mt-10 max-w-xl font-spectral italic text-lg md:text-xl leading-relaxed text-[#BFCBC2] relative"
               data-testid="personal-quote"
             >
-              <span className="text-[#D4A373]/20 font-serif text-6xl absolute -left-6 -top-5 select-none">“</span>
+               <span aria-hidden="true" className="text-[#D4A373]/20 font-serif text-6xl absolute -left-6 -top-5 select-none">“</span>
               {personal.quote}
-              <span className="text-[#D4A373]/20 font-serif text-6xl absolute -right-6 -bottom-10 select-none">”</span>
+               <span aria-hidden="true" className="text-[#D4A373]/20 font-serif text-6xl absolute -right-6 -bottom-10 select-none">”</span>
             </motion.blockquote>
           </div>
 
@@ -254,9 +254,9 @@ export default function Personal() {
           <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-[#D4A373] mb-6">Final thought</p>
 
           <blockquote className="font-spectral italic text-2xl md:text-4xl text-[#FAF5EC] leading-relaxed relative max-w-2xl mx-auto" data-testid="personal-closing">
-            <span className="text-[#D4A373]/10 font-serif text-8xl absolute -left-10 -top-12 select-none pointer-events-none">“</span>
+             <span aria-hidden="true" className="text-[#D4A373]/10 font-serif text-8xl absolute -left-10 -top-12 select-none pointer-events-none">“</span>
             <span className="personal-underline px-1">“{personal.closing}”</span>
-            <span className="text-[#D4A373]/10 font-serif text-8xl absolute -right-10 -bottom-16 select-none pointer-events-none">”</span>
+             <span aria-hidden="true" className="text-[#D4A373]/10 font-serif text-8xl absolute -right-10 -bottom-16 select-none pointer-events-none">”</span>
           </blockquote>
         </motion.section>
       </div>

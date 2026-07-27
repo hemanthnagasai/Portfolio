@@ -28,7 +28,7 @@ function SectionLabel({ num, icon, children }: SectionLabelProps) {
         {icon}
         {num}
       </span>
-      <span className="font-mono text-xs uppercase tracking-[0.35em] text-white/40">
+      <span className="font-mono text-xs uppercase tracking-[0.35em] text-white/60">
         {children}
       </span>
       <div className="flex-1 h-px bg-gradient-to-r from-[#00E5FF]/20 to-transparent" />
@@ -45,7 +45,7 @@ function HudPanel({ label, value, icon }: { label: string; value: string; icon: 
     >
       <div className="flex items-center gap-2 mb-3 relative z-10">
         <span className="text-[#00E5FF]/60">{icon}</span>
-        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/30">{label}</span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/50">{label}</span>
       </div>
       <p className="font-display text-2xl md:text-3xl font-bold text-white tracking-tight relative z-10">{value}</p>
     </motion.div>
@@ -88,7 +88,7 @@ function ProjectCard({ p, i }: { p: typeof professional.projects[0]; i: number }
         </p>
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]/60 animate-pulse" />
-          <span className="font-mono text-[8px] text-white/20 uppercase tracking-wider">Active</span>
+          <span className="font-mono text-[8px] text-white/50 uppercase tracking-wider">Active</span>
         </div>
       </div>
 
@@ -144,7 +144,7 @@ export default function Professional() {
       <ThreeWorld type="professional" />
 
       {/* TOP BAR */}
-      <div className={`${worldTopBarClass} text-white/30 relative z-10`}>
+      <div className={`${worldTopBarClass} text-white/50 relative z-10`}>
         <Link to="/" className="hover:text-white transition-colors flex items-center gap-2" data-testid="prof-back-link">
           <ArrowLeft size={12} /> Gateway
         </Link>
@@ -179,7 +179,7 @@ export default function Professional() {
 
           {/* Main heading */}
           <h1 className="font-display font-bold leading-[0.95] tracking-tight text-[12vw] md:text-[7vw] lg:text-[5.5vw] relative z-10" data-testid="prof-heading">
-            <span className="font-spectral italic font-light text-white/40 block text-xs md:text-sm uppercase tracking-[0.35em] mb-4">
+            <span className="font-spectral italic font-light text-white/60 block text-xs md:text-sm uppercase tracking-[0.35em] mb-4">
               Professional · Overview
             </span>
             <Typewriter
@@ -204,7 +204,7 @@ export default function Professional() {
           {/* Bio */}
           <motion.p
             variants={cinematicReveal} initial="hidden" animate="show" custom={5}
-            className="mt-10 max-w-3xl font-mono text-xs md:text-sm leading-[1.95] text-white/45 relative z-10"
+            className="mt-10 max-w-3xl font-mono text-xs md:text-sm leading-[1.95] text-white/60 relative z-10"
           >
             {professional.bio}
           </motion.p>
@@ -248,12 +248,12 @@ export default function Professional() {
             transition={{ delay: 3, duration: 1 }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10"
           >
-            <span className="font-mono text-[8px] uppercase tracking-[0.3em] text-white/20">Scroll</span>
+            <span className="font-mono text-[8px] uppercase tracking-[0.3em] text-white/50">Scroll</span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <ChevronDown size={14} className="text-[#00E5FF]/40" />
+              <ChevronDown size={14} className="text-[#00E5FF]/70" />
             </motion.div>
           </motion.div>
         </section>
@@ -286,17 +286,17 @@ export default function Professional() {
 
               {/* Film metadata badge */}
               <div className="flex items-center gap-3 mb-6 relative z-10">
-                <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#00E5FF]/40">0{i + 1}</span>
+                <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#00E5FF]/70">0{i + 1}</span>
                 <div className="flex-1 h-px bg-white/5" />
-                <span className="font-mono text-[8px] text-white/20">▶ {e.period}</span>
+                <span className="font-mono text-[8px] text-white/50">▶ {e.period}</span>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 relative z-10">
                 <div className="lg:col-span-4">
                   <p className="font-heading text-xl md:text-2xl font-semibold text-white tracking-tight">{e.company}</p>
                   <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#00E5FF]/80 mt-2">{e.role}</p>
-                  <p className="font-mono text-xs text-white/30 mt-3">{e.period}</p>
-                  {e.sub && <p className="font-mono text-[10px] text-white/25 mt-1">{e.sub}</p>}
+                  <p className="font-mono text-xs text-white/50 mt-3">{e.period}</p>
+                  {e.sub && <p className="font-mono text-[10px] text-white/50 mt-1">{e.sub}</p>}
                 </div>
                 <ul className="lg:col-span-8 space-y-4">
                   {e.bullets.map((b, j) => (
@@ -389,10 +389,10 @@ export default function Professional() {
                       <p className="font-heading text-lg md:text-xl font-medium text-white tracking-tight group-hover:text-[#00E5FF] transition-colors duration-500">
                         {e.degree}
                       </p>
-                      <p className="font-mono text-xs text-white/45 mt-1">{e.org}</p>
+                      <p className="font-mono text-xs text-white/60 mt-1">{e.org}</p>
                     </div>
                     <div className="col-span-6 md:col-span-3">
-                      <p className="font-mono text-[10px] text-white/30 uppercase tracking-wider">{e.period}</p>
+                      <p className="font-mono text-[10px] text-white/50 uppercase tracking-wider">{e.period}</p>
                     </div>
                     <div className="col-span-6 md:col-span-3 text-right md:text-left">
                       <span className="inline-block px-3 py-1 font-mono text-xs text-[#00E5FF] font-semibold rounded-md border border-[#00E5FF]/20 bg-[#00E5FF]/05 group-hover:bg-[#00E5FF]/10 group-hover:border-[#00E5FF]/40 transition-all duration-500">

@@ -314,7 +314,7 @@ export default function Recruiter() {
               { label: "Domains & Concepts", items: ["Machine Learning", "NLP", "GenAI Tools", "Data Validation", "Process Automation", "LLM Exploration"] },
             ].map((group) => (
               <div key={group.label}>
-                <p className="font-plex text-[11px] uppercase tracking-[0.15em] text-[#9CA3AF] mb-2 font-medium">{group.label}</p>
+                <p className="font-plex text-[11px] uppercase tracking-[0.15em] text-[#6B7280] mb-2 font-medium">{group.label}</p>
                 <div className="flex flex-wrap gap-2">
                   {group.items.map((skill) => (
                     <span
@@ -340,7 +340,7 @@ export default function Recruiter() {
                 <GraduationCap size={15} className="text-[#6B7280] mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-plex text-[13px] font-semibold text-[#111827] leading-tight">{c.name}</p>
-                  <p className="font-plex text-[11px] text-[#9CA3AF] mt-0.5">{c.org}</p>
+                  <p className="font-plex text-[11px] text-[#6B7280] mt-0.5">{c.org}</p>
                 </div>
               </div>
             ))}
@@ -356,7 +356,7 @@ export default function Recruiter() {
                 <Award size={15} className="text-[#D97706] mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-plex text-[13px] font-semibold text-[#111827] leading-tight">{a.name}</p>
-                  <p className="font-plex text-[11px] text-[#9CA3AF] mt-0.5">{a.org}</p>
+                  <p className="font-plex text-[11px] text-[#6B7280] mt-0.5">{a.org}</p>
                 </div>
               </div>
             ))}
