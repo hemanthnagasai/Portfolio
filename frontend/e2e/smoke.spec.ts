@@ -56,6 +56,16 @@ test("query console boots sqlite (wasm under real CSP) and runs SQL", async ({ p
   await expect(results.locator("tbody tr")).toHaveCount(3);
 });
 
+test("privacy page is reachable from the gateway", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("gateway-privacy-link").click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(page.getByTestId("privacy-page")).toBeVisible();
+  // The policy must state the no-cookie fact it promises.
+  await expect(page.getByRole("heading", { name: "Privacy" })).toBeVisible();
+  await expect(page.getByText("No cookies", { exact: false }).first()).toBeVisible();
+});
+
 test("how-i-built-this and now pages render", async ({ page }) => {
   await page.goto("/how-i-built-this");
   await expect(page).toHaveTitle(/How I Built This/);

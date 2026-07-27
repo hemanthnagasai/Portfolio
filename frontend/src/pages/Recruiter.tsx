@@ -366,7 +366,11 @@ export default function Recruiter() {
         <footer className="py-8 border-t border-[#E5E7EB] text-center">
           <p className="font-plex text-xs text-[#4B5563]">
             Full layered portfolio available at{" "}
-            <Link to="/" className="underline hover:text-black">Home</Link>.
+            <Link to="/" className="underline hover:text-black">Home</Link>. Read the{" "}
+            <Link to="/privacy" className="underline hover:text-black" data-testid="recruiter-privacy-link">
+              privacy note
+            </Link>
+            .
           </p>
         </footer>
       </div>

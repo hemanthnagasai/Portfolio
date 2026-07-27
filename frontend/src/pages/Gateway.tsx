@@ -790,6 +790,9 @@ export default function Gateway() {
             <Link to="/now" className="hover:text-white/60 transition-colors" data-testid="gateway-now-link">
               Now
             </Link>
+            <Link to="/privacy" className="hover:text-white/60 transition-colors" data-testid="gateway-privacy-link">
+              Privacy
+            </Link>
             <button
               onClick={handleRecruiterPick}
               className="hover:text-white/60 transition-colors glass-pill px-3 py-1.5"
