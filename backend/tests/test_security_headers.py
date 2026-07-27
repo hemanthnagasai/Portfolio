@@ -38,6 +38,28 @@ class TestSecurityHeaders:
         assert "script-src 'self' 'unsafe-inline'" not in csp
 
 
+class TestCspExtraHosts:
+    def test_newline_separated_hosts_collapse_to_spaces(self, monkeypatch):
+        # Hosting dashboards use textareas, so operators often paste extra
+        # hosts on separate lines. A raw newline in a header value would
+        # corrupt it, so the parser must normalise whitespace.
+        import importlib
+        import app.main as main_module
+
+        monkeypatch.setenv(
+            "CSP_CONNECT_EXTRA",
+            "https://a.example.com\n  https://b.example.com\t\n",
+        )
+        importlib.reload(main_module)
+        csp = main_module.CONTENT_SECURITY_POLICY
+
+        assert "connect-src 'self' https://a.example.com https://b.example.com" in csp
+        assert "\n" not in csp and "\t" not in csp
+
+        monkeypatch.delenv("CSP_CONNECT_EXTRA", raising=False)
+        importlib.reload(main_module)
+
+
 class TestCacheHeaders:
     def test_api_responses_are_never_cached(self, api_client):
         r = api_client.get("/api/health")

@@ -59,7 +59,12 @@ app.add_middleware(GZipMiddleware, minimum_size=1024)
 # the tight default — needed when enabling Sentry (connect to *.sentry.io) or
 # GoatCounter analytics (script gc.zgo.at, connect/img the counter host).
 def _csp_extra(name: str) -> str:
-    value = os.environ.get(name, "").strip()
+    # Hosting dashboards expose env vars as multi-line textareas, so a
+    # multi-host value easily picks up newlines instead of spaces. CSP
+    # directives are space-separated and a raw newline would corrupt the
+    # header, so collapse any whitespace run (newlines, tabs, doubles)
+    # into single spaces.
+    value = " ".join(os.environ.get(name, "").split())
     return (" " + value) if value else ""
 
 CONTENT_SECURITY_POLICY = "; ".join([
