@@ -9,9 +9,20 @@ const worlds = [
   { to: "/emotional", label: "Emotional", key: "emotional", icon: PenLine },
 ];
 
+// The floating switcher belongs to the four dimensions. Standalone pages
+// carry their own "← Gateway" link at the top, so the pill is redundant
+// there — and being fixed to the bottom it overlaps their footers.
+const WITHOUT_SWITCHER = new Set([
+  "/recruiter",
+  "/query",
+  "/how-i-built-this",
+  "/now",
+  "/privacy",
+]);
+
 export default function WorldSwitcher() {
   const { pathname } = useLocation();
-  if (pathname === "/recruiter") return null;
+  if (WITHOUT_SWITCHER.has(pathname)) return null;
 
   const isLight = false; // All worlds now dark cinematic
   const baseText = "#a0a0b0";
