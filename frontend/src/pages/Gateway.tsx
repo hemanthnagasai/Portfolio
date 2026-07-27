@@ -61,7 +61,7 @@ const milestones = [
   { year: "2021", label: "Intermediate · 87.8%" },
   { year: "2025", label: "B.Tech · KITS" },
   { year: "2025", label: "EY · Intern" },
-  { year: "2026", label: "EY · Senior Data Analyst" },
+  { year: "2025", label: "EY · Senior Data Analyst" },
 ];
 
 interface PortalProps {
