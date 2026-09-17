@@ -46,6 +46,8 @@ export default function Admin() {
   };
 
   useEffect(() => {
+    // Initial fetch; isLoading already starts true so the sync setIsLoading(true) is a no-op here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadTraces();
   }, []);
 

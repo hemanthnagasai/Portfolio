@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 
@@ -44,6 +45,7 @@ class TestCspExtraHosts:
         # hosts on separate lines. A raw newline in a header value would
         # corrupt it, so the parser must normalise whitespace.
         import importlib
+
         import app.main as main_module
 
         monkeypatch.setenv(

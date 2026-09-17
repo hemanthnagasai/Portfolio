@@ -19,7 +19,10 @@ const VISUALIZER_BARS = Array.from({ length: BARS_COUNT }).map((_, i) => {
 });
 
 export default function CinematicIntro() {
-  const [show, setShow] = useState(false);
+  // Decided once, up front: shown unless this session has already seen it.
+  const [show, setShow] = useState(
+    () => typeof window !== "undefined" && sessionStorage.getItem("intro_seen") !== "1"
+  );
   const [typed, setTyped] = useState(0);
   const [done, setDone] = useState(false);
   const [barsIn, setBarsIn] = useState(false);
@@ -38,10 +41,7 @@ export default function CinematicIntro() {
   };
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (sessionStorage.getItem("intro_seen") === "1") return;
-
-    setShow(true);
+    if (!show) return;
 
     // 1. Cinematic letterbox bars slide in
     timersRef.current.push(
@@ -91,7 +91,7 @@ export default function CinematicIntro() {
     return () => {
       clearAllTimers();
     };
-  }, []);
+  }, [show]);
 
   const handleSkip = () => {
     clearAllTimers();

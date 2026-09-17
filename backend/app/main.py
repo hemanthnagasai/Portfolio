@@ -1,14 +1,15 @@
-from fastapi import FastAPI, APIRouter, Request
+import logging
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
+
+from fastapi import APIRouter, FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from pathlib import Path
-import os
-import logging
 
-from app.database import init_db
-from app.routers import status, traces, chat, resume
 from app.config import CORS_ORIGINS
+from app.database import init_db
+from app.routers import chat, resume, status, traces
 
 logging.basicConfig(
     level=logging.INFO,
@@ -134,18 +135,20 @@ frontend_dist_path = Path(__file__).resolve().parent.parent.parent / "frontend" 
 if frontend_dist_path.exists():
     from fastapi.responses import FileResponse
     from fastapi.staticfiles import StaticFiles
-    
+
     # Mount assets folder if it exists
     assets_path = frontend_dist_path / "assets"
     if assets_path.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
-    
+
+    # Plain `def` on purpose: FastAPI runs sync handlers in its threadpool,
+    # so the stat/resolve calls below never block the event loop.
     @app.get("/{catchall:path}")
-    async def serve_frontend(catchall: str):
+    def serve_frontend(catchall: str):
         # Clean path to prevent directory traversal
         safe_path = os.path.normpath(catchall).lstrip("./\\")
         file_path = frontend_dist_path / safe_path
-        
+
         # Check if the resolved file path is inside the frontend dist directory
         try:
             resolved_file = file_path.resolve()
@@ -153,10 +156,10 @@ if frontend_dist_path.exists():
             is_safe = str(resolved_file).startswith(str(resolved_dist))
         except Exception:
             is_safe = False
-            
+
         if is_safe and file_path.exists() and file_path.is_file():
             return FileResponse(file_path)
-            
+
         index_file = frontend_dist_path / "index.html"
         if index_file.exists():
             return FileResponse(index_file)

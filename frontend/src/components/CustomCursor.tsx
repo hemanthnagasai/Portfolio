@@ -67,60 +67,61 @@ export default function CustomCursor() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Frame animation loop for canvas particles
-  const drawParticles = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  useEffect(() => {
+    // Frame animation loop for canvas particles. Lives inside the effect: it only
+    // touches refs, and this is the only place that starts it.
+    function drawParticles() {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const activeStyle = cursorStyles[dimensionRef.current];
-    if (!activeStyle) {
-      particlesRef.current = [];
-      loopRunningRef.current = false;
-      return;
-    }
+      const activeStyle = cursorStyles[dimensionRef.current];
+      if (!activeStyle) {
+        particlesRef.current = [];
+        loopRunningRef.current = false;
+        return;
+      }
 
-    const activeParticles: Particle[] = [];
-    const particles = particlesRef.current;
+      const activeParticles: Particle[] = [];
+      const particles = particlesRef.current;
 
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-      p.life -= 16.67; // Approx time elapsed (60fps scale)
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.life -= 16.67; // Approx time elapsed (60fps scale)
 
-      if (p.life > 0) {
-        const ratio = p.life / p.maxLife;
-        const currentAlpha = p.alpha * ratio;
-        const currentSize = p.size * ratio;
-        const currentX = p.x + p.drift * (1 - ratio);
-        const currentY = p.y + p.driftY * (1 - ratio);
+        if (p.life > 0) {
+          const ratio = p.life / p.maxLife;
+          const currentAlpha = p.alpha * ratio;
+          const currentSize = p.size * ratio;
+          const currentX = p.x + p.drift * (1 - ratio);
+          const currentY = p.y + p.driftY * (1 - ratio);
 
-        ctx.save();
-        ctx.globalAlpha = currentAlpha;
-        ctx.beginPath();
-        ctx.arc(currentX, currentY, currentSize, 0, Math.PI * 2);
-        ctx.fillStyle = activeStyle.spark;
-        ctx.shadowColor = activeStyle.glow;
-        ctx.shadowBlur = currentSize * 3.5;
-        ctx.fill();
-        ctx.restore();
+          ctx.save();
+          ctx.globalAlpha = currentAlpha;
+          ctx.beginPath();
+          ctx.arc(currentX, currentY, currentSize, 0, Math.PI * 2);
+          ctx.fillStyle = activeStyle.spark;
+          ctx.shadowColor = activeStyle.glow;
+          ctx.shadowBlur = currentSize * 3.5;
+          ctx.fill();
+          ctx.restore();
 
-        activeParticles.push(p);
+          activeParticles.push(p);
+        }
+      }
+
+      particlesRef.current = activeParticles;
+
+      if (activeParticles.length > 0) {
+        requestAnimationFrame(drawParticles);
+      } else {
+        loopRunningRef.current = false;
       }
     }
 
-    particlesRef.current = activeParticles;
-
-    if (activeParticles.length > 0) {
-      requestAnimationFrame(drawParticles);
-    } else {
-      loopRunningRef.current = false;
-    }
-  };
-
-  useEffect(() => {
     const move = (e: MouseEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);

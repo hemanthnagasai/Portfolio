@@ -24,7 +24,6 @@ export default function WorldSwitcher() {
   const { pathname } = useLocation();
   if (WITHOUT_SWITCHER.has(pathname)) return null;
 
-  const isLight = false; // All worlds now dark cinematic
   const baseText = "#a0a0b0";
   const activeBg = "rgba(255,255,255,0.1)";
   const activeText = "#ffffff";

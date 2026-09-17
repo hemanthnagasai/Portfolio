@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 @pytest.fixture(scope="module")
 def api_client():
@@ -26,7 +28,7 @@ class TestResumeDownload:
         cd = r.headers.get("content-disposition", "")
         assert "attachment" in cd.lower(), f"Bad content-disposition: {cd}"
         assert "Hemanth_Naga_Sai_Chakka_Resume.pdf" in cd, f"Filename missing in CD: {cd}"
-        
+
         body = r.content
         assert len(body) > 1000, f"PDF too small ({len(body)} bytes)"
         assert body[:4] == b"%PDF", f"Not a PDF (first 8 bytes: {body[:8]!r})"

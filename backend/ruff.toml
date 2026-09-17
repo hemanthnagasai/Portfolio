@@ -1,0 +1,23 @@
+# Lint config for the backend. Run: ruff check .   (CI runs the same)
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = [
+    "E", "F", "W",   # pycodestyle + pyflakes
+    "I",             # isort
+    "UP",            # pyupgrade
+    "B",             # bugbear
+    "SIM",           # simplify
+    "ASYNC",         # blocking calls inside async functions
+    "RUF",           # ruff-specific
+]
+ignore = [
+    # Long lines are almost entirely the chatbot system prompt and moderation
+    # prompt in the routers - prose, not code.
+    "E501",
+]
+
+[lint.per-file-ignores]
+# Tests monkeypatch module globals and reach into private helpers on purpose.
+"tests/*" = ["SLF001"]

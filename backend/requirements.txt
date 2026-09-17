@@ -9,6 +9,7 @@ google-genai==1.74.0
 reportlab==4.5.0
 aiosqlite==0.20.0
 pytest==9.0.3
+ruff==0.16.8
 requests==2.33.1
 httpx==0.28.1
 # Optional error tracking — dormant unless SENTRY_DSN is set (see main.py).

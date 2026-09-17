@@ -25,28 +25,31 @@ export default function LeaveATrace() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [hovered, setHovered] = useState<string | null>(null);
-  const [alreadyLeft, setAlreadyLeft] = useState(false);
-
-  useEffect(() => {
-    setAlreadyLeft(sessionStorage.getItem(SESSION_KEY) === "1");
-    fetchTraces();
-  }, []);
+  const [alreadyLeft, setAlreadyLeft] = useState(
+    () => sessionStorage.getItem(SESSION_KEY) === "1"
+  );
 
   const fetchTraces = async () => {
     try {
       const res = await axios.get<Trace[]>(`${API}/traces?limit=120`);
       setTraces(res.data || []);
-    } catch (e) {
+    } catch {
       // silent — guestbook is non-critical
     }
   };
+
+  useEffect(() => {
+    // Initial fetch; fetchTraces only sets state after its await, not synchronously.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchTraces();
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     const w = word.trim();
     if (!w) return;
-    if (!/^[A-Za-z'\-]{1,24}$/.test(w)) {
+    if (!/^[A-Za-z'-]{1,24}$/.test(w)) {
       setError("One word, letters only.");
       return;
     }

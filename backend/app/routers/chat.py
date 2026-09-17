@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import StreamingResponse
 import asyncio
 import json
 import logging
+
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from google import genai
 from google.genai import types
-from app.schemas import ChatRequest
+
 from app.config import GEMINI_API_KEY, PORTFOLIO_JSON_PATH
+from app.schemas import ChatRequest
 from app.utils.rate_limiter import check_rate_limit
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
@@ -19,13 +21,17 @@ if GEMINI_API_KEY:
     except Exception as e:
         logger.error(f"Failed to initialize Gemini Client: {e}")
 
-portfolio_data = {}
-if PORTFOLIO_JSON_PATH.exists():
+def _load_portfolio_data() -> dict:
+    if not PORTFOLIO_JSON_PATH.exists():
+        return {}
     try:
-        with open(PORTFOLIO_JSON_PATH, "r", encoding="utf-8") as f:
-            portfolio_data = json.load(f)
+        with open(PORTFOLIO_JSON_PATH, encoding="utf-8") as f:
+            return json.load(f)
     except Exception as e:
         logger.error(f"Failed to load portfolio.json: {e}")
+        return {}
+
+portfolio_data = _load_portfolio_data()
 
 def get_genai_client():
     global genai_client
@@ -69,12 +75,8 @@ async def post_chat(input_data: ChatRequest, request: Request):
 
     global portfolio_data
     if not portfolio_data:
-        if PORTFOLIO_JSON_PATH.exists():
-            try:
-                with open(PORTFOLIO_JSON_PATH, "r", encoding="utf-8") as f:
-                    portfolio_data = json.load(f)
-            except Exception as e:
-                logger.error(f"Failed to load portfolio.json: {e}")
+        # Retry a failed import-time load off the event loop (file I/O blocks).
+        portfolio_data = await asyncio.to_thread(_load_portfolio_data)
 
     system_instruction = f"""
 You are Hemanth Naga Sai Chakka. You speak in the first person ("I", "me", "my").
@@ -142,7 +144,7 @@ Answer the user's message as Hemanth.
             iterator, first = await asyncio.to_thread(start_stream, 'gemini-2.0-flash')
         except Exception as e2:
             logger.error(f"All Gemini models failed to generate content: {e2}")
-            raise HTTPException(status_code=500, detail=f"Generation failed: {str(e2)}")
+            raise HTTPException(status_code=500, detail=f"Generation failed: {e2!s}") from e2
 
     async def token_stream():
         chunk = first

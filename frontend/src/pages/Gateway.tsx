@@ -5,7 +5,6 @@ import { DimensionContext } from "@/context/DimensionContext";
 import { TransitionContext } from "@/context/TransitionContext";
 import { profile } from "@/data/portfolio";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import useMagnetic from "@/hooks/useMagnetic";
 import LivingPortrait from "@/components/LivingPortrait";
 import { getGreeting, SUBLINE } from "@/utils/greeting";
 import useUnlock, { ensureFirstVisit } from "@/hooks/useUnlock";
@@ -539,32 +538,49 @@ export default function Gateway() {
     trigger({ rect, color: "#fafafa", to: "/recruiter" });
   };
 
+  // Randomised once per mount: computing these inline in JSX reshuffled every
+  // particle on each re-render (intro/unlock state changes).
+  const [particles] = useState(() =>
+      Array.from({ length: 30 }, () => ({
+        width: 2 + Math.random() * 3,
+        height: 2 + Math.random() * 3,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        alpha: 0.1 + Math.random() * 0.15,
+        glow: 4 + Math.random() * 8,
+        dy: -30 - Math.random() * 40,
+        dx: (Math.random() - 0.5) * 20,
+        duration: 6 + Math.random() * 6,
+        delay: Math.random() * 4,
+      }))
+  );
+
   return (
     <main className="gateway-bg min-h-screen relative overflow-hidden" data-testid="gateway-page">
       {/* Floating depth particles */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-        {Array.from({ length: 30 }).map((_, i) => (
+        {particles.map((p, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
-              width: 2 + Math.random() * 3,
-              height: 2 + Math.random() * 3,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              background: `rgba(200,182,255,${0.1 + Math.random() * 0.15})`,
-              boxShadow: `0 0 ${4 + Math.random() * 8}px rgba(200,182,255,0.15)`,
+              width: p.width,
+              height: p.height,
+              left: p.left,
+              top: p.top,
+              background: `rgba(200,182,255,${p.alpha})`,
+              boxShadow: `0 0 ${p.glow}px rgba(200,182,255,0.15)`,
             }}
             animate={{
-              y: [0, -30 - Math.random() * 40, 0],
-              x: [0, (Math.random() - 0.5) * 20, 0],
+              y: [0, p.dy, 0],
+              x: [0, p.dx, 0],
               opacity: [0.2, 0.6, 0.2],
             }}
             transition={{
-              duration: 6 + Math.random() * 6,
+              duration: p.duration,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: Math.random() * 4,
+              delay: p.delay,
             }}
           />
         ))}

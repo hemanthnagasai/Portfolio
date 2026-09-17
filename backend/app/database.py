@@ -1,5 +1,6 @@
-import aiosqlite
 from pathlib import Path
+
+import aiosqlite
 
 DB_PATH = Path(__file__).resolve().parent.parent / "portfolio.db"
 

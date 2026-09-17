@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AmbientLight,
   BoxGeometry,
@@ -50,7 +50,8 @@ const FALLBACK_GRADIENTS: Record<ThreeWorldProps["type"], string> = {
 
 export default function ThreeWorld({ type, candlelightActive = false }: ThreeWorldProps) {
   // Computed once per mount; WebGL support doesn't change mid-session.
-  const webglSupportedRef = useRef(isWebGLAvailable());
+  // Lazy initializer: probed once per mount, then constant.
+  const [webglSupported] = useState(isWebGLAvailable);
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<WebGLRenderer | null>(null);
   const sceneRef = useRef<Scene | null>(null);
@@ -72,7 +73,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !webglSupportedRef.current) return;
+    if (!container || !webglSupported) return;
 
     // --- Scene Setup ---
     const scene = new Scene();
@@ -224,7 +225,6 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     // --- Setup Scene Elements Per World Mode ---
     let roadPath1: CatmullRomCurve3 | null = null;
     const animObjects: { mesh: Object3D; speed: number; axis: "x" | "y" | "z"; offset?: number }[] = [];
-    let flowLines: Line[] = [];
 
     // ─── 1. DATA SKY HIGHWAY (PROFESSIONAL) ───
     if (type === "professional") {
@@ -471,7 +471,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
     }
 
     // ─── 3. NIGHT SKY CONSTELLATION SPIRAL (EMOTIONAL) ───
-    let emotionalCandles: Group[] = [];
+    const emotionalCandles: Group[] = [];
     if (type === "emotional") {
       const starCount = 2500;
       const starGeo = new BufferGeometry();
@@ -722,7 +722,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
         rendererRef.current.dispose();
       }
     };
-  }, [type]);
+  }, [type, webglSupported]);
 
   return (
     <div
@@ -732,7 +732,7 @@ export default function ThreeWorld({ type, candlelightActive = false }: ThreeWor
       className="fixed inset-0 pointer-events-none transition-opacity duration-1000"
       style={{
         zIndex: 0,
-        background: webglSupportedRef.current ? undefined : FALLBACK_GRADIENTS[type],
+        background: webglSupported ? undefined : FALLBACK_GRADIENTS[type],
       }}
     />
   );

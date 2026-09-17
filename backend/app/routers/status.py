@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Request
-from typing import List
 from datetime import datetime
+
 import aiosqlite
-from app.schemas import StatusCheck, StatusCheckCreate
+from fastapi import APIRouter, Request
+
 from app.database import get_db_connection
+from app.schemas import StatusCheck, StatusCheckCreate
 from app.utils.rate_limiter import check_rate_limit
 
 router = APIRouter(prefix="/status", tags=["Status Checks"])
@@ -22,23 +23,23 @@ async def create_status_check(input_data: StatusCheckCreate, request: Request):
         )
         # Cap the table size to the last 40 status checks to prevent DB bloat
         await db.execute("""
-            DELETE FROM status_checks 
+            DELETE FROM status_checks
             WHERE id NOT IN (
-                SELECT id FROM status_checks 
-                ORDER BY timestamp DESC 
+                SELECT id FROM status_checks
+                ORDER BY timestamp DESC
                 LIMIT 40
             )
         """)
         await db.commit()
     return status_obj
 
-@router.get("", response_model=List[StatusCheck])
+@router.get("", response_model=list[StatusCheck])
 async def get_status_checks():
     async with get_db_connection() as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute("SELECT id, client_name, timestamp FROM status_checks ORDER BY timestamp DESC")
         rows = await cursor.fetchall()
-        
+
     checks = []
     for row in rows:
         ts = row["timestamp"]

@@ -21,6 +21,22 @@ export default function LayerZero() {
     return () => [t1, t2, t3, t4].forEach(clearTimeout);
   }, [setDimension]);
 
+  // Randomised once per mount so the reveal-step re-renders don't reshuffle the sky.
+  const [stars] = useState(() =>
+      Array.from({ length: 60 }, () => {
+        const size = 1 + Math.random() * 2;
+        const duration = 3 + Math.random() * 5;
+        return {
+          size,
+          duration,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          alpha: 0.15 + Math.random() * 0.3,
+          delay: Math.random() * duration,
+        };
+      })
+  );
+
   return (
     <main
       className="min-h-screen relative overflow-hidden"
@@ -33,25 +49,21 @@ export default function LayerZero() {
     >
       {/* Starfield */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        {Array.from({ length: 60 }).map((_, i) => {
-          const size = 1 + Math.random() * 2;
-          const duration = 3 + Math.random() * 5;
-          return (
-            <div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                width: size,
-                height: size,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                background: `rgba(200,182,255,${0.15 + Math.random() * 0.3})`,
-                boxShadow: `0 0 ${size * 3}px rgba(200,182,255,0.2)`,
-                animation: `starfield-twinkle ${duration}s ease-in-out ${Math.random() * duration}s infinite`,
-              }}
-            />
-          );
-        })}
+        {stars.map((s, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: s.size,
+              height: s.size,
+              left: s.left,
+              top: s.top,
+              background: `rgba(200,182,255,${s.alpha})`,
+              boxShadow: `0 0 ${s.size * 3}px rgba(200,182,255,0.2)`,
+              animation: `starfield-twinkle ${s.duration}s ease-in-out ${s.delay}s infinite`,
+            }}
+          />
+        ))}
       </div>
 
       {/* Slow rotating nebula */}

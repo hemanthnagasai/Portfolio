@@ -142,11 +142,13 @@ export default function Query() {
     const db = dbRef.current;
     const sql = (text ?? sqlText).trim();
     if (!db || !sql) return;
+    // eslint-disable-next-line react-hooks/purity -- runQuery is an event handler, not render
     const t0 = performance.now();
     try {
       const res = db.exec(sql);
       setResults(res);
       setQueryError(null);
+      // eslint-disable-next-line react-hooks/purity -- see above
       setElapsed(performance.now() - t0);
     } catch (e) {
       setQueryError(e instanceof Error ? e.message : String(e));

@@ -1,7 +1,10 @@
-import pytest
 import uuid
+
+import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 @pytest.fixture(scope="module")
 def api_client():
@@ -78,7 +81,7 @@ class TestTracesPostInvalid:
         async def mock_inappropriate(word: str) -> bool:
             return True
         monkeypatch.setattr(app.routers.traces, "is_word_inappropriate", mock_inappropriate)
-        
+
         r = api_client.post("/api/traces", json={"word": "inappropriate"})
         assert r.status_code == 400
         assert r.json()["detail"] == "Inappropriate content is not allowed."
@@ -123,14 +126,14 @@ class TestTracesDelete:
         monkeypatch.setenv("ADMIN_TOKEN", "secrettoken")
         word = "todelete"
         api_client.post("/api/traces", json={"word": word})
-        
+
         r = api_client.get("/api/traces")
         assert any(item["word"] == word for item in r.json())
-        
+
         r = api_client.delete(f"/api/traces/{word}", headers={"X-Admin-Token": "secrettoken"})
         assert r.status_code == 200
         assert r.json()["message"] == f"Trace '{word}' deleted successfully"
-        
+
         r = api_client.get("/api/traces")
         assert not any(item["word"] == word for item in r.json())
 

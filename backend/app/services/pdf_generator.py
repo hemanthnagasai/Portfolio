@@ -1,16 +1,17 @@
 import io
 import json
 from xml.sax.saxutils import escape
-from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.lib.enums import TA_LEFT
+
 from reportlab.lib.colors import HexColor
+from reportlab.lib.enums import TA_LEFT
+from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import inch
 from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer,
     HRFlowable,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
 )
 
 from app.config import PORTFOLIO_JSON_PATH
@@ -20,7 +21,7 @@ def _load_portfolio() -> dict:
     # Same portfolio.json the frontend renders and the chatbot is grounded
     # in — the resume can't drift from the site because they share one
     # source of truth.
-    with open(PORTFOLIO_JSON_PATH, "r", encoding="utf-8") as f:
+    with open(PORTFOLIO_JSON_PATH, encoding="utf-8") as f:
         return json.load(f)
 
 

@@ -1,6 +1,8 @@
+import io
+
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
-import io
+
 from app.services.pdf_generator import build_resume_pdf
 
 router = APIRouter(prefix="/resume", tags=["Resume"])
