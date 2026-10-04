@@ -189,7 +189,7 @@ export default function Query() {
             Query my life<span className="text-[#00E5FF]">_</span>
           </h1>
           <p className="font-outfit text-white/60 mt-4 max-w-[62ch] leading-relaxed">
-            I'm a data analyst — a page of adjectives felt wrong. So here's the data instead: a
+            I'm a consultant — a page of adjectives felt wrong. So here's the data instead: a
             real SQLite database of my work, education, skills, and life, running entirely in your
             browser. It's your own private copy; even <code className="font-mono text-[13px] text-[#00E5FF]/80">DROP TABLE</code> only
             breaks it for you.

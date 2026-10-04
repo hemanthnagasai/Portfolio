@@ -61,6 +61,7 @@ const milestones = [
   { year: "2025", label: "B.Tech · KITS" },
   { year: "2025", label: "EY · Intern" },
   { year: "2025", label: "EY · Senior Data Analyst" },
+  { year: "2026", label: "EY · Associate Consultant" },
 ];
 
 interface PortalProps {
@@ -516,7 +517,7 @@ export default function Gateway() {
   const { setDimension } = useContext(DimensionContext);
   usePageMeta(
     "Hemanth Naga Sai Chakka — A Portfolio in Layers",
-    "Explore the professional, personal, and emotional dimensions of Hemanth Naga Sai Chakka — Senior Data Analyst at EY.",
+    "Explore the professional, personal, and emotional dimensions of Hemanth Naga Sai Chakka — Associate Consultant at EY.",
   );
   const { trigger } = useContext(TransitionContext);
   const unlocked = useUnlock();

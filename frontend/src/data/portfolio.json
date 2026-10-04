@@ -7,14 +7,14 @@
     "origin": "Mangalagiri, Guntur"
   },
   "resume": {
-    "summary": "Senior Data Analyst at EY working at the intersection of data, technology, and people. Translates complexity into clarity, automates repetitive workflows, and leverages GenAI to simplify complex findings for non-technical stakeholders."
+    "summary": "Associate Consultant at EY working at the intersection of data, technology, and people. Translates complexity into clarity, automates repetitive workflows, and leverages GenAI to simplify complex findings for non-technical stakeholders."
   },
   "now": {
-    "updated": "July 2026",
+    "updated": "October 2026",
     "intro": "What I'm actually focused on these days. Updated whenever it changes — inspired by the /now page movement.",
     "items": [
       {
-        "title": "Senior Data Analyst at EY",
+        "title": "Associate Consultant at EY",
         "note": "Validating client data, running monthly analytics cycles, and automating the Excel work nobody asked me to automate."
       },
       {
@@ -35,18 +35,18 @@
     "kicker": "01 · Professional",
     "heading": ["Data.", "Clarity.", "Initiative."],
     "quote": "I work at the intersection of data and human understanding, making complex things clear, and finding better ways before anyone asks me to.",
-    "bio": "I'm Hemanth — a Senior Data Analyst at EY, working at the crossroads of data, technology, and people. My journey started in a computer science classroom in Guntur, building projects with friends that weren't impressive by industry standards but taught me something more valuable — that the best work happens when people build things together. Today I translate complexity into clarity, automate what doesn't need to be manual, and quietly explore where technology is heading next.",
+    "bio": "I'm Hemanth — an Associate Consultant at EY, working at the crossroads of data, technology, and people. My journey started in a computer science classroom in Guntur, building projects with friends that weren't impressive by industry standards but taught me something more valuable — that the best work happens when people build things together. Today I translate complexity into clarity, automate what doesn't need to be manual, and quietly explore where technology is heading next.",
     "experience": [
       {
         "company": "Ernst & Young LLP",
-        "role": "Senior Data Analyst",
-        "period": "Dec 2025 — Present",
-        "sub": "Intern · Jun 2025 — Dec 2025",
+        "role": "Associate Consultant",
+        "period": "Oct 2026 — Present",
+        "sub": "Senior Data Analyst · Dec 2025 — Oct 2026 · Intern · Jun 2025 — Dec 2025",
         "bullets": [
+          "Own and run the monthly cycles of an internal analytics and reporting tool used by client teams",
           "Validate and reconcile client data across multiple enterprise platforms ensuring accuracy and consistency",
-          "Execute monthly runs for an internally developed analytics and reporting tool used by client teams",
-          "Automate repetitive Excel workflows using Python, reducing manual effort without being asked",
-          "Leverage GenAI tools to simplify complex report findings for non-technical end users"
+          "Support a teammate building a product that improves Vintage efficiency across the project's region",
+          "Automate repetitive Excel workflows with Python and use GenAI to simplify findings for non-technical users"
         ]
       }
     ],

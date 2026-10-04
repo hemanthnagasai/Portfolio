@@ -184,7 +184,7 @@ export default function Recruiter() {
           <h1 className="font-plex font-semibold text-4xl md:text-5xl text-[#111827] tracking-tight">
             Hemanth Naga Sai Chakka
           </h1>
-          <p className="font-plex text-lg text-[#4B5563] mt-2">Senior Data Analyst · EY</p>
+          <p className="font-plex text-lg text-[#4B5563] mt-2">Associate Consultant · EY</p>
           <p className="font-plex text-sm text-[#4B5563] mt-3">
             Mangalagiri, Guntur · B.Tech CSE, KITS (CGPA 8.55)
           </p>

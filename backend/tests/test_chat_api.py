@@ -44,7 +44,7 @@ class FakeClient:
 class TestChatSuccess:
     def test_chat_success_mocked(self, api_client, monkeypatch):
         import app.routers.chat as chat_module
-        fake_client = FakeClient(text="hey, I work at EY as a senior data analyst.")
+        fake_client = FakeClient(text="hey, I work at EY as an associate consultant.")
         monkeypatch.setattr(chat_module, "get_genai_client", lambda: fake_client)
 
         r = api_client.post("/api/chat", json={"message": "Where do you work?", "history": []})

@@ -19,14 +19,14 @@ const FACTS = [
   { value: "1", label: "AI version of me you can talk to" },
 ];
 
-// The long-form version of the story: a data analyst building a full-stack
+// The long-form version of the story: a consultant building a full-stack
 // site with an AI pair, staying in the loop the whole way. Content is
 // deliberately honest — including the bugs.
 export default function HowIBuiltThis() {
   const { setDimension } = useContext(DimensionContext);
   usePageMeta(
     "How I Built This — Hemanth Naga Sai Chakka",
-    "A data analyst, an AI pair, and a portfolio that reveals itself in layers — the honest story of how this site was built.",
+    "A consultant, an AI pair, and a portfolio that reveals itself in layers — the honest story of how this site was built.",
   );
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function HowIBuiltThis() {
             How I built this
           </h1>
           <p className="font-spectral italic text-lg text-white/60 mt-5 leading-relaxed max-w-[58ch]">
-            A data analyst, an AI pair, and a portfolio that reveals itself in layers. The honest
+            A consultant, an AI pair, and a portfolio that reveals itself in layers. The honest
             version — including the parts that broke.
           </p>
         </motion.header>
@@ -96,7 +96,7 @@ export default function HowIBuiltThis() {
           <motion.section {...reveal}>
             <h2>The honest part</h2>
             <p>
-              I'm a data analyst, not a developer. I built this with AI — Claude, in a coding
+              I'm a consultant, not a developer. I built this with AI — Claude, in a coding
               environment — and I think the honest framing matters: the AI wrote most of the code,
               and <strong>I was in it the whole time</strong>. Every decision that shaped this site
               was a conversation: what to build, what to cut, what "done" means, whether the fix
