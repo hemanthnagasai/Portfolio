@@ -100,6 +100,10 @@ def build_resume_pdf() -> bytes:
     contact_bits = [f"{profile['origin']}, India"] if profile.get("origin") else []
     if education:
         contact_bits.append(f"{education[0]['degree']}, {education[0].get('meta', '')}".strip(", "))
+    links = profile.get("links") or {}
+    for key in ("linkedin", "github"):
+        if links.get(key):
+            contact_bits.append(links[key].removeprefix("https://").removeprefix("www.").rstrip("/"))
     if contact_bits:
         story.append(Paragraph(escape("  |  ".join(contact_bits)), contact_style))
     story.append(HRFlowable(width="100%", thickness=0.6, color=HexColor("#D1D5DB"), spaceAfter=6))

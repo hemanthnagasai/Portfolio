@@ -8,7 +8,6 @@ The frontend React application built with **Vite** and **TypeScript**.
 - **Styling**: TailwindCSS & Custom Vanilla CSS
 - **Routing**: React Router DOM (v7)
 - **Animations**: Framer Motion
-- **3D / WebGL**: Three.js
 - **E2E tests**: Playwright
 
 ---

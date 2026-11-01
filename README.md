@@ -9,7 +9,6 @@ A premium, interactive, scroll-driven portfolio application that spans across mu
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=Vite&logoColor=white)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Three.js](https://img.shields.io/badge/ThreeJS-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Gemini](https://img.shields.io/badge/Gemini%20AI-8E75FF?style=for-the-badge&logo=google-gemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
@@ -22,14 +21,17 @@ A premium, interactive, scroll-driven portfolio application that spans across mu
 
 ## 🌌 The Four Dimensions
 
-Explore Hemanth's life and work through four unique visual dimensions:
+The site moves like Hemanth's own Instagram reels: full-bleed colour scenes cut on the beat, giant kinetic statements that slam in, and content on chunky playful cards. Five colours (cream, ink, orange, cobalt, lime), one face (Inter), hard offset shadows.
 
-| Dimension | Aesthetic | Core Features | 3D WebGL Background |
-| :--- | :--- | :--- | :--- |
-| **🌀 Gateway** | Futuristic Portal | Locked paths that unlock as you explore; cinematic typewriter intro. | Interactive Starfield Vortex |
-| **💻 Professional** | Cybernetic HUD | 3D film-reel timeline, interactive projects, education tree, skills. | Data Sky Highway |
-| **🍃 Personal** | Scrapbook Journal | Real Polaroid frames, glassmorphic panels, value vertical spine. | Warm Stepping Stones & Fireflies |
-| **🕯️ Emotional** | Candlelight Poetry | Poetic letters, signature, moderated message board ("Leave a Trace"). | Constellation Spiral + Flashlight |
+| Dimension | On the page | Core Features |
+| :--- | :--- | :--- |
+| **Gateway** | Cream hello, cobalt cards, an end card | Each world is a card; six dots fill in as you actually read each page, and a check appears once you've opened it. A locked fourth card reads ప్రవేశం లేదు and scans into NO ENTRY until it opens. Ends on the reels' sign-off. |
+| **Professional** | Cobalt opening, then scenes | "DATA. CLARITY. INITIATIVE." slams in; numbered role cards, project cards, education scores that scramble into place, skills, certifications, résumé download. |
+| **Personal** | Orange opening, then scenes | Story, hobby cards (with links to the music and AI pages), values shown as ~~struck word~~ then the word that beats it. |
+| **Emotional** | Ink, and still | The letter, with only its title in motion, and a moderated guestbook ("Leave a Trace") where every word is a pill. |
+| **Layer Zero** | Lime | Opens once all three worlds have been visited, or after 90 seconds. |
+
+Moving between pages is the reels' cut: diagonal orange, ink and destination-colour bands sweep across.
 
 A dedicated **Recruiter view** sits outside the four dimensions: a clean, fast, conversational summary of Hemanth's background with an AI chatbot that **streams replies token-by-token** (grounded in his real portfolio data), a one-click résumé PDF, and direct contact links. Each route also ships its own `<title>`/meta description and a JSON-LD `Person` schema for search and link previews.
 
@@ -40,7 +42,6 @@ A dedicated **Recruiter view** sits outside the four dimensions: a clean, fast, 
 ```mermaid
 graph TD
     User([User Browser]) -->|Interacts| FE[Vite + React + TS Frontend]
-    FE -->|WebGL Background Canvas| Canvas[Three.js Engine]
     FE -->|Queries /api| BE[FastAPI Backend]
     BE -->|Saves Traces| DB[(SQLite Database)]
     BE -->|Builds PDF from portfolio.json| PDF[ReportLab Resume Engine]
@@ -67,10 +68,9 @@ This application includes robust security and content moderation features to pre
 
 ## ⚡ Performance & Accessibility
 
-- **Adaptive rendering:** the WebGL scenes drop shadows/antialiasing and cap pixel ratio on lower-power and touch devices, instead of forcing the same render cost on every visitor.
-- **Graceful WebGL fallback:** browsers or devices without WebGL support get a static themed background instead of a broken or blank page.
-- **Reduced motion:** all animations (page transitions, cursor effects, 3D camera drift) respect the OS-level `prefers-reduced-motion` setting.
-- **Code-split routes & stable vendor chunks:** each dimension loads its own JS chunk on demand, and large libraries (Three.js, Framer Motion) are split into their own hashed chunks so editing app code doesn't force returning visitors to re-download them.
+- **Light by design:** no WebGL, no scroll hijacking, three font families (Inter, Anek Telugu for the Telugu sign, JetBrains Mono for SQL). Each world is a few kilobytes of JS on top of the shared bundle.
+- **Reduced motion:** with the OS-level `prefers-reduced-motion` setting, statements and cards appear without slamming or springing, the marquees stop, and the page-change bands are skipped.
+- **Code-split routes & stable vendor chunks:** each dimension loads its own JS chunk on demand, and Framer Motion is split into its own hashed chunk so editing app code doesn't force returning visitors to re-download it.
 - **HTTP caching & compression:** content-hashed assets are served `immutable` for a year, HTML always revalidates, and responses are gzipped.
 - **Keyboard & screen-reader support:** a visible focus ring on every interactive element, a skip-to-content link, `prefers-reduced-motion` throughout, and labelled navigation.
 - **Streaming chat:** the Recruiter chatbot renders its reply token-by-token instead of blocking on the full generation.

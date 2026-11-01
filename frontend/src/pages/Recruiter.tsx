@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { Download, ArrowLeft, MessageSquare, Send, X, Loader2, Linkedin, Github, Mail, Phone, GraduationCap, Award } from "lucide-react";
+import { Download, ArrowLeft, MessageSquare, Send, X, Loader2, Linkedin, Github, Mail, Phone, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DimensionContext } from "@/context/DimensionContext";
-import { professional, resume } from "@/data/portfolio";
+import { profile, professional, resume } from "@/data/portfolio";
 import usePageMeta from "@/hooks/usePageMeta";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -48,7 +48,6 @@ export default function Recruiter() {
 
   useEffect(() => {
     setDimension("recruiter");
-    document.documentElement.style.setProperty("--grain-opacity", "0");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
@@ -160,101 +159,73 @@ export default function Recruiter() {
   ];
 
   return (
-    <main className="recruiter-bg min-h-screen relative" data-testid="recruiter-page">
-      {/* Subtle grid pattern */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.03]"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      <div className="max-w-3xl mx-auto px-6 md:px-10 py-12 relative">
+    <main className="recruiter-bg text-ink" data-testid="recruiter-page">
+      <div className="max-w-3xl mx-auto px-6 md:px-10 pt-8 pb-28">
         {/* Top bar */}
-        <div className="flex justify-between items-center mb-10 text-xs uppercase tracking-[0.2em] text-[#4B5563] font-plex">
-          <Link to="/" className="inline-flex items-center gap-2 hover:text-black transition-colors" data-testid="recruiter-back-link">
-            <ArrowLeft size={12} /> Full portfolio
+        <div className="flex justify-between items-center mb-12 text-sm text-ink-soft">
+          <Link to="/" className="inline-flex items-center gap-2 no-underline hover:text-ink transition-colors" data-testid="recruiter-back-link">
+            <ArrowLeft size={15} strokeWidth={1.75} aria-hidden="true" /> Full portfolio
           </Link>
           <span>Recruiter view</span>
         </div>
 
         {/* Header */}
-        <header className="pb-6 border-b border-[#E5E7EB]">
-          <h1 className="font-plex font-semibold text-4xl md:text-5xl text-[#111827] tracking-tight">
-            Hemanth Naga Sai Chakka
-          </h1>
-          <p className="font-plex text-lg text-[#4B5563] mt-2">Associate Consultant · EY</p>
-          <p className="font-plex text-sm text-[#4B5563] mt-3">
+        <header className="pb-8 border-b border-line">
+          <h1 className="text-[clamp(2.25rem,6vw,3.25rem)] font-black tracking-[-0.045em] leading-[0.95]">Hemanth Naga Sai Chakka</h1>
+          <p className="text-lg mt-3">Associate Consultant · EY</p>
+          <p className="text-[0.9375rem] text-ink-soft mt-1">
             Mangalagiri, Guntur · B.Tech CSE, KITS (CGPA 8.55)
           </p>
 
-          {/* Contact Links */}
-          <div className="flex items-center gap-3 mt-4 flex-wrap">
-            <a
-              href="https://www.linkedin.com/in/hemanth-chakka-5126111a9/"
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-plex font-medium text-[#4B5563] border border-[#D1D5DB] rounded-lg hover:text-[#0A66C2] hover:border-[#0A66C2] hover:bg-[#0A66C2]/5 transition-all"
-              data-testid="recruiter-linkedin-link"
-            >
-              <Linkedin size={13} /> LinkedIn
-            </a>
-            <a
-              href="https://github.com/hemanthnagasai"
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-plex font-medium text-[#4B5563] border border-[#D1D5DB] rounded-lg hover:text-[#111827] hover:border-[#111827] hover:bg-[#111827]/5 transition-all"
-              data-testid="recruiter-github-link"
-            >
-              <Github size={13} /> GitHub
-            </a>
-            <a
-              href="mailto:virathemu9@gmail.com"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-plex font-medium text-[#4B5563] border border-[#D1D5DB] rounded-lg hover:text-[#DC2626] hover:border-[#DC2626] hover:bg-[#DC2626]/5 transition-all"
-              data-testid="recruiter-email-link"
-            >
-              <Mail size={13} /> virathemu9@gmail.com
-            </a>
-            <a
-              href="tel:+916309534077"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-plex font-medium text-[#4B5563] border border-[#D1D5DB] rounded-lg hover:text-[#059669] hover:border-[#059669] hover:bg-[#059669]/5 transition-all"
-              data-testid="recruiter-phone-link"
-            >
-              <Phone size={13} /> +91 6309534077
-            </a>
+          <div className="flex items-center gap-2 mt-6 flex-wrap">
+            {[
+              { href: profile.links.linkedin, icon: <Linkedin size={14} aria-hidden="true" />, label: "LinkedIn", id: "recruiter-linkedin-link", ext: true },
+              { href: profile.links.github, icon: <Github size={14} aria-hidden="true" />, label: "GitHub", id: "recruiter-github-link", ext: true },
+              { href: profile.links.instagram, icon: <Instagram size={14} aria-hidden="true" />, label: "AI on Instagram", id: "recruiter-instagram-link", ext: true },
+              { href: "mailto:virathemu9@gmail.com", icon: <Mail size={14} aria-hidden="true" />, label: "virathemu9@gmail.com", id: "recruiter-email-link" },
+              { href: "tel:+916309534077", icon: <Phone size={14} aria-hidden="true" />, label: "+91 6309534077", id: "recruiter-phone-link" },
+            ].map((c) => (
+              <a
+                key={c.id}
+                href={c.href}
+                {...(c.ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold text-ink border-2 border-ink/80 no-underline hover:bg-lime transition-colors"
+                data-testid={c.id}
+              >
+                {c.icon} {c.label}
+              </a>
+            ))}
           </div>
 
           <a
             href={`${BACKEND_URL}/api/resume/download`}
             target="_blank" rel="noopener noreferrer"
             data-testid="recruiter-download-btn"
-            className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 bg-[#111827] text-white text-sm font-plex font-medium rounded-lg hover:bg-black transition-all hover:shadow-lg"
+            className="btn fill-ink mt-6 text-[0.9375rem]" style={{ ["--card-shadow" as string]: "var(--orange)" } as React.CSSProperties}
           >
-            <Download size={14} /> Download Resume (PDF)
+            <Download size={15} strokeWidth={2} aria-hidden="true" /> Download résumé (PDF)
           </a>
         </header>
 
         {/* Summary */}
-        <section className="py-8">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-3">Summary</h2>
-          <p className="font-plex text-[15px] leading-relaxed text-[#111827]">
-            {resume.summary}
-          </p>
+        <section className="pt-10">
+          <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] mb-3">Summary</h2>
+          <p className="text-[1.0625rem] leading-relaxed">{resume.summary}</p>
         </section>
 
         {/* Experience */}
-        <section className="py-8 border-t border-[#E5E7EB]">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Experience</h2>
+        <section className="pt-12">
+          <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] pb-2 border-b border-ink">Experience</h2>
           {professional.experience.map((e, i) => (
-            <div key={i} data-testid={`recruiter-exp-${i}`}>
-              <div className="flex justify-between items-baseline">
-                <p className="font-plex font-semibold text-[#111827]">{e.role} — {e.company}</p>
-                <p className="font-plex text-sm text-[#4B5563]">{e.period}</p>
+            <div key={i} className="pt-5" data-testid={`recruiter-exp-${i}`}>
+              <div className="flex flex-wrap justify-between items-baseline gap-x-4">
+                <p className="font-semibold text-[1.0625rem]">{e.role} — {e.company}</p>
+                <p className="text-sm text-ink-soft">{e.period}</p>
               </div>
-              {e.sub && <p className="font-plex text-sm text-[#4B5563] italic mb-2">{e.sub}</p>}
-              <ul className="mt-3 space-y-1.5">
+              {e.sub && <p className="text-sm text-ink-soft mt-1">{e.sub}</p>}
+              <ul className="mt-3">
                 {e.bullets.map((b, j) => (
-                  <li key={j} className="font-plex text-[14px] leading-relaxed text-[#111827] pl-4 relative">
-                    <span className="absolute left-0 top-2 w-1 h-1 bg-[#111827] rounded-full" />
+                  <li key={j} className="text-[0.9375rem] leading-relaxed py-2 border-b border-line last:border-b-0">
                     {b}
                   </li>
                 ))}
@@ -264,110 +235,79 @@ export default function Recruiter() {
         </section>
 
         {/* Projects */}
-        <section className="py-8 border-t border-[#E5E7EB]">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Projects</h2>
-          <div className="space-y-6">
-            {professional.projects.map((p, i) => (
-              <div key={i} className="p-4 rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB] transition-colors" data-testid={`recruiter-proj-${i}`}>
-                <p className="font-plex font-semibold text-[#111827] mb-2">{p.name}</p>
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {p.stack.split(" · ").map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-block px-2 py-0.5 text-[11px] font-plex font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <p className="font-plex text-[14px] leading-relaxed text-[#374151]">{p.desc}</p>
-              </div>
-            ))}
-          </div>
+        <section className="pt-12">
+          <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] pb-2 border-b border-ink">Projects</h2>
+          {professional.projects.map((p, i) => (
+            <div key={i} className="py-5 border-b border-line" data-testid={`recruiter-proj-${i}`}>
+              <p className="font-semibold text-[1.0625rem]">{p.name}</p>
+              <p className="text-sm text-ink-soft mt-1">{p.stack.split(" · ").join(", ")}</p>
+              <p className="text-[0.9375rem] leading-relaxed mt-2">{p.desc}</p>
+            </div>
+          ))}
         </section>
 
         {/* Education */}
-        <section className="py-8 border-t border-[#E5E7EB]">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Education</h2>
+        <section className="pt-12">
+          <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] pb-2 border-b border-ink">Education</h2>
           {professional.education.map((e, i) => (
-            <div key={i} className="flex justify-between items-baseline mb-2" data-testid={`recruiter-edu-${i}`}>
+            <div key={i} className="flex justify-between items-baseline gap-4 py-3 border-b border-line" data-testid={`recruiter-edu-${i}`}>
               <div>
-                <p className="font-plex font-medium text-[#111827]">{e.degree}</p>
-                <p className="font-plex text-sm text-[#4B5563]">{e.org}</p>
+                <p className="font-medium">{e.degree}</p>
+                <p className="text-sm text-ink-soft">{e.org}</p>
               </div>
-              <div className="text-right">
-                <p className="font-plex text-sm text-[#4B5563]">{e.period}</p>
-                <p className="font-plex text-sm font-medium text-[#111827]">{e.meta}</p>
+              <div className="text-right shrink-0">
+                <p className="text-sm text-ink-soft">{e.period}</p>
+                <p className="font-semibold">{e.meta}</p>
               </div>
             </div>
           ))}
         </section>
 
         {/* Skills */}
-        <section className="py-8 border-t border-[#E5E7EB]">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Skills</h2>
-          <div className="space-y-4">
+        <section className="pt-12">
+          <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] pb-2 border-b border-ink">Skills</h2>
+          <dl>
             {[
-              { label: "Languages & Tools", items: ["Python", "SQL", "Excel"] },
-              { label: "Libraries & Frameworks", items: ["NumPy", "Pandas", "Matplotlib"] },
+              { label: "Languages & tools", items: ["Python", "SQL", "Excel"] },
+              { label: "Libraries", items: ["NumPy", "Pandas", "Matplotlib"] },
               { label: "Databases", items: ["MongoDB"] },
-              { label: "Domains & Concepts", items: ["Machine Learning", "NLP", "GenAI Tools", "Data Validation", "Process Automation", "LLM Exploration"] },
+              { label: "Domains", items: ["Machine Learning", "NLP", "GenAI Tools", "Data Validation", "Process Automation", "LLM Exploration"] },
             ].map((group) => (
-              <div key={group.label}>
-                <p className="font-plex text-[11px] uppercase tracking-[0.15em] text-[#6B7280] mb-2 font-medium">{group.label}</p>
-                <div className="flex flex-wrap gap-2">
-                  {group.items.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-block px-3 py-1 text-[13px] font-plex font-medium text-[#111827] bg-[#F3F4F6] border border-[#E5E7EB] rounded-md hover:bg-[#E5E7EB] hover:border-[#D1D5DB] transition-all cursor-default"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+              <div key={group.label} className="grid sm:grid-cols-[11rem_1fr] gap-x-4 gap-y-0.5 py-3 border-b border-line">
+                <dt className="text-sm text-ink-soft">{group.label}</dt>
+                <dd className="text-[0.9375rem]">{group.items.join(", ")}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </section>
 
-
-        {/* Certifications */}
-        <section className="py-8 border-t border-[#E5E7EB]">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Certifications</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Certifications + achievements */}
+        <div className="grid sm:grid-cols-2 gap-x-10">
+          <section className="pt-12">
+            <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] pb-2 border-b border-ink">Certifications</h2>
             {certifications.map((c, i) => (
-              <div key={i} className="flex items-start gap-2.5 p-3 rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB] transition-colors" data-testid={`recruiter-cert-${i}`}>
-                <GraduationCap size={15} className="text-[#6B7280] mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-plex text-[13px] font-semibold text-[#111827] leading-tight">{c.name}</p>
-                  <p className="font-plex text-[11px] text-[#6B7280] mt-0.5">{c.org}</p>
-                </div>
+              <div key={i} className="py-3 border-b border-line" data-testid={`recruiter-cert-${i}`}>
+                <p className="text-[0.9375rem] font-medium leading-snug">{c.name}</p>
+                <p className="text-sm text-ink-soft">{c.org}</p>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Achievements */}
-        <section className="py-8 border-t border-[#E5E7EB]">
-          <h2 className="font-plex text-xs uppercase tracking-[0.2em] text-[#4B5563] mb-5">Achievements</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          </section>
+          <section className="pt-12">
+            <h2 className="text-[0.8125rem] font-extrabold uppercase tracking-[0.02em] pb-2 border-b border-ink">Achievements</h2>
             {achievements.map((a, i) => (
-              <div key={i} className="flex items-start gap-2.5 p-3 rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB] transition-colors" data-testid={`recruiter-ach-${i}`}>
-                <Award size={15} className="text-[#D97706] mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-plex text-[13px] font-semibold text-[#111827] leading-tight">{a.name}</p>
-                  <p className="font-plex text-[11px] text-[#6B7280] mt-0.5">{a.org}</p>
-                </div>
+              <div key={i} className="py-3 border-b border-line" data-testid={`recruiter-ach-${i}`}>
+                <p className="text-[0.9375rem] font-medium leading-snug">{a.name}</p>
+                <p className="text-sm text-ink-soft">{a.org}</p>
               </div>
             ))}
-          </div>
-        </section>
+          </section>
+        </div>
 
-        <footer className="py-8 border-t border-[#E5E7EB] text-center">
-          <p className="font-plex text-xs text-[#4B5563]">
-            Full layered portfolio available at{" "}
-            <Link to="/" className="underline hover:text-black">Home</Link>. Read the{" "}
-            <Link to="/privacy" className="underline hover:text-black" data-testid="recruiter-privacy-link">
+        <footer className="pt-12 mt-12 border-t border-line">
+          <p className="text-sm text-ink-soft">
+            The full layered portfolio is on the{" "}
+            <Link to="/" className="text-ink underline decoration-line hover:decoration-ink">home page</Link>. Read the{" "}
+            <Link to="/privacy" className="text-ink underline decoration-line hover:decoration-ink" data-testid="recruiter-privacy-link">
               privacy note
             </Link>
             .
@@ -384,7 +324,7 @@ export default function Recruiter() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.96 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="origin-bottom-right w-[calc(100vw-32px)] sm:w-96 h-[520px] max-h-[75vh] bg-white ring-1 ring-black/5 shadow-2xl rounded-2xl flex flex-col overflow-hidden mb-4"
+              className="origin-bottom-right w-[calc(100vw-32px)] sm:w-96 h-[520px] max-h-[75vh] bg-cream border-[3px] border-ink rounded-card shadow-[6px_6px_0_var(--ink)] flex flex-col overflow-hidden mb-4"
               role="dialog"
               aria-label="Chat with Hemanth"
               onKeyDown={(e) => {
@@ -393,34 +333,25 @@ export default function Recruiter() {
               data-testid="chatbot-window"
             >
               {/* Chat Header */}
-              <div
-                className="text-white p-4 flex justify-between items-center"
-                style={{
-                  background: "linear-gradient(135deg, #111827 0%, #1f2937 100%)",
-                }}
-              >
+              <div className="bg-ink text-cream p-4 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <img
-                      src="/avatar.jpeg"
-                      alt=""
-                      className="w-9 h-9 rounded-full object-cover border border-neutral-700"
-                    />
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#10B981] border-2 border-[#151d2b]"
-                      aria-hidden="true"
-                    />
-                  </div>
+                  <img
+                    src="/portrait-head.webp"
+                    alt=""
+                    width={36}
+                    height={36}
+                    className="w-9 h-9 object-cover rounded-full border-2 border-cream/40"
+                  />
                   <div>
-                    <h3 className="font-plex font-semibold text-sm leading-tight">Hemanth</h3>
-                    <p className="text-[11px] text-neutral-400 font-medium leading-none mt-1">
+                    <h3 className="font-semibold text-sm leading-tight">Hemanth</h3>
+                    <p className="text-xs text-cream/70 leading-none mt-1">
                       AI · answers from my real story
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={closeChat}
-                  className="p-2 -m-0.5 hover:bg-white/10 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                  className="p-2 -m-0.5 hover:bg-cream/10 rounded-full transition-colors"
                   aria-label="Close chat"
                 >
                   <X size={18} />
@@ -433,7 +364,7 @@ export default function Recruiter() {
                 onScroll={handleMessagesScroll}
                 role="log"
                 aria-label="Conversation"
-                className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAFAFA] light-scroll"
+                className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#e6e6d3] light-scroll"
               >
                 {messages.map((msg, i) => (
                   <motion.div
@@ -444,10 +375,10 @@ export default function Recruiter() {
                     className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
                   >
                     <div
-                      className={`px-4 py-2.5 rounded-2xl text-sm font-plex max-w-[85%] leading-relaxed whitespace-pre-wrap break-words ${
+                      className={`px-4 py-2.5 text-[0.9375rem] max-w-[85%] leading-relaxed whitespace-pre-wrap break-words ${
                         msg.role === "user"
-                          ? "bg-[#111827] text-white rounded-br-md"
-                          : "bg-white border border-[#E5E7EB] text-[#111827] rounded-bl-md shadow-sm"
+                          ? "bg-ink text-cream rounded-[1.1rem] rounded-br-md"
+                          : "bg-cream border-2 border-ink/15 text-ink rounded-[1.1rem] rounded-bl-md"
                       } ${isStreaming && msg.role === "model" && i === messages.length - 1 ? "stream-caret" : ""}`}
                     >
                       {msg.content}
@@ -463,7 +394,7 @@ export default function Recruiter() {
                     className="flex items-start"
                   >
                     <div
-                      className="px-4 py-3.5 rounded-2xl rounded-bl-md bg-white border border-[#E5E7EB] shadow-sm flex items-center gap-1"
+                      className="px-4 py-3.5 bg-cream border-2 border-ink/15 rounded-[1.1rem] rounded-bl-md flex items-center gap-1"
                       aria-label="Hemanth is typing"
                     >
                       <span className="typing-dot" />
@@ -476,13 +407,13 @@ export default function Recruiter() {
 
               {/* Suggestions */}
               {messages.length === 1 && (
-                <div className="p-3 bg-[#FAFAFA] border-t border-[#E5E7EB] flex flex-wrap gap-1.5 justify-start">
+                <div className="p-3 bg-[#e6e6d3] border-t border-line flex flex-wrap gap-1.5 justify-start">
                   {suggestions.map((sug, i) => (
                     <button
                       key={i}
                       onClick={() => handleSendMessage(sug)}
                       disabled={busy}
-                      className="text-xs font-plex px-3 py-2 bg-white border border-[#E5E7EB] rounded-full hover:bg-neutral-50 hover:border-neutral-400 transition-colors text-[#4B5563] disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/25"
+                      className="text-[0.8125rem] font-semibold text-left px-3 py-2 rounded-full bg-cream border-2 border-ink/80 hover:bg-lime transition-colors text-ink disabled:opacity-50"
                     >
                       {sug}
                     </button>
@@ -496,7 +427,7 @@ export default function Recruiter() {
                   e.preventDefault();
                   handleSendMessage(inputValue);
                 }}
-                className="p-3 border-t border-[#E5E7EB] flex gap-2 items-center bg-white"
+                className="p-3 border-t border-line flex gap-2 items-center bg-cream"
               >
                 <input
                   ref={inputRef}
@@ -506,17 +437,17 @@ export default function Recruiter() {
                   placeholder="Ask about my work, projects, cricket…"
                   maxLength={2000}
                   aria-label="Your message"
-                  className="flex-1 min-w-0 px-3.5 py-2.5 border border-[#D1D5DB] rounded-xl text-base sm:text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/10 font-plex transition-[border-color,box-shadow] disabled:bg-neutral-50 disabled:text-neutral-400"
+                  className="flex-1 min-w-0 px-4 py-2.5 rounded-full border-2 border-ink/80 bg-cream text-base sm:text-[0.9375rem] text-ink placeholder:text-ink-soft focus:outline-none focus:border-ink transition-colors disabled:bg-[#e6e6d3] disabled:text-ink-soft"
                   disabled={busy}
                 />
                 <button
                   type="submit"
                   disabled={!inputValue.trim() || busy}
                   aria-label="Send message"
-                  className={`w-11 h-11 shrink-0 flex items-center justify-center rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/30 ${
+                  className={`w-11 h-11 shrink-0 flex items-center justify-center rounded-full transition-colors ${
                     inputValue.trim() && !busy
-                      ? "bg-[#111827] text-white hover:bg-black"
-                      : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                      ? "bg-ink text-lime hover:bg-[#000]"
+                      : "bg-[#e6e6d3] text-ink-soft cursor-not-allowed"
                   }`}
                 >
                   {busy ? <Loader2 size={17} className="animate-spin motion-reduce:animate-none" /> : <Send size={17} />}
@@ -531,16 +462,12 @@ export default function Recruiter() {
           ref={toggleRef}
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
-          className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] text-white hover:bg-black rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/40 focus-visible:ring-offset-2"
-          style={{
-            boxShadow: "0 8px 32px -8px rgba(0,0,0,0.3)",
-          }}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+          className="btn fill-ink !px-5 !py-3.5"
+          style={{ ["--card-shadow" as string]: "var(--orange)" } as React.CSSProperties}
           data-testid="chatbot-toggle-btn"
         >
           {isOpen ? <X size={20} /> : <MessageSquare size={20} />}
-          <span className="font-plex font-medium text-sm">{isOpen ? "Close" : "Ask Hemanth"}</span>
+          <span className="font-semibold text-sm">{isOpen ? "Close" : "Ask Hemanth"}</span>
         </motion.button>
       </div>
     </main>

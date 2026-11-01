@@ -4,7 +4,13 @@
     "middleName": "Naga Sai",
     "lastName": "Chakka",
     "tagline": "A man who reveals himself in layers. Choose a world to begin.",
-    "origin": "Mangalagiri, Guntur"
+    "origin": "Mangalagiri, Guntur",
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/hemanthchakka/",
+      "github": "https://github.com/hemanthnagasai",
+      "instagram": "https://www.instagram.com/hemanth_chakka/",
+      "music": "https://www.instagram.com/hemanth_.sings_/"
+    }
   },
   "resume": {
     "summary": "Associate Consultant at EY working at the intersection of data, technology, and people. Translates complexity into clarity, automates repetitive workflows, and leverages GenAI to simplify complex findings for non-technical stakeholders."

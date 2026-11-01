@@ -55,11 +55,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Split the big, rarely-changing libraries into their own chunks so
-        // editing app code doesn't bust their (immutable-cached) hash. Three
-        // was previously bundled into ThreeWorld's chunk, so every edit to
-        // that file re-shipped ~535KB of Three to returning visitors.
+        // editing app code doesn't bust their (immutable-cached) hash.
         manualChunks(id) {
-          if (id.includes('node_modules/three')) return 'three';
           if (id.includes('node_modules/framer-motion') || id.includes('node_modules/motion')) return 'motion';
         },
       },

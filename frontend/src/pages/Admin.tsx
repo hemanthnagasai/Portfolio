@@ -28,7 +28,6 @@ export default function Admin() {
 
   useEffect(() => {
     setDimension("recruiter");
-    document.documentElement.style.setProperty("--grain-opacity", "0");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
@@ -91,10 +90,10 @@ export default function Admin() {
   return (
     <main className="recruiter-bg min-h-screen relative" data-testid="admin-page">
       <div className="max-w-3xl mx-auto px-6 md:px-10 py-12 relative">
-        <div className="flex justify-between items-center mb-10 text-xs uppercase tracking-[0.2em] text-[#4B5563] font-plex">
+        <div className="flex justify-between items-center mb-10 text-sm text-ink-soft">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 hover:text-black transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/30 rounded"
+            className="inline-flex items-center gap-2 hover:text-ink transition-colors"
             data-testid="admin-back-link"
           >
             <ArrowLeft size={12} /> Full portfolio
@@ -102,11 +101,11 @@ export default function Admin() {
           <span>Trace moderation</span>
         </div>
 
-        <header className="pb-6 border-b border-[#E5E7EB]">
-          <h1 className="font-plex font-semibold text-3xl text-[#111827] tracking-tight">
+        <header className="pb-6 border-b border-line">
+          <h1 className="font-semibold text-3xl text-ink tracking-tight">
             Leave a Trace — Moderation
           </h1>
-          <p className="font-plex text-sm text-[#4B5563] mt-2 max-w-[65ch]">
+          <p className="text-sm text-ink-soft mt-2 max-w-[65ch]">
             Words visitors left on the Emotional page, newest first. Deleting requires the admin
             token; everything else here is read-only.
           </p>
@@ -129,14 +128,14 @@ export default function Admin() {
               autoComplete="off"
               spellCheck={false}
               aria-label="Admin token"
-              className="pl-3 pr-10 py-2 text-base sm:text-sm font-plex border border-[#D1D5DB] rounded-lg bg-white text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/10 transition-[border-color,box-shadow] w-64"
+              className="pl-3 pr-10 py-2 text-base sm:text-sm border border-line bg-cream text-ink placeholder:text-ink-soft focus:border-ink transition-colors w-64"
               data-testid="admin-token-input"
             />
             <button
               type="button"
               onClick={() => setShowToken((v) => !v)}
               aria-label={showToken ? "Hide token" : "Show token"}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded text-[#6B7280] hover:text-[#111827] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/30"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-ink-soft hover:text-ink transition-colors"
             >
               {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
@@ -144,13 +143,13 @@ export default function Admin() {
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-plex font-medium text-[#4B5563] border border-[#D1D5DB] rounded-lg hover:text-[#111827] hover:border-[#111827] transition-colors disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/30"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-ink-soft border border-line hover:text-ink hover:border-ink transition-colors disabled:opacity-50"
             data-testid="admin-refresh-btn"
           >
             <RefreshCw size={13} className={isLoading ? "animate-spin motion-reduce:animate-none" : ""} />
             Refresh
           </button>
-          <span className="font-plex text-xs text-[#4B5563]" role="status" aria-live="polite" data-testid="admin-status">
+          <span className="text-xs text-ink-soft" role="status" aria-live="polite" data-testid="admin-status">
             {status}
           </span>
         </form>
@@ -158,19 +157,19 @@ export default function Admin() {
         {/* Filter + count */}
         <div className="mt-8 flex items-center justify-between gap-3 flex-wrap">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" aria-hidden="true" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" aria-hidden="true" />
             <input
               type="text"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               placeholder="Filter words"
               aria-label="Filter traces"
-              className="pl-[2.125rem] pr-3 py-2 text-base sm:text-sm font-plex border border-[#D1D5DB] rounded-lg bg-white text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/10 transition-[border-color,box-shadow] w-56"
+              className="pl-[2.125rem] pr-3 py-2 text-base sm:text-sm border border-line bg-cream text-ink placeholder:text-ink-soft focus:border-ink transition-colors w-56"
               data-testid="admin-filter-input"
             />
           </div>
           {!isLoading && (
-            <p className="font-plex text-xs text-[#4B5563] tabular-nums" data-testid="admin-count">
+            <p className="text-xs text-ink-soft tabular-nums" data-testid="admin-count">
               {filter.trim()
                 ? `${visible.length} of ${traces.length} trace${traces.length === 1 ? "" : "s"}`
                 : `${traces.length} trace${traces.length === 1 ? "" : "s"}`}
@@ -185,7 +184,7 @@ export default function Admin() {
             [64, 88, 72, 96, 56, 80, 104, 68].map((w, i) => (
               <span
                 key={i}
-                className="h-[34px] rounded-full bg-[#E5E7EB]/70 animate-pulse motion-reduce:animate-none"
+                className="h-[34px] bg-line/70 animate-pulse motion-reduce:animate-none"
                 style={{ width: w }}
                 aria-hidden="true"
               />
@@ -194,7 +193,7 @@ export default function Admin() {
             visible.map((t) => (
               <span
                 key={t.id}
-                className="inline-flex items-center gap-1.5 pl-3 pr-1 py-1 text-sm font-plex text-[#111827] border border-[#E5E7EB] bg-white rounded-full hover:border-[#D1D5DB] transition-colors"
+                className="inline-flex items-center gap-1.5 pl-3 pr-1 py-1 text-sm text-ink border border-line bg-cream hover:border-line transition-colors"
               >
                 {t.word}
                 <button
@@ -202,7 +201,7 @@ export default function Admin() {
                   disabled={busyWord !== null}
                   title={`Delete "${t.word}"`}
                   aria-label={`Delete "${t.word}"`}
-                  className="p-1.5 rounded-full text-[#6B7280] hover:text-[#DC2626] hover:bg-[#DC2626]/10 transition-colors disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]/40"
+                  className="p-1.5 text-ink-soft hover:text-orange hover:bg-orange/15 transition-colors disabled:opacity-40"
                   data-testid={`admin-delete-${t.word}`}
                 >
                   {busyWord === t.word ? (
@@ -214,17 +213,17 @@ export default function Admin() {
               </span>
             ))
           ) : traces.length > 0 ? (
-            <p className="font-plex text-sm text-[#4B5563]">
+            <p className="text-sm text-ink-soft">
               Nothing matches “{filter.trim()}”.{" "}
               <button
                 onClick={() => setFilter("")}
-                className="underline underline-offset-2 hover:text-[#111827] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/30 rounded"
+                className="underline underline-offset-2 hover:text-ink transition-colors"
               >
                 Clear filter
               </button>
             </p>
           ) : (
-            <p className="font-plex text-sm text-[#4B5563]">
+            <p className="text-sm text-ink-soft">
               No traces yet — they'll appear here as visitors leave words on the Emotional page.
             </p>
           )}

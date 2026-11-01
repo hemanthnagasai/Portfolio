@@ -1,467 +1,241 @@
-import { useContext, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Download, ArrowLeft, Briefcase, Code2, GraduationCap, Award, Cpu, ChevronDown, Zap, Layers, Target } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Download } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { professional } from "@/data/portfolio";
-import Typewriter from "@/components/Typewriter";
-
-import { markVisited, ensureFirstVisit } from "@/hooks/useUnlock";
-import { worldContentClass, worldTopBarClass } from "@/constants/worldLayout";
-import { cinematicReveal, fadeUp, staggerContainer } from "@/motion/presets";
+import { markVisited, ensureFirstVisit, useReadingProgress } from "@/hooks/useUnlock";
 import usePageMeta from "@/hooks/usePageMeta";
-import ThreeWorld from "@/components/ThreeWorld";
+import { parseStints } from "@/lib/content";
+import RunningHead from "@/components/kit/RunningHead";
+import { Marquee, PopIn, Scramble, Slam } from "@/components/kit/Kinetic";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
 
-/* ─── Section Label ─── */
-interface SectionLabelProps {
-  num: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}
+const certifications = professional.certs.filter((c) => c.type !== "achievement");
+const achievements = professional.certs.filter((c) => c.type === "achievement");
 
-function SectionLabel({ num, icon, children }: SectionLabelProps) {
+const roleFills = ["fill-orange", "fill-cobalt", "fill-lime"];
+const projectFills = ["fill-orange", "fill-lime"];
+const scoreFills = ["fill-cobalt", "fill-orange", "fill-lime"];
+
+function SceneHead({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-4 mb-12 relative z-10">
-      <span className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.35em] text-[#00E5FF]">
-        {icon}
-        {num}
-      </span>
-      <span className="font-mono text-xs uppercase tracking-[0.35em] text-white/60">
-        {children}
-      </span>
-      <div className="flex-1 h-px bg-gradient-to-r from-[#00E5FF]/20 to-transparent" />
-    </div>
+    <h2 id={id} className="mega text-[clamp(3rem,8vw,6.5rem)]">
+      {children}
+    </h2>
   );
 }
 
-/* ─── HUD Stat Panel ─── */
-function HudPanel({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
-  return (
-    <motion.div
-      variants={fadeUp}
-      className="prof-hero-hud p-5 md:p-6 flex-1 min-w-[140px]"
-    >
-      <div className="flex items-center gap-2 mb-3 relative z-10">
-        <span className="text-[#00E5FF]/60">{icon}</span>
-        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/50">{label}</span>
-      </div>
-      <p className="font-display text-2xl md:text-3xl font-bold text-white tracking-tight relative z-10">{value}</p>
-    </motion.div>
-  );
-}
-
-/* ─── Project Card with Spotlight ─── */
-function ProjectCard({ p, i }: { p: typeof professional.projects[0]; i: number }) {
-  const cardRef = useRef<HTMLElement>(null);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    el.style.setProperty("--mx", `${x}%`);
-    el.style.setProperty("--my", `${y}%`);
-  }, []);
-
-  return (
-    <motion.article
-      ref={cardRef}
-      variants={cinematicReveal}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.2 }}
-      custom={i}
-      onMouseMove={handleMouseMove}
-      className="prof-card prof-spotlight p-7 md:p-8 perspective-container group"
-      data-testid={`prof-project-${i}`}
-    >
-      {/* Holographic shimmer overlay */}
-      <div className="holo-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      {/* Header */}
-      <div className="flex justify-between items-center mb-5 relative z-10">
-        <p className="font-mono text-[10px] text-[#00E5FF]/70 uppercase tracking-[0.25em] whitespace-nowrap">
-          [ Engine / 0{i + 1} ]
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]/60 animate-pulse" />
-          <span className="font-mono text-[8px] text-white/50 uppercase tracking-wider">Active</span>
-        </div>
-      </div>
-
-      {/* Title */}
-      <h3 className="font-heading text-2xl md:text-3xl font-semibold mb-2 text-white tracking-tight relative z-10 group-hover:text-[#00E5FF] transition-colors duration-500">
-        {p.name}
-      </h3>
-
-      {/* Stack pills */}
-      <div className="flex flex-wrap gap-2 mb-5 relative z-10">
-        {p.stack.split(" · ").map((tech, j) => (
-          <span
-            key={j}
-            className="px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.15em] rounded-full border border-[#00E5FF]/15 text-[#00E5FF]/70 bg-[#00E5FF]/05"
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
-
-      {/* Description */}
-      <p className="text-sm leading-relaxed text-white/50 font-spectral relative z-10 group-hover:text-white/65 transition-colors duration-500">
-        {p.desc}
-      </p>
-
-      {/* Bottom accent line */}
-      <div className="mt-6 h-[1px] bg-gradient-to-r from-[#00E5FF]/20 via-[#00E5FF]/10 to-transparent relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    </motion.article>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   MAIN PAGE
-   ═══════════════════════════════════════════ */
 export default function Professional() {
   const { setDimension } = useContext(DimensionContext);
   usePageMeta(
     "Professional — Hemanth Naga Sai Chakka",
     "Experience at EY, projects, education, and skills — the professional dimension of Hemanth Naga Sai Chakka.",
   );
+  const read = useReadingProgress("professional");
 
   useEffect(() => {
     setDimension("professional");
-    document.documentElement.style.setProperty("--grain-opacity", "0.04");
     ensureFirstVisit();
     markVisited("professional");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
+  const current = professional.experience[0];
+  const stints = parseStints(current?.sub) ?? [];
+  const roles = current ? [{ role: current.role, period: current.period }, ...stints] : [];
+
   return (
-    <main className="prof-bg min-h-screen text-[#E2E8F0] relative overflow-hidden" data-testid="professional-page">
-      {/* Dynamic 3D Scroll-Driven World (Data Sky Highway) */}
-      <ThreeWorld type="professional" />
+    <main data-testid="professional-page">
+      <RunningHead title="Professional" progress={read} backTestId="prof-back-link" scene="scene-cobalt" />
 
-      {/* TOP BAR */}
-      <div className={`${worldTopBarClass} text-white/50 relative z-10`}>
-        <Link to="/" className="hover:text-white transition-colors flex items-center gap-2" data-testid="prof-back-link">
-          <ArrowLeft size={12} /> Gateway
-        </Link>
-        <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em]">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse" style={{ boxShadow: "0 0 8px #00E5FF" }} />
-          01 / 03 · Professional
-        </span>
-      </div>
-
-      <div className={`${worldContentClass} relative z-10`}>
-
-        {/* ════════════════════════════════════════════
-            WING I: IMMERSIVE HERO SECTION
-            ════════════════════════════════════════════ */}
-        <section className="pt-12 md:pt-24 pb-16 perspective-container min-h-[85vh] flex flex-col justify-center relative">
-          {/* Volumetric background glow */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none z-0"
-            style={{
-              background: "radial-gradient(circle, rgba(0, 229, 255,0.06) 0%, transparent 70%)",
-              filter: "blur(60px)",
-            }}
-          />
-
-          {/* Kicker */}
-          <motion.p
-            variants={cinematicReveal} initial="hidden" animate="show" custom={0}
-            className="font-mono text-xs uppercase tracking-[0.3em] text-[#00E5FF]/80 mb-6 relative z-10"
-          >
-            {professional.kicker}
-          </motion.p>
-
-          {/* Main heading */}
-          <h1 className="font-display font-bold leading-[0.95] tracking-tight text-[12vw] md:text-[7vw] lg:text-[5.5vw] relative z-10" data-testid="prof-heading">
-            <span className="font-spectral italic font-light text-white/60 block text-xs md:text-sm uppercase tracking-[0.35em] mb-4">
-              Professional · Overview
-            </span>
-            <Typewriter
-              text="Data. Clarity. Systems."
-              speed={55}
-              delay={350}
-              cursorClass="bg-[#00E5FF]"
-              className="text-white [&>span]:text-[#00E5FF]"
-              testId="prof-heading-tw"
+      {/* Opening — cobalt */}
+      <section className="scene scene-cobalt">
+        <div className="max-w-page mx-auto px-[var(--page-x)] pt-10 md:pt-16 pb-12 grid grid-cols-12 gap-x-6 gap-y-10">
+          <div className="col-span-12 lg:col-span-8">
+            <Slam
+              as="h1"
+              words={professional.heading}
+              className="mega text-[clamp(3.5rem,10vw,8.5rem)]"
+              wordClassName={(i) => (i === professional.heading.length - 1 ? "text-lime" : "")}
             />
-          </h1>
-
-          {/* Quote */}
-          <motion.blockquote
-            variants={cinematicReveal} initial="hidden" animate="show" custom={4}
-            className="mt-12 max-w-2xl font-spectral italic text-lg md:text-xl leading-relaxed text-white/50 border-l-2 border-[#00E5FF]/40 pl-6 relative z-10"
-            data-testid="prof-quote"
-          >
-            "{professional.quote}"
-          </motion.blockquote>
-
-          {/* Bio */}
-          <motion.p
-            variants={cinematicReveal} initial="hidden" animate="show" custom={5}
-            className="mt-10 max-w-3xl font-mono text-xs md:text-sm leading-[1.95] text-white/60 relative z-10"
-          >
-            {professional.bio}
-          </motion.p>
-
-          {/* HUD Stat Panels */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="show"
-            className="mt-14 flex flex-wrap gap-4 relative z-10"
-          >
-            <HudPanel label="Experience" value="1+ Year" icon={<Zap size={12} strokeWidth={1.5} />} />
-            <HudPanel label="Tools & Langs" value="13+" icon={<Layers size={12} strokeWidth={1.5} />} />
-            <HudPanel label="Projects" value={`${professional.projects.length}`} icon={<Target size={12} strokeWidth={1.5} />} />
-            <HudPanel label="Certifications" value={`${professional.certs.length}`} icon={<Award size={12} strokeWidth={1.5} />} />
-          </motion.div>
-
-          {/* Download CTA */}
-          <motion.div
-            variants={cinematicReveal} initial="hidden" animate="show" custom={7}
-            className="relative z-10"
-          >
+            <blockquote className="lead text-[clamp(1.375rem,2.6vw,2rem)] mt-10 max-w-[32ch]" data-testid="prof-quote">
+              {professional.quote}
+            </blockquote>
+          </div>
+          <div className="col-span-12 lg:col-span-4 lg:self-end flex flex-col gap-4">
+            <PopIn rotate={2}>
+              <div className="card fill-cream p-5">
+                <dl className="grid grid-cols-[4.5rem_1fr] gap-x-3 gap-y-2.5 text-[0.9375rem]">
+                  <dt className="font-semibold text-ink-soft">Role</dt>
+                  <dd className="font-bold">{current?.role}</dd>
+                  <dt className="font-semibold text-ink-soft">At</dt>
+                  <dd className="font-bold">{current?.company}</dd>
+                  <dt className="font-semibold text-ink-soft">Studied</dt>
+                  <dd className="font-bold">{professional.education[0]?.degree.replace(" — ", ", ")}</dd>
+                </dl>
+              </div>
+            </PopIn>
             <a
               href={`${BACKEND_URL}/api/resume/download`}
-              target="_blank" rel="noopener noreferrer"
+              target="_blank"
+              rel="noopener noreferrer"
               data-testid="download-resume-btn"
-              className="glass-pill inline-flex items-center gap-3 mt-12 px-6 py-3 text-[#00E5FF] font-mono text-xs uppercase tracking-[0.25em] hover:bg-[#00E5FF]/10 transition-all rounded-sm"
-              style={{
-                borderColor: "rgba(0, 229, 255,0.3)",
-                boxShadow: "0 0 20px -4px rgba(0, 229, 255,0.15)",
-              }}
+              className="btn fill-lime justify-between text-lg !py-4"
             >
-              <Download size={14} strokeWidth={1.4} /> Download Resume (PDF)
+              Download résumé
+              <span className="flex items-center gap-2 text-sm">
+                PDF <Download size={18} strokeWidth={2.5} aria-hidden="true" />
+              </span>
             </a>
-          </motion.div>
+          </div>
+          <p className="col-span-12 lg:col-span-7 reading text-[var(--fg-soft)]">{professional.bio}</p>
+        </div>
+        <Marquee words={professional.heading.map((h) => h.replace(/\.$/, ""))} className="pb-6 mt-6" />
+      </section>
 
-          {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 3, duration: 1 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10"
-          >
-            <span className="font-mono text-[8px] uppercase tracking-[0.3em] text-white/50">Scroll</span>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <ChevronDown size={14} className="text-[#00E5FF]/70" />
-            </motion.div>
-          </motion.div>
-        </section>
-
-        <div className="section-divider" />
-
-        {/* ════════════════════════════════════════════
-            WING II: 3D FILM-REEL EXPERIENCE TIMELINE
-            ════════════════════════════════════════════ */}
-        <section className="py-16">
-          <SectionLabel num="01" icon={<Briefcase size={12} strokeWidth={1.4} />}>Experience</SectionLabel>
-
+      {/* Experience — cream */}
+      <section className="scene scene-cream" aria-labelledby="experience-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
+          <SceneHead id="experience-head">
+            Where I
+            <span className="block">work.</span>
+          </SceneHead>
           {professional.experience.map((e, i) => (
-            <motion.div
-              key={i}
-              variants={cinematicReveal}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-              custom={i}
-              className="prof-reel-card p-8 md:p-10 mb-8 perspective-container"
-              data-testid={`prof-experience-${i}`}
-            >
-              {/* Sprocket holes top */}
-              <div className="absolute top-0 left-0 right-0 h-4 flex gap-5 px-6 items-center pointer-events-none z-20">
-                {Array.from({ length: 20 }).map((_, k) => (
-                  <div key={k} className="w-2.5 h-1.5 rounded-[1px] bg-white/[0.03] border border-white/[0.04] flex-shrink-0" />
-                ))}
-              </div>
-
-              {/* Film metadata badge */}
-              <div className="flex items-center gap-3 mb-6 relative z-10">
-                <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#00E5FF]/70">0{i + 1}</span>
-                <div className="flex-1 h-px bg-white/5" />
-                <span className="font-mono text-[8px] text-white/50">▶ {e.period}</span>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 relative z-10">
-                <div className="lg:col-span-4">
-                  <p className="font-heading text-xl md:text-2xl font-semibold text-white tracking-tight">{e.company}</p>
-                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#00E5FF]/80 mt-2">{e.role}</p>
-                  <p className="font-mono text-xs text-white/50 mt-3">{e.period}</p>
-                  {e.sub && <p className="font-mono text-[10px] text-white/50 mt-1">{e.sub}</p>}
-                </div>
-                <ul className="lg:col-span-8 space-y-4">
-                  {e.bullets.map((b, j) => (
-                    <motion.li
-                      key={j}
-                      variants={fadeUp}
-                      initial="hidden"
-                      whileInView="show"
-                      viewport={{ once: true }}
-                      custom={j * 0.1}
-                      className="flex gap-4 font-mono text-xs md:text-sm leading-relaxed text-white/55"
-                    >
-                      <span className="mt-[6px] w-2 h-2 rounded-full border border-[#00E5FF]/30 bg-[#00E5FF]/10 flex items-center justify-center shrink-0">
-                        <span className="w-1 h-1 rounded-full bg-[#00E5FF]" />
-                      </span>
-                      {b}
-                    </motion.li>
+            <div key={i} className="mt-12 grid grid-cols-12 gap-6 md:gap-8" data-testid={`prof-experience-${i}`}>
+              <div className="col-span-12 lg:col-span-5">
+                <p className="lead text-2xl md:text-3xl mb-6">{e.company}</p>
+                <div role="list" className="flex flex-col gap-4">
+                  {roles.map((r, j) => (
+                    <PopIn key={r.role} delay={j * 0.08}>
+                      <div role="listitem" className={`card ${roleFills[j % roleFills.length]} p-4 md:p-5 flex items-start gap-3.5`}>
+                        <span className="badge mt-0.5">{roles.length - j}</span>
+                        <span>
+                          <span className="block lead text-lg">{r.role}</span>
+                          <span className="block text-sm font-semibold opacity-90 mt-0.5">{r.period}</span>
+                        </span>
+                      </div>
+                    </PopIn>
                   ))}
-                </ul>
+                </div>
+                {parseStints(e.sub) === null && <p className="mt-3 text-sm font-semibold">{e.sub}</p>}
               </div>
-
-              {/* Sprocket holes bottom */}
-              <div className="absolute bottom-0 left-0 right-0 h-4 flex gap-5 px-6 items-center pointer-events-none z-20">
-                {Array.from({ length: 20 }).map((_, k) => (
-                  <div key={k} className="w-2.5 h-1.5 rounded-[1px] bg-white/[0.03] border border-white/[0.04] flex-shrink-0" />
+              <ul className="col-span-12 lg:col-span-7 flex flex-col gap-3 lg:pt-14">
+                {e.bullets.map((b, j) => (
+                  <li key={j} className="flex items-start gap-3.5 reading">
+                    <span className="mt-2 w-3 h-3 rounded-full bg-orange shrink-0" aria-hidden="true" />
+                    {b}
+                  </li>
                 ))}
-              </div>
-
-              {/* Projector burn right edge */}
-              <div
-                className="absolute right-0 top-0 bottom-0 w-3 opacity-0 hover:opacity-30 transition-opacity duration-700 pointer-events-none z-0"
-                style={{
-                  background: "linear-gradient(270deg, rgba(0, 229, 255,0.3), transparent)",
-                  filter: "blur(2px)",
-                }}
-              />
-            </motion.div>
+              </ul>
+            </div>
           ))}
-        </section>
+        </div>
+      </section>
 
-        <div className="section-divider" />
-
-        {/* ════════════════════════════════════════════
-            WING III: INTERACTIVE PROJECT SHOWCASE
-            ════════════════════════════════════════════ */}
-        <section className="py-16">
-          <SectionLabel num="02" icon={<Code2 size={12} strokeWidth={1.4} />}>Projects</SectionLabel>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 perspective-container">
+      {/* Projects — ink */}
+      <section className="scene scene-ink" aria-labelledby="projects-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
+          <SceneHead id="projects-head">
+            Things I
+            <span className="block text-orange">built.</span>
+          </SceneHead>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-7">
             {professional.projects.map((p, i) => (
-              <ProjectCard key={i} p={p} i={i} />
-            ))}
-          </div>
-        </section>
-
-        <div className="section-divider" />
-
-        {/* ════════════════════════════════════════════
-            WING IV: EDUCATION — GLOWING VERTICAL TIMELINE
-            ════════════════════════════════════════════ */}
-        <section className="py-16">
-          <SectionLabel num="03" icon={<GraduationCap size={12} strokeWidth={1.4} />}>Education</SectionLabel>
-
-          <div className="relative pl-12 md:pl-14">
-            {/* Glowing spine */}
-            <div className="edu-timeline-spine" />
-
-            {professional.education.map((e, i) => (
-              <motion.div
-                key={i}
-                variants={cinematicReveal}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.2 }}
-                custom={i}
-                className="relative mb-10 group"
-                data-testid={`prof-education-${i}`}
-              >
-                {/* Timeline node */}
-                <div className="absolute -left-[42px] md:-left-[46px] top-6">
-                  <div className="edu-timeline-node group-hover:scale-110 transition-transform" />
-                </div>
-
-                {/* Horizontal connector */}
-                <div className="absolute -left-[20px] md:-left-[24px] top-[31px] w-[20px] md:w-[24px] h-[1px] bg-gradient-to-r from-[#00E5FF]/30 to-[#00E5FF]/10" />
-
-                {/* Card */}
-                <div className="prof-card p-6 md:p-8 group-hover:border-[#00E5FF]/30 transition-colors duration-500">
-                  <div className="grid grid-cols-12 gap-4 items-start">
-                    <div className="col-span-12 md:col-span-6">
-                      <p className="font-heading text-lg md:text-xl font-medium text-white tracking-tight group-hover:text-[#00E5FF] transition-colors duration-500">
-                        {e.degree}
-                      </p>
-                      <p className="font-mono text-xs text-white/60 mt-1">{e.org}</p>
-                    </div>
-                    <div className="col-span-6 md:col-span-3">
-                      <p className="font-mono text-[10px] text-white/50 uppercase tracking-wider">{e.period}</p>
-                    </div>
-                    <div className="col-span-6 md:col-span-3 text-right md:text-left">
-                      <span className="inline-block px-3 py-1 font-mono text-xs text-[#00E5FF] font-semibold rounded-md border border-[#00E5FF]/20 bg-[#00E5FF]/05 group-hover:bg-[#00E5FF]/10 group-hover:border-[#00E5FF]/40 transition-all duration-500">
-                        {e.meta}
+              <PopIn key={p.name} delay={i * 0.08} rotate={i % 2 ? 1 : -1}>
+                <article className={`card ${projectFills[i % projectFills.length]} p-6 md:p-7 h-full`} data-testid={`prof-project-${i}`}>
+                  <h3 className="mega text-[clamp(2rem,3.4vw,2.75rem)]">{p.name}</h3>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {p.stack.split(" · ").map((t) => (
+                      <span key={t} className="pill fill-ink text-xs !py-1.5">
+                        {t}
                       </span>
-                    </div>
+                    ))}
                   </div>
-                </div>
-              </motion.div>
+                  <p className="reading mt-6">{p.desc}</p>
+                </article>
+              </PopIn>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <div className="section-divider" />
+      {/* Education — cream */}
+      <section className="scene scene-cream" aria-labelledby="education-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
+          <SceneHead id="education-head">
+            What I
+            <span className="block">studied.</span>
+          </SceneHead>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {professional.education.map((e, i) => (
+              <PopIn key={e.degree} delay={i * 0.08}>
+                <article className={`card ${scoreFills[i % scoreFills.length]} p-6 h-full flex flex-col justify-between gap-8`} data-testid={`prof-education-${i}`}>
+                  <Scramble text={e.meta} className="mega text-[clamp(2.5rem,4.5vw,3.5rem)] block" />
+                  <span>
+                    <span className="block lead text-lg">{e.degree}</span>
+                    <span className="block font-semibold mt-1 opacity-90">
+                      {e.org} · {e.period}
+                    </span>
+                  </span>
+                </article>
+              </PopIn>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {/* ════════════════════════════════════════════
-            WING V: ORBITAL SKILL CONSTELLATION
-            ════════════════════════════════════════════ */}
-        <section className="py-16">
-          <SectionLabel num="04" icon={<Cpu size={12} strokeWidth={1.4} />}>Skills</SectionLabel>
-          <div className="flex flex-wrap gap-3 perspective-container">
+      {/* Skills — lime */}
+      <section className="scene scene-lime" aria-labelledby="skills-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
+          <SceneHead id="skills-head">
+            What I
+            <span className="block">use.</span>
+          </SceneHead>
+          <ul className="mt-12 flex flex-wrap gap-3">
             {professional.skills.map((s, i) => (
-              <motion.span
-                key={s}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.4 }}
-                custom={i * 0.08}
-                className="prof-chip px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] cursor-default"
-                data-testid={`prof-skill-${i}`}
-              >
-                {s}
-              </motion.span>
+              <li key={s} data-testid={`prof-skill-${i}`}>
+                <PopIn delay={i * 0.03} rotate={((i * 37) % 5) - 2}>
+                  <span className="pill fill-ink text-base md:text-lg !px-5 !py-3">{s}</span>
+                </PopIn>
+              </li>
             ))}
-          </div>
-        </section>
+          </ul>
+        </div>
+      </section>
 
-        <div className="section-divider" />
-
-        {/* ════════════════════════════════════════════
-            WING VI: CERTIFICATION AWARD SHELF
-            ════════════════════════════════════════════ */}
-        <section className="py-16">
-          <SectionLabel num="05" icon={<Award size={12} strokeWidth={1.4} />}>Certifications</SectionLabel>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-1">
-            {professional.certs.map((c, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.2 }}
-                custom={i}
-                className="cert-shelf-item flex justify-between items-center border-b border-white/5 py-4 group"
-                data-testid={`prof-cert-${i}`}
-              >
-                <div className="flex items-center gap-3 relative z-10">
-                  <div className="w-1 h-1 rounded-full bg-[#00E5FF]/40 group-hover:bg-[#00E5FF] transition-colors duration-300" />
-                  <p className="font-heading text-[13px] text-white/70 group-hover:text-white transition-colors duration-300">{c.name}</p>
-                </div>
-                <p className="font-mono text-[10px] text-[#00E5FF]/60 uppercase tracking-[0.15em] font-semibold relative z-10 group-hover:text-[#00E5FF] transition-colors duration-300">
-                  {c.org}
-                </p>
-              </motion.div>
-            ))}
+      {/* Certifications + achievements — ink */}
+      <section className="scene scene-ink" aria-labelledby="certs-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] pt-20 md:pt-28 pb-36">
+          <SceneHead id="certs-head">
+            Proof,
+            <span className="block text-lime">on paper.</span>
+          </SceneHead>
+          <div className="mt-12 grid grid-cols-12 gap-x-8 gap-y-12">
+            <div className="col-span-12 lg:col-span-7">
+              <h3 className="lead text-xl mb-5">Certifications</h3>
+              <ul className="grid sm:grid-cols-2 gap-4">
+                {certifications.map((c, i) => (
+                  <li key={c.name} className="card fill-cream p-4" data-testid={`prof-cert-${i}`}>
+                    <span className="block font-bold">{c.name}</span>
+                    <span className="block text-sm font-semibold text-ink-soft mt-0.5">{c.org}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="col-span-12 lg:col-span-5">
+              <h3 className="lead text-xl mb-5">Achievements</h3>
+              <ul className="flex flex-col gap-4">
+                {achievements.map((c, i) => (
+                  <li key={c.name} className="card fill-orange p-4" data-testid={`prof-cert-${certifications.length + i}`}>
+                    <span className="block font-bold">{c.name}</span>
+                    <span className="block text-sm font-semibold mt-0.5">{c.org}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }

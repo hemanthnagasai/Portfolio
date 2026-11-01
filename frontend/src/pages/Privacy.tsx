@@ -1,21 +1,12 @@
 import { useContext, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import usePageMeta from "@/hooks/usePageMeta";
+import Leaf from "@/components/kit/Leaf";
 
 // Written to describe what this site actually does, not what a generic
 // template says. The analytics section renders only when analytics are
 // genuinely switched on, so the page can't drift out of truth.
 const analyticsEnabled = !!import.meta.env.REACT_APP_GOATCOUNTER;
-
-const reveal = {
-  initial: { opacity: 0, y: 12 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.5, ease: "easeOut" as const },
-};
 
 export default function Privacy() {
   const { setDimension } = useContext(DimensionContext);
@@ -26,42 +17,24 @@ export default function Privacy() {
 
   useEffect(() => {
     setDimension("gateway");
-    document.documentElement.style.setProperty("--grain-opacity", "0.04");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
   return (
-    <main
-      className="min-h-screen relative"
-      style={{ background: "var(--bg-void)", color: "#f0f0f5" }}
-      data-testid="privacy-page"
+    <Leaf
+      title="Privacy"
+      heading={["Privacy."]}
+      intro="This is a personal portfolio, not a business. I'm not selling anything, and I'm not building a profile of you. Here's exactly what happens when you visit."
+      note="Updated July 2026"
+      testId="privacy-page"
+      backTestId="privacy-back-link"
+      footer={[
+        { to: "/how-i-built-this", label: "How this site was built" },
+        { to: "/", label: "Back to the gateway" },
+      ]}
     >
-      <div className="max-w-2xl mx-auto px-6 md:px-10 py-16 relative">
-        <div className="flex justify-between items-center mb-14 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 hover:text-white/80 transition-colors"
-            data-testid="privacy-back-link"
-          >
-            <ArrowLeft size={11} /> Gateway
-          </Link>
-          <span>Updated July 2026</span>
-        </div>
-
-        <motion.header
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <h1 className="font-playfair text-4xl md:text-5xl text-[#f5f2ff]">Privacy</h1>
-          <p className="font-spectral italic text-lg text-white/60 mt-4 leading-relaxed max-w-[58ch]">
-            This is a personal portfolio, not a business. I'm not selling anything, and I'm not
-            building a profile of you. Here's exactly what happens when you visit.
-          </p>
-        </motion.header>
-
-        <div className="mt-14 space-y-12 font-spectral text-[15.5px] leading-[1.85] text-white/65 [&_h2]:font-heading [&_h2]:text-lg [&_h2]:text-white/90 [&_h2]:tracking-tight [&_h2]:mb-3 [&_strong]:text-white/85 [&_strong]:font-semibold [&_code]:font-mono [&_code]:text-[13px] [&_code]:text-[#c8b6ff]/90">
-          <motion.section {...reveal}>
+      <div className="leaf-prose">
+          <section>
             <h2>The short version</h2>
             <p>
               <strong>No cookies. No ad tech. No accounts. No selling anything to anyone.</strong>{" "}
@@ -69,9 +42,9 @@ export default function Privacy() {
               a handful of services see technical data in the ordinary course of serving the page.
               That's it.
             </p>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>What's stored on your device</h2>
             <p>
               Not cookies — just browser storage, which never gets sent to my server. It's purely
@@ -93,9 +66,9 @@ export default function Privacy() {
             <p className="mt-3">
               Clearing your browser data removes all of it, and nothing breaks if you do.
             </p>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>What the server sees</h2>
             <p>
               Standard web server logs — IP address, browser, which page you asked for, and when.
@@ -103,9 +76,9 @@ export default function Privacy() {
               anything. It's also what lets me rate-limit abuse. These logs live with my host and
               rotate away on their own.
             </p>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>Error monitoring</h2>
             <p>
               If something breaks while you're here, an error report goes to <strong>Sentry</strong>{" "}
@@ -113,10 +86,10 @@ export default function Privacy() {
               browser and operating system, and your IP address. I use it to find bugs — nothing
               else — and I don't attempt to identify anyone from it.
             </p>
-          </motion.section>
+          </section>
 
           {analyticsEnabled && (
-            <motion.section {...reveal}>
+            <section>
               <h2>Analytics</h2>
               <p>
                 Visit counts come from <strong>GoatCounter</strong>, which is deliberately
@@ -125,10 +98,10 @@ export default function Privacy() {
                 from — never who you are. That's why there's no cookie banner on this site: there's
                 nothing to consent to.
               </p>
-            </motion.section>
+            </section>
           )}
 
-          <motion.section {...reveal}>
+          <section>
             <h2>The chatbot</h2>
             <p>
               The "Ask Hemanth" chat sends your message, and the recent messages in that
@@ -141,9 +114,9 @@ export default function Privacy() {
               Please don't type anything sensitive into it. It's a portfolio chatbot, not a secure
               channel.
             </p>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>The guestbook</h2>
             <p>
               If you leave a word on the Emotional page, that single word is stored and shown
@@ -152,9 +125,9 @@ export default function Privacy() {
               genuinely holds only the word and a timestamp. The word is checked by Gemini for
               abuse before it's saved. If you'd like a word removed, email me and it's gone.
             </p>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>Who else is involved</h2>
             <ul className="mt-1 space-y-2 list-none">
               <li>
@@ -177,9 +150,9 @@ export default function Privacy() {
                 </li>
               )}
             </ul>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>Your say</h2>
             <p>
               Since I hold almost nothing about you, there's usually nothing to hand over or
@@ -187,32 +160,21 @@ export default function Privacy() {
               report, or just have a question — email me at{" "}
               <a
                 href="mailto:virathemu9@gmail.com"
-                className="text-[#c8b6ff] hover:text-white transition-colors underline underline-offset-4 decoration-white/20"
               >
                 virathemu9@gmail.com
               </a>{" "}
               and I'll sort it out. No process, no form. Just me.
             </p>
-          </motion.section>
+          </section>
 
-          <motion.section {...reveal}>
+          <section>
             <h2>Changes</h2>
             <p>
               If what the site collects changes, this page changes with it — the date at the top
               tells you when it was last true.
             </p>
-          </motion.section>
-        </div>
-
-        <footer className="mt-20 pt-8 border-t border-white/5 font-mono text-[10px] uppercase tracking-[0.25em] text-white/50 flex gap-6 flex-wrap">
-          <Link to="/how-i-built-this" className="hover:text-white/80 transition-colors">
-            How this site was built →
-          </Link>
-          <Link to="/" className="hover:text-white/80 transition-colors">
-            Back to the gateway →
-          </Link>
-        </footer>
+          </section>
       </div>
-    </main>
+    </Leaf>
   );
 }

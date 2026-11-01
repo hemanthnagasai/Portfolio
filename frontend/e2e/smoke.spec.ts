@@ -1,11 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-// The cinematic intro shows once per session and covers the page; skip it so
-// it never intercepts clicks or hides content under test.
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => sessionStorage.setItem("intro_seen", "1"));
-});
-
 test("gateway landing renders with its per-route title", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/A Portfolio in Layers/);

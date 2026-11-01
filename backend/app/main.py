@@ -104,7 +104,7 @@ async def security_and_cache_headers(request: Request, call_next):
         # Vite emits content-hashed filenames, so these can never go stale.
         headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
     elif path.endswith(CACHEABLE_STATIC_EXTENSIONS):
-        # Un-hashed public/ files (avatar, robots.txt, ...) - short-lived cache.
+        # Un-hashed public/ files (portrait, robots.txt, ...) - short-lived cache.
         headers.setdefault("Cache-Control", "public, max-age=86400")
     else:
         # The SPA HTML shell: always revalidate so deploys are picked up.

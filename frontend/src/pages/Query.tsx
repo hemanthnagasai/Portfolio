@@ -1,11 +1,10 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Play, Table2 } from "lucide-react";
+import { Play } from "lucide-react";
 import type { Database, QueryExecResult } from "sql.js";
 import { DimensionContext } from "@/context/DimensionContext";
 import usePageMeta from "@/hooks/usePageMeta";
 import portfolioData from "@/data/portfolio.json";
+import Leaf from "@/components/kit/Leaf";
 // Vite serves the wasm as a hashed asset from our own origin (CSP-friendly;
 // script-src carries 'wasm-unsafe-eval' for the compile step).
 import sqlWasmUrl from "sql.js/dist/sql-wasm.wasm?url";
@@ -114,7 +113,6 @@ export default function Query() {
 
   useEffect(() => {
     setDimension("professional");
-    document.documentElement.style.setProperty("--grain-opacity", "0.04");
     window.scrollTo(0, 0);
   }, [setDimension]);
 
@@ -163,175 +161,149 @@ export default function Query() {
   };
 
   return (
-    <main
-      className="min-h-screen relative"
-      style={{ background: "var(--bg-void)", color: "#f0f0f5" }}
-      data-testid="query-page"
+    <Leaf
+      title="Query my life"
+      heading={["Query", "my life."]}
+      intro={
+        <>
+          I'm a consultant — a page of adjectives felt wrong. So here's the data instead: a real
+          SQLite database of my work, education, skills, and life, running entirely in your
+          browser. It's your own private copy; even <code className="font-mono text-[0.85em] bg-ink text-lime rounded-md px-1.5">DROP TABLE</code> only
+          breaks it for you.
+        </>
+      }
+      note="SQLite, in your browser. Nothing leaves the page."
+      testId="query-page"
+      backTestId="query-back-link"
+      wide
+      footer={[
+        { to: "/how-i-built-this", label: "How this site was built" },
+        { to: "/professional", label: "The human-readable version" },
+      ]}
     >
-      <div className="max-w-5xl mx-auto px-6 md:px-10 py-16 relative">
-        <div className="flex justify-between items-center mb-12 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 hover:text-white/60 transition-colors"
-            data-testid="query-back-link"
-          >
-            <ArrowLeft size={11} /> Gateway
-          </Link>
-          <span className="text-[#00E5FF]/70">sqlite · in your browser · nothing leaves the page</span>
-        </div>
+      <div className="grid md:grid-cols-[1fr_15rem] gap-x-10 gap-y-10 items-start">
+        {/* Console */}
+        <div className="min-w-0">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {EXAMPLES.map((ex, i) => (
+              <button
+                key={ex.label}
+                onClick={() => runExample(ex.sql)}
+                disabled={!ready}
+                className="pill fill-cream border-[3px] border-ink text-sm hover:bg-lime transition-colors disabled:opacity-40"
+                data-testid={`query-example-${i}`}
+              >
+                {ex.label}
+              </button>
+            ))}
+          </div>
 
-        <motion.header
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <h1 className="font-heading text-4xl md:text-5xl tracking-tight text-[#f5f2ff]">
-            Query my life<span className="text-[#00E5FF]">_</span>
-          </h1>
-          <p className="font-outfit text-white/60 mt-4 max-w-[62ch] leading-relaxed">
-            I'm a consultant — a page of adjectives felt wrong. So here's the data instead: a
-            real SQLite database of my work, education, skills, and life, running entirely in your
-            browser. It's your own private copy; even <code className="font-mono text-[13px] text-[#00E5FF]/80">DROP TABLE</code> only
-            breaks it for you.
-          </p>
-        </motion.header>
-
-        <div className="mt-10 grid md:grid-cols-[1fr_230px] gap-6 items-start">
-          {/* Console */}
-          <div>
-            {/* Example chips */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {EXAMPLES.map((ex, i) => (
-                <button
-                  key={ex.label}
-                  onClick={() => runExample(ex.sql)}
-                  disabled={!ready}
-                  className="font-mono text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-white/50 hover:text-[#00E5FF] hover:border-[#00E5FF]/40 transition-colors disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]/40"
-                  data-testid={`query-example-${i}`}
-                >
-                  {ex.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="rounded-lg border border-white/10 bg-[#07070e] overflow-hidden focus-within:border-[#00E5FF]/40 transition-colors">
-              <textarea
-                value={sqlText}
-                onChange={(e) => setSqlText(e.target.value)}
-                onKeyDown={(e) => {
-                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-                    e.preventDefault();
-                    runQuery();
-                  }
-                }}
-                spellCheck={false}
-                rows={5}
-                aria-label="SQL query"
-                className="w-full bg-transparent font-mono text-[13px] leading-relaxed text-[#d6f6ff] p-4 resize-y focus:outline-none placeholder:text-white/50"
-                placeholder="SELECT * FROM skills;"
-                data-testid="query-input"
-              />
-              <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
-                <span className="font-mono text-[10px] text-white/50 uppercase tracking-[0.2em]">
-                  {ready ? "Ctrl+Enter to run" : loadError ? "unavailable" : "loading database…"}
-                </span>
-                <button
-                  onClick={() => runQuery()}
-                  disabled={!ready || !sqlText.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md font-mono text-xs uppercase tracking-[0.15em] bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/30 hover:bg-[#00E5FF]/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]/50"
-                  data-testid="query-run"
-                >
-                  <Play size={12} /> Run
-                </button>
-              </div>
-            </div>
-
-            {/* Output */}
-            <div className="mt-5" aria-live="polite">
-              {loadError && (
-                <p className="font-mono text-sm text-red-400/80 border border-red-400/20 rounded-lg p-4" data-testid="query-load-error">
-                  {loadError}
-                </p>
-              )}
-              {queryError && (
-                <p className="font-mono text-[13px] text-red-400/90 border border-red-400/20 bg-red-400/5 rounded-lg p-4" data-testid="query-error">
-                  {queryError}
-                </p>
-              )}
-              {results && results.length === 0 && !queryError && (
-                <p className="font-mono text-[12px] text-white/60 p-1" data-testid="query-empty">
-                  ok — no rows returned{elapsed !== null ? ` · ${elapsed.toFixed(1)}ms` : ""}
-                </p>
-              )}
-              {results?.map((res, ri) => (
-                <div key={ri} className="mb-6" data-testid="query-results">
-                  <div className="overflow-x-auto rounded-lg border border-white/10">
-                    <table className="w-full font-mono text-[12.5px]">
-                      <thead>
-                        <tr className="bg-[#00E5FF]/[0.06] text-[#00E5FF]/80">
-                          {res.columns.map((c) => (
-                            <th key={c} className="text-left px-3.5 py-2.5 font-medium whitespace-nowrap border-b border-white/10">
-                              {c}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {res.values.map((row, i) => (
-                          <tr key={i} className="odd:bg-white/[0.015] align-top">
-                            {row.map((cell, j) => (
-                              <td key={j} className="px-3.5 py-2.5 text-white/70 border-b border-white/5 min-w-[80px] max-w-[420px]">
-                                {cell === null ? <span className="text-white/50">NULL</span> : String(cell)}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <p className="font-mono text-[10px] text-white/50 mt-2 uppercase tracking-[0.15em]">
-                    {res.values.length} row{res.values.length === 1 ? "" : "s"}
-                    {elapsed !== null && ri === results.length - 1 ? ` · ${elapsed.toFixed(1)}ms` : ""}
-                  </p>
-                </div>
-              ))}
+          <div className="card fill-ink overflow-hidden focus-within:outline focus-within:outline-[3px] focus-within:outline-ink focus-within:outline-offset-4" style={{ ["--card-shadow" as string]: "var(--orange)" } as React.CSSProperties}>
+            <textarea
+              value={sqlText}
+              onChange={(e) => setSqlText(e.target.value)}
+              onKeyDown={(e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                  e.preventDefault();
+                  runQuery();
+                }
+              }}
+              spellCheck={false}
+              rows={5}
+              aria-label="SQL query"
+              className="block w-full bg-transparent font-mono text-[0.9375rem] leading-relaxed text-lime p-5 resize-y focus:outline-none placeholder:text-cream-soft"
+              placeholder="SELECT * FROM skills;"
+              data-testid="query-input"
+            />
+            <div className="flex items-center justify-between px-5 py-3 border-t border-[#262626]">
+              <span className="text-sm font-semibold text-cream-soft">
+                {ready ? "Ctrl+Enter to run" : loadError ? "Unavailable" : "Loading the database…"}
+              </span>
+              <button
+                onClick={() => runQuery()}
+                disabled={!ready || !sqlText.trim()}
+                className="pill fill-lime text-sm hover:bg-cream transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                data-testid="query-run"
+              >
+                <Play size={13} strokeWidth={2} aria-hidden="true" /> Run
+              </button>
             </div>
           </div>
 
-          {/* Schema panel */}
-          <aside className="rounded-lg border border-white/10 bg-[#07070e] p-4 md:sticky md:top-6" data-testid="query-schema">
-            <h2 className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50 mb-3 flex items-center gap-2">
-              <Table2 size={11} /> Schema
-            </h2>
-            <ul className="space-y-3">
-              {SCHEMA.map((t) => (
-                <li key={t.table}>
-                  <button
-                    onClick={() => runExample(`SELECT * FROM ${t.table};`)}
-                    disabled={!ready}
-                    className="font-mono text-[12px] text-[#00E5FF]/70 hover:text-[#00E5FF] transition-colors disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]/40 rounded"
-                    title={`SELECT * FROM ${t.table};`}
-                  >
-                    {t.table}
-                  </button>
-                  <p className="font-mono text-[10px] text-white/50 leading-relaxed mt-0.5">
-                    {t.columns.join(" · ")}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </aside>
+          {/* Output */}
+          <div className="mt-6" aria-live="polite">
+            {loadError && (
+              <p className="pill fill-orange text-sm" data-testid="query-load-error">
+                {loadError}
+              </p>
+            )}
+            {queryError && (
+              <p className="card fill-orange font-mono text-[0.8125rem] p-4" data-testid="query-error">
+                {queryError}
+              </p>
+            )}
+            {results && results.length === 0 && !queryError && (
+              <p className="text-sm font-semibold text-ink-soft" data-testid="query-empty">
+                Ran fine, no rows returned{elapsed !== null ? ` · ${elapsed.toFixed(1)} ms` : ""}
+              </p>
+            )}
+            {results?.map((res, ri) => (
+              <div key={ri} className="mb-8" data-testid="query-results">
+                <div className="overflow-x-auto">
+                  <table className="data-table font-mono text-[0.8125rem]">
+                    <thead>
+                      <tr>
+                        {res.columns.map((c) => (
+                          <th key={c} className="font-sans whitespace-nowrap">
+                            {c}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {res.values.map((row, i) => (
+                        <tr key={i}>
+                          {row.map((cell, j) => (
+                            <td key={j} className="min-w-[5rem] max-w-[26rem]">
+                              {cell === null ? <span className="text-ink-soft">NULL</span> : String(cell)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-sm font-semibold text-ink-soft mt-2">
+                  {res.values.length} row{res.values.length === 1 ? "" : "s"}
+                  {elapsed !== null && ri === results.length - 1 ? ` · ${elapsed.toFixed(1)} ms` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <footer className="mt-16 pt-8 border-t border-white/5 font-mono text-[10px] uppercase tracking-[0.25em] text-white/50 flex gap-6 flex-wrap">
-          <Link to="/how-i-built-this" className="hover:text-white/80 transition-colors">
-            How this site was built →
-          </Link>
-          <Link to="/professional" className="hover:text-white/80 transition-colors">
-            The human-readable version →
-          </Link>
-        </footer>
+        {/* Schema */}
+        <aside className="md:sticky md:top-20" data-testid="query-schema">
+          <h2 className="lead text-xl mb-2">Schema</h2>
+          <ul>
+            {SCHEMA.map((t) => (
+              <li key={t.table} className="py-3 border-b-2 border-ink/15">
+                <button
+                  onClick={() => runExample(`SELECT * FROM ${t.table};`)}
+                  disabled={!ready}
+                  className="font-mono text-[0.875rem] font-medium text-ink underline decoration-orange decoration-2 hover:decoration-ink disabled:opacity-40"
+                  title={`SELECT * FROM ${t.table};`}
+                >
+                  {t.table}
+                </button>
+                <p className="font-mono text-[0.75rem] text-ink-soft leading-relaxed mt-1">
+                  {t.columns.join(", ")}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </aside>
       </div>
-    </main>
+    </Leaf>
   );
 }

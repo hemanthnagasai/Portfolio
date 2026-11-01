@@ -3,12 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 import { useState, Suspense, lazy } from "react";
 import Gateway from "@/pages/Gateway";
-import CustomCursor from "@/components/CustomCursor";
-import NoiseOverlay from "@/components/NoiseOverlay";
 import WorldSwitcher from "@/components/WorldSwitcher";
-import CinematicIntro from "@/components/CinematicIntro";
 import TransitionOverlay from "@/components/TransitionOverlay";
-import SmoothScroll from "@/components/SmoothScroll";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DimensionContext } from "@/context/DimensionContext";
 import { TransitionContext, TransitionState } from "@/context/TransitionContext";
@@ -28,10 +24,8 @@ export default function App() {
   const [dimension, setDimension] = useState<string>("gateway");
   const [transitionState, setTransitionState] = useState<TransitionState>({ phase: "idle" });
 
-  const trigger = ({ rect, color, to }: { rect: DOMRect; color: string; to: string }) => {
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    setTransitionState({ phase: "expanding", color, cx, cy, to });
+  const trigger = ({ color, to }: { color: string; to: string }) => {
+    setTransitionState({ phase: "expanding", color, to });
   };
 
   return (
@@ -44,12 +38,8 @@ export default function App() {
           <BrowserRouter>
             <ErrorBoundary>
               <a href="#main-content" className="skip-link">Skip to content</a>
-              <SmoothScroll />
-              <CinematicIntro />
-              <CustomCursor />
-              <NoiseOverlay />
               <div id="main-content">
-              <Suspense fallback={<div style={{ position: "fixed", inset: 0, background: "#000" }} />}>
+              <Suspense fallback={<div className="fixed inset-0 bg-cream" />}>
                 <Routes>
                   <Route path="/" element={<Gateway />} />
                   <Route path="/professional" element={<Professional />} />

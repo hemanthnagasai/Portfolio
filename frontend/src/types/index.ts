@@ -4,6 +4,14 @@ export interface Profile {
   lastName: string;
   tagline: string;
   origin: string;
+  links: {
+    linkedin: string;
+    github: string;
+    /** The AI tech page. */
+    instagram: string;
+    /** The singing page. */
+    music: string;
+  };
 }
 
 export interface ExperienceEntry {
