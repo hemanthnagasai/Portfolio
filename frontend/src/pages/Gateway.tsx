@@ -9,6 +9,7 @@ import useUnlock, { ensureFirstVisit, getProgress, getVisited, OVER } from "@/ho
 import usePageMeta from "@/hooks/usePageMeta";
 import { readMinutes } from "@/lib/content";
 import TurnLink from "@/components/kit/TurnLink";
+import ReelPlayer from "@/components/kit/ReelPlayer";
 import { CycleWord, Dots, Marquee, PopIn, Scramble, StrikeSwap } from "@/components/kit/Kinetic";
 
 interface World {
@@ -297,59 +298,70 @@ export default function Gateway() {
 
       {/* Scene 4 — ink: the end card, the way every reel signs off */}
       <section className="scene scene-ink" aria-labelledby="end-head">
-        <div className="max-w-page mx-auto px-[var(--page-x)] pt-20 md:pt-28">
-          <h2 id="end-head" className="mega text-[clamp(3rem,9vw,7.5rem)]">
-            <StrikeSwap
-              struck="Developer"
-              landed="Just a consultant"
-              label="Not a developer. Just a consultant."
-              className="[&>span:last-child]:text-lime"
-            />
-          </h2>
-          <p className="lead text-[clamp(1.25rem,2.4vw,1.75rem)] mt-8 max-w-[34rem]">
-            Built with Claude, and{" "}
-            <Link to="/how-i-built-this" className="underline decoration-orange decoration-[3px] underline-offset-4 hover:text-lime">
-              the honest story of how
-            </Link>{" "}
-            is one page away.
-          </p>
-          <p className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="lead text-orange text-[clamp(1.5rem,3vw,2.25rem)]">Follow for more</span>
-            <a
-              href={profile.links.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="lead text-[clamp(1.125rem,2vw,1.375rem)] text-cream underline decoration-lime decoration-[3px] underline-offset-4 hover:text-lime"
-              data-testid="gateway-instagram-link"
-            >
-              @hemanth_chakka
-            </a>
-            <span className="lead text-[var(--fg-soft)] text-[clamp(1rem,1.8vw,1.25rem)]">
-              for AI. Songs live on{" "}
+        <div className="max-w-page mx-auto px-[var(--page-x)] pt-20 md:pt-28 grid grid-cols-12 gap-x-6 gap-y-14 items-start">
+          <div className="col-span-12 lg:col-span-8">
+            <h2 id="end-head" className="mega text-[clamp(3rem,9vw,7.5rem)]">
+              <StrikeSwap
+                struck="Developer"
+                landed="Just a consultant"
+                label="Not a developer. Just a consultant."
+                className="[&>span:last-child]:text-lime"
+              />
+            </h2>
+            <p className="lead text-[clamp(1.25rem,2.4vw,1.75rem)] mt-8 max-w-[34rem]">
+              Built with Claude, and{" "}
+              <Link to="/how-i-built-this" className="underline decoration-orange decoration-[3px] underline-offset-4 hover:text-lime">
+                the honest story of how
+              </Link>{" "}
+              is one page away.
+            </p>
+            <p className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="lead text-orange text-[clamp(1.5rem,3vw,2.25rem)]">Follow for more</span>
               <a
-                href={profile.links.music}
+                href={profile.links.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cream underline decoration-orange decoration-[3px] underline-offset-4 hover:text-lime"
-                data-testid="gateway-music-link"
+                className="lead text-[clamp(1.125rem,2vw,1.375rem)] text-cream underline decoration-lime decoration-[3px] underline-offset-4 hover:text-lime"
+                data-testid="gateway-instagram-link"
               >
-                @hemanth_.sings_
+                @hemanth_chakka
               </a>
-              .
-            </span>
-          </p>
-          <nav aria-label="More pages" className="mt-12 flex flex-wrap gap-3.5">
-            {[
-              { to: "/now", label: "Now", id: "gateway-now-link" },
-              { to: "/how-i-built-this", label: "How it's built", id: "gateway-how-link" },
-              { to: "/query", label: "Query my data", id: "gateway-query-link" },
-              { to: "/privacy", label: "Privacy", id: "gateway-privacy-link" },
-            ].map((l) => (
-              <Link key={l.to} to={l.to} className="btn fill-cream" data-testid={l.id}>
-                {l.label}
-              </Link>
-            ))}
-          </nav>
+              <span className="lead text-[var(--fg-soft)] text-[clamp(1rem,1.8vw,1.25rem)]">
+                for AI. Songs live on{" "}
+                <a
+                  href={profile.links.music}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cream underline decoration-orange decoration-[3px] underline-offset-4 hover:text-lime"
+                  data-testid="gateway-music-link"
+                >
+                  @hemanth_.sings_
+                </a>
+                .
+              </span>
+            </p>
+            <nav aria-label="More pages" className="mt-12 flex flex-wrap gap-3.5">
+              {[
+                { to: "/now", label: "Now", id: "gateway-now-link" },
+                { to: "/how-i-built-this", label: "How it's built", id: "gateway-how-link" },
+                { to: "/query", label: "Query my data", id: "gateway-query-link" },
+                { to: "/privacy", label: "Privacy", id: "gateway-privacy-link" },
+              ].map((l) => (
+                <Link key={l.to} to={l.to} className="btn fill-cream" data-testid={l.id}>
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <div className="col-span-12 sm:col-span-6 lg:col-span-4 w-full max-w-[17rem] lg:justify-self-end lg:mt-4">
+            <ReelPlayer
+              ambient
+              src="/media/ai-intro-reel.mp4"
+              poster="/media/ai-intro-reel-poster.webp"
+              label="Hemanth's AI page intro reel"
+              testId="ai-intro-reel"
+            />
+          </div>
         </div>
         <Marquee words={["Just a consultant", "Built with Claude"]} stroke="var(--lime)" className="mt-16 md:mt-24 pb-28" />
       </section>

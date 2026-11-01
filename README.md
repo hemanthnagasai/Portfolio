@@ -27,7 +27,7 @@ The site moves like Hemanth's own Instagram reels: full-bleed colour scenes cut 
 | :--- | :--- | :--- |
 | **Gateway** | Cream hello, cobalt cards, an end card | Each world is a card; six dots fill in as you actually read each page, and a check appears once you've opened it. A locked fourth card reads ప్రవేశం లేదు and scans into NO ENTRY until it opens. Ends on the reels' sign-off. |
 | **Professional** | Cobalt opening, then scenes | "DATA. CLARITY. INITIATIVE." slams in; numbered role cards, project cards, education scores that scramble into place, skills, certifications, résumé download. |
-| **Personal** | Orange opening, then scenes | Story, hobby cards (with links to the music and AI pages), values shown as ~~struck word~~ then the word that beats it. |
+| **Personal** | Orange opening, then scenes | Story, hobby cards, a gallery of his own pencil sketches (tap to open full size), his singing reel (plays with sound on tap), and values shown as ~~struck word~~ then the word that beats it. |
 | **Emotional** | Ink, and still | The letter, with only its title in motion, and a moderated guestbook ("Leave a Trace") where every word is a pill. |
 | **Layer Zero** | Lime | Opens once all three worlds have been visited, or after 90 seconds. |
 

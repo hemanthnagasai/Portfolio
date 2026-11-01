@@ -1,11 +1,13 @@
 import { useContext, useEffect } from "react";
-import { Mic, PencilLine, BrainCircuit, ArrowUpRight } from "lucide-react";
+import { Mic, PencilLine, BrainCircuit, ArrowUpRight, ArrowDown } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { personal, profile } from "@/data/portfolio";
 import { markVisited, ensureFirstVisit, useReadingProgress } from "@/hooks/useUnlock";
 import usePageMeta from "@/hooks/usePageMeta";
 import RunningHead from "@/components/kit/RunningHead";
 import { Marquee, PopIn, Slam, StrikeSwap } from "@/components/kit/Kinetic";
+import ReelPlayer from "@/components/kit/ReelPlayer";
+import SketchGallery, { Sketch } from "@/components/kit/SketchGallery";
 
 // A cricket ball: lucide has no icon for it, so it's drawn here in the
 // same stroke as the others.
@@ -25,11 +27,38 @@ const hobbyLook = [
   { fill: "fill-ink", icon: <BrainCircuit size={28} strokeWidth={2} aria-hidden="true" />, note: "for wonder." },
 ];
 
-// Hobbies that have a public page link out to it.
-const hobbyLinks: Record<string, { href: string; label: string }> = {
-  Singing: { href: profile.links.music, label: "Listen on Instagram" },
-  "Exploring AI": { href: profile.links.instagram, label: "See it on Instagram" },
+// Hobbies with something to show: the real thing further down this page,
+// or his public page for it.
+const hobbyLinks: Record<string, { href: string; label: string; external?: boolean }> = {
+  Singing: { href: "#singing", label: "Hear me sing" },
+  "Pencil Art": { href: "#sketches", label: "See the sketches" },
+  "Exploring AI": { href: profile.links.instagram, label: "See it on Instagram", external: true },
 };
+
+const sketches: Sketch[] = [
+  {
+    src: "/art/sketch-shiva.webp",
+    title: "Shiva",
+    alt: "Pencil sketch of Lord Shiva's face: the three ash lines and third eye on the forehead, heavy brows, wide eyes, full lips.",
+    width: 1080,
+    height: 1092,
+  },
+  {
+    src: "/art/sketch-batman.webp",
+    title: "Batman",
+    date: "18.04.22",
+    alt: "Pencil sketch of Batman from the chest up, cape torn at the shoulders, signed 'By Hemanth' and dated 18/04/22.",
+    width: 1050,
+    height: 1400,
+  },
+  {
+    src: "/art/sketch-krishna.webp",
+    title: "Krishna",
+    alt: "Pencil sketch of Krishna with eyes closed, framed by a peacock feather, flowers and paisley patterns, signed 'Art by Hemanth'.",
+    width: 960,
+    height: 1280,
+  },
+];
 
 // "Connection over convenience." → struck: convenience, landed: connection.
 function splitValue(v: string): { landed: string; struck: string } | null {
@@ -109,13 +138,16 @@ export default function Personal() {
                         {hobbyLinks[h.title] && (
                           <a
                             href={hobbyLinks[h.title].href}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            {...(hobbyLinks[h.title].external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                             className="btn !py-2 !px-4 text-sm fill-cream"
                             data-testid={`personal-hobby-link-${i}`}
                           >
                             {hobbyLinks[h.title].label}
-                            <ArrowUpRight size={15} strokeWidth={2.5} aria-hidden="true" />
+                            {hobbyLinks[h.title].external ? (
+                              <ArrowUpRight size={15} strokeWidth={2.5} aria-hidden="true" />
+                            ) : (
+                              <ArrowDown size={15} strokeWidth={2.5} aria-hidden="true" />
+                            )}
                           </a>
                         )}
                       </span>
@@ -125,6 +157,55 @@ export default function Personal() {
               );
             })}
           </ul>
+        </div>
+      </section>
+
+      {/* Pencil art — cream: the real sketches */}
+      <section id="sketches" className="scene scene-cream scroll-mt-16" aria-labelledby="sketches-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
+          <h2 id="sketches-head" className="mega text-[clamp(3rem,8vw,7rem)]">
+            Pencil,
+            <span className="block text-cobalt">paper.</span>
+          </h2>
+          <p className="lead text-[clamp(1.25rem,2.4vw,1.75rem)] mt-6 max-w-[34rem]">
+            Quiet, patient, detail-oriented. Everything I am when no one is watching.
+          </p>
+          <div className="mt-12 md:mt-16">
+            <SketchGallery sketches={sketches} />
+          </div>
+        </div>
+      </section>
+
+      {/* Singing — lime: the real voice */}
+      <section id="singing" className="scene scene-lime scroll-mt-16" aria-labelledby="singing-head">
+        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28 grid grid-cols-12 gap-x-6 gap-y-12 items-center">
+          <div className="col-span-12 md:col-span-7">
+            <h2 id="singing-head" className="mega text-[clamp(3rem,8vw,7rem)]">
+              <span className="block">Not</span>
+              <StrikeSwap struck="Perfectly" landed="Fully" label="Not perfectly. Just fully." className="[&>span:last-child]:text-cobalt" />
+            </h2>
+            <p className="lead text-[clamp(1.25rem,2.4vw,1.75rem)] mt-8 max-w-[30rem]">
+              Not professionally. Music is where I go when words aren't enough.
+            </p>
+            <a
+              href={profile.links.music}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn fill-ink mt-8"
+              data-testid="personal-music-link"
+            >
+              More on @hemanth_.sings_
+              <ArrowUpRight size={16} strokeWidth={2.5} aria-hidden="true" />
+            </a>
+          </div>
+          <div className="col-span-12 md:col-span-5 justify-self-center md:justify-self-end w-full max-w-[19rem]">
+            <ReelPlayer
+              src="/media/music-reel.mp4"
+              poster="/media/music-reel-poster.webp"
+              label="Hemanth singing a Telugu song"
+              testId="music-reel"
+            />
+          </div>
         </div>
       </section>
 
@@ -151,8 +232,8 @@ export default function Personal() {
         </div>
       </section>
 
-      {/* Closing — lime */}
-      <section className="scene scene-lime">
+      {/* Closing — orange, bookending the opening */}
+      <section className="scene scene-orange">
         <div className="max-w-page mx-auto px-[var(--page-x)] pt-20 md:pt-28 pb-36">
           <div data-testid="personal-closing">
             <Slam
