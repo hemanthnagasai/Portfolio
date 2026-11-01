@@ -19,6 +19,7 @@ const Query = lazy(() => import("@/pages/Query"));
 const HowIBuiltThis = lazy(() => import("@/pages/HowIBuiltThis"));
 const Now = lazy(() => import("@/pages/Now"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export default function App() {
   const [dimension, setDimension] = useState<string>("gateway");
@@ -52,6 +53,7 @@ export default function App() {
                   <Route path="/how-i-built-this" element={<HowIBuiltThis />} />
                   <Route path="/now" element={<Now />} />
                   <Route path="/privacy" element={<Privacy />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
               </div>

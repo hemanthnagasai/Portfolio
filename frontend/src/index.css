@@ -145,6 +145,14 @@ a {
     line-height: 0.84;
     text-wrap: balance;
   }
+  /* An outlined statement word. Outline strokes collide at the statement's
+     tight tracking, so outlined words get a little more room. */
+  .outline-word {
+    color: transparent;
+    -webkit-text-stroke: 2.5px var(--fg);
+    letter-spacing: -0.02em;
+  }
+
   /* The line that sets up a statement ("IT CAN", "Everyone:"). */
   .lead {
     font-weight: 800;
@@ -170,11 +178,24 @@ a {
     box-shadow: 6px 6px 0 var(--card-shadow, var(--shadow));
   }
   /* A card the same colour as its scene's shadow would lose its edge. */
+  .scene-orange .card.fill-ink {
+    --card-shadow: var(--cream);
+  }
   .scene-ink .card.fill-cream,
   .scene-ink .btn.fill-cream,
   .scene-cream .card.fill-ink,
   .scene-cream .btn.fill-ink:not([style*="--card-shadow"]) {
     --card-shadow: var(--orange);
+  }
+  /* Information on a flat colour field: no shadow, so it never reads as
+     something to press. Only cards you can act on carry the hard shadow. */
+  .tile {
+    position: relative;
+    border-radius: 1.125rem;
+  }
+  .fill-ink.tile .badge {
+    background: var(--cream);
+    color: var(--ink);
   }
   .card-press {
     transition:
@@ -411,6 +432,9 @@ a {
   max-width: calc(100vw - 1.5rem);
 }
 .running-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   border-radius: 999px;
   padding: 0.55rem 0.95rem;
   color: var(--cream);
@@ -424,14 +448,42 @@ a {
 .running-foot a:hover {
   background: #262626;
 }
+.running-foot .sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  min-width: 2.25rem;
+  padding: 0 0.7rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  border-radius: 999px;
+  color: var(--cream-soft);
+  transition: background-color 0.2s linear, color 0.2s linear;
+}
+.running-foot .sound-toggle:hover {
+  background: #262626;
+  color: var(--cream);
+}
+.running-foot .sound-toggle[aria-pressed="true"] {
+  color: var(--lime);
+}
 .running-foot a[aria-current="page"] {
   background: var(--lime);
   color: var(--ink);
 }
 @media (max-width: 420px) {
+  .running-foot {
+    gap: 0;
+  }
   .running-foot a {
-    padding: 0.55rem 0.7rem;
-    font-size: 0.8125rem;
+    padding: 0.55rem 0.55rem;
+    font-size: 0.75rem;
+  }
+  .running-foot .sound-toggle {
+    min-width: 2rem;
+    padding: 0 0.4rem;
   }
 }
 

@@ -1,12 +1,12 @@
 import { useContext, useEffect } from "react";
-import { Download } from "lucide-react";
+import { Download, Camera, ScanFace, ClipboardCheck, Smile, BrainCircuit, PackageCheck, ArrowRight } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { professional } from "@/data/portfolio";
 import { markVisited, ensureFirstVisit, useReadingProgress } from "@/hooks/useUnlock";
 import usePageMeta from "@/hooks/usePageMeta";
 import { parseStints } from "@/lib/content";
 import RunningHead from "@/components/kit/RunningHead";
-import { Marquee, PopIn, Scramble, Slam } from "@/components/kit/Kinetic";
+import { Marquee, PopIn, Slam } from "@/components/kit/Kinetic";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
 
@@ -14,6 +14,36 @@ const certifications = professional.certs.filter((c) => c.type !== "achievement"
 const achievements = professional.certs.filter((c) => c.type === "achievement");
 
 const roleFills = ["fill-orange", "fill-cobalt", "fill-lime"];
+
+// How each project worked, step by step, taken from its own description.
+const projectFlows: Record<string, { icon: React.ReactNode; label: string }[]> = {
+  "Attendance Management System": [
+    { icon: <Camera size={18} strokeWidth={2.25} aria-hidden="true" />, label: "Camera captures faces" },
+    { icon: <ScanFace size={18} strokeWidth={2.25} aria-hidden="true" />, label: "Faces recognised" },
+    { icon: <ClipboardCheck size={18} strokeWidth={2.25} aria-hidden="true" />, label: "Attendance marked" },
+  ],
+  "Emotion Detection & Analysis": [
+    { icon: <Smile size={18} strokeWidth={2.25} aria-hidden="true" />, label: "Face read live" },
+    { icon: <BrainCircuit size={18} strokeWidth={2.25} aria-hidden="true" />, label: "Emotion detected" },
+    { icon: <PackageCheck size={18} strokeWidth={2.25} aria-hidden="true" />, label: "Drone delivers" },
+  ],
+};
+
+function Flow({ steps }: { steps: { icon: React.ReactNode; label: string }[] }) {
+  return (
+    <ol className="mt-6 flex flex-wrap items-center gap-2" aria-label="How it worked">
+      {steps.map((s, i) => (
+        <li key={s.label} className="flex items-center gap-2">
+          <span className="pill fill-ink text-sm !py-2">
+            {s.icon}
+            {s.label}
+          </span>
+          {i < steps.length - 1 && <ArrowRight size={16} strokeWidth={2.5} aria-hidden="true" />}
+        </li>
+      ))}
+    </ol>
+  );
+}
 const projectFills = ["fill-orange", "fill-lime"];
 const scoreFills = ["fill-cobalt", "fill-orange", "fill-lime"];
 
@@ -43,6 +73,8 @@ export default function Professional() {
   const current = professional.experience[0];
   const stints = parseStints(current?.sub) ?? [];
   const roles = current ? [{ role: current.role, period: current.period }, ...stints] : [];
+  // The year he started there: the start of the earliest role.
+  const since = (roles[roles.length - 1]?.period.match(/\d{4}/) ?? [""])[0];
 
   return (
     <main data-testid="professional-page">
@@ -54,17 +86,14 @@ export default function Professional() {
           <div className="col-span-12 lg:col-span-8">
             <Slam
               as="h1"
-              words={professional.heading}
-              className="mega text-[clamp(3.5rem,10vw,8.5rem)]"
-              wordClassName={(i) => (i === professional.heading.length - 1 ? "text-lime" : "")}
+              words={["Making complex", "things clear."]}
+              className="mega text-[clamp(3rem,7.5vw,6.75rem)]"
+              wordClassName={(i) => (i === 1 ? "text-lime" : "")}
             />
-            <blockquote className="lead text-[clamp(1.375rem,2.6vw,2rem)] mt-10 max-w-[32ch]" data-testid="prof-quote">
-              {professional.quote}
-            </blockquote>
           </div>
           <div className="col-span-12 lg:col-span-4 lg:self-end flex flex-col gap-4">
-            <PopIn rotate={2}>
-              <div className="card fill-cream p-5">
+            <PopIn soft>
+              <div className="tile fill-cream p-5">
                 <dl className="grid grid-cols-[4.5rem_1fr] gap-x-3 gap-y-2.5 text-[0.9375rem]">
                   <dt className="font-semibold text-ink-soft">Role</dt>
                   <dd className="font-bold">{current?.role}</dd>
@@ -90,15 +119,15 @@ export default function Professional() {
           </div>
           <p className="col-span-12 lg:col-span-7 reading text-[var(--fg-soft)]">{professional.bio}</p>
         </div>
-        <Marquee words={professional.heading.map((h) => h.replace(/\.$/, ""))} className="pb-6 mt-6" />
+        <Marquee words={["Python", "SQL", "Excel", "GenAI"]} className="pb-6 mt-6" />
       </section>
 
       {/* Experience — cream */}
       <section className="scene scene-cream" aria-labelledby="experience-head">
         <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
           <SceneHead id="experience-head">
-            Where I
-            <span className="block">work.</span>
+            At EY,
+            <span className="block text-cobalt">since {since}.</span>
           </SceneHead>
           {professional.experience.map((e, i) => (
             <div key={i} className="mt-12 grid grid-cols-12 gap-6 md:gap-8" data-testid={`prof-experience-${i}`}>
@@ -106,8 +135,8 @@ export default function Professional() {
                 <p className="lead text-2xl md:text-3xl mb-6">{e.company}</p>
                 <div role="list" className="flex flex-col gap-4">
                   {roles.map((r, j) => (
-                    <PopIn key={r.role} delay={j * 0.08}>
-                      <div role="listitem" className={`card ${roleFills[j % roleFills.length]} p-4 md:p-5 flex items-start gap-3.5`}>
+                    <PopIn key={r.role} delay={j * 0.08} soft>
+                      <div role="listitem" className={`tile ${roleFills[j % roleFills.length]} p-4 md:p-5 flex items-start gap-3.5`}>
                         <span className="badge mt-0.5">{roles.length - j}</span>
                         <span>
                           <span className="block lead text-lg">{r.role}</span>
@@ -136,21 +165,22 @@ export default function Professional() {
       <section className="scene scene-ink" aria-labelledby="projects-head">
         <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
           <SceneHead id="projects-head">
-            Things I
-            <span className="block text-orange">built.</span>
+            Built with
+            <span className="block text-orange">friends.</span>
           </SceneHead>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-7">
             {professional.projects.map((p, i) => (
-              <PopIn key={p.name} delay={i * 0.08} rotate={i % 2 ? 1 : -1}>
-                <article className={`card ${projectFills[i % projectFills.length]} p-6 md:p-7 h-full`} data-testid={`prof-project-${i}`}>
+              <PopIn key={p.name} delay={i * 0.08} soft className="h-full">
+                <article className={`tile ${projectFills[i % projectFills.length]} p-6 md:p-7 h-full`} data-testid={`prof-project-${i}`}>
                   <h3 className="mega text-[clamp(2rem,3.4vw,2.75rem)]">{p.name}</h3>
                   <div className="mt-5 flex flex-wrap gap-2">
                     {p.stack.split(" · ").map((t) => (
-                      <span key={t} className="pill fill-ink text-xs !py-1.5">
+                      <span key={t} className="pill border-2 border-current text-xs !py-1">
                         {t}
                       </span>
                     ))}
                   </div>
+                  {projectFlows[p.name] && <Flow steps={projectFlows[p.name]} />}
                   <p className="reading mt-6">{p.desc}</p>
                 </article>
               </PopIn>
@@ -163,14 +193,14 @@ export default function Professional() {
       <section className="scene scene-cream" aria-labelledby="education-head">
         <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
           <SceneHead id="education-head">
-            What I
-            <span className="block">studied.</span>
+            The report
+            <span className="block text-cobalt">cards.</span>
           </SceneHead>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
             {professional.education.map((e, i) => (
-              <PopIn key={e.degree} delay={i * 0.08}>
-                <article className={`card ${scoreFills[i % scoreFills.length]} p-6 h-full flex flex-col justify-between gap-8`} data-testid={`prof-education-${i}`}>
-                  <Scramble text={e.meta} className="mega text-[clamp(2.5rem,4.5vw,3.5rem)] block" />
+              <PopIn key={e.degree} delay={i * 0.08} soft className="h-full">
+                <article className={`tile ${scoreFills[i % scoreFills.length]} p-6 h-full flex flex-col justify-between gap-8`} data-testid={`prof-education-${i}`}>
+                  <span className="mega text-[clamp(2.5rem,4.5vw,3.5rem)] block">{e.meta}</span>
                   <span>
                     <span className="block lead text-lg">{e.degree}</span>
                     <span className="block font-semibold mt-1 opacity-90">
@@ -188,13 +218,13 @@ export default function Professional() {
       <section className="scene scene-lime" aria-labelledby="skills-head">
         <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
           <SceneHead id="skills-head">
-            What I
-            <span className="block">use.</span>
+            Daily
+            <span className="block">tools.</span>
           </SceneHead>
           <ul className="mt-12 flex flex-wrap gap-3">
             {professional.skills.map((s, i) => (
               <li key={s} data-testid={`prof-skill-${i}`}>
-                <PopIn delay={i * 0.03} rotate={((i * 37) % 5) - 2}>
+                <PopIn delay={i * 0.03} soft>
                   <span className="pill fill-ink text-base md:text-lg !px-5 !py-3">{s}</span>
                 </PopIn>
               </li>
@@ -215,7 +245,7 @@ export default function Professional() {
               <h3 className="lead text-xl mb-5">Certifications</h3>
               <ul className="grid sm:grid-cols-2 gap-4">
                 {certifications.map((c, i) => (
-                  <li key={c.name} className="card fill-cream p-4" data-testid={`prof-cert-${i}`}>
+                  <li key={c.name} className="tile fill-cream p-4" data-testid={`prof-cert-${i}`}>
                     <span className="block font-bold">{c.name}</span>
                     <span className="block text-sm font-semibold text-ink-soft mt-0.5">{c.org}</span>
                   </li>
@@ -226,7 +256,7 @@ export default function Professional() {
               <h3 className="lead text-xl mb-5">Achievements</h3>
               <ul className="flex flex-col gap-4">
                 {achievements.map((c, i) => (
-                  <li key={c.name} className="card fill-orange p-4" data-testid={`prof-cert-${certifications.length + i}`}>
+                  <li key={c.name} className="tile fill-orange p-4" data-testid={`prof-cert-${certifications.length + i}`}>
                     <span className="block font-bold">{c.name}</span>
                     <span className="block text-sm font-semibold mt-0.5">{c.org}</span>
                   </li>

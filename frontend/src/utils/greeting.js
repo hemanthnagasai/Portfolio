@@ -25,4 +25,4 @@ export function getGreeting() {
 }
 
 // Always-on subline (the original tagline kept as second line)
-export const SUBLINE = "A man who reveals himself in layers. Choose a world to begin.";
+export const SUBLINE = "I reveal myself in layers. Choose a world to begin.";

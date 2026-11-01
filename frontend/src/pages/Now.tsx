@@ -39,8 +39,8 @@ export default function Now() {
       <ol className="flex flex-col gap-5">
         {now.items.map((item, i) => (
           <li key={item.title} data-testid={`now-item-${i}`}>
-            <PopIn delay={i * 0.07}>
-              <article className={`card ${nowFills[i % nowFills.length]} p-5 md:p-6 flex items-start gap-4`}>
+            <PopIn delay={i * 0.07} soft>
+              <article className={`tile ${nowFills[i % nowFills.length]} p-5 md:p-6 flex items-start gap-4`}>
                 <span className="badge mt-0.5">{i + 1}</span>
                 <div>
                   <h2 className="lead text-xl md:text-2xl">{item.title}</h2>

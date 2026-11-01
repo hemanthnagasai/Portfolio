@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { TransitionContext } from "@/context/TransitionContext";
+import { playCut } from "@/lib/sfx";
 
 const SWEEP_MS = 460;
 const SWEEP_EASE = [0.65, 0, 0.35, 1] as const;
@@ -26,6 +27,7 @@ export default function TransitionOverlay() {
 
   useEffect(() => {
     if (state.phase === "expanding") {
+      if (!reduced) playCut();
       const t = setTimeout(() => {
         if (state.to) navigate(state.to);
         setState((s) => ({ ...s, phase: reduced ? "idle" : "fading" }));

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Mic, PencilLine, BrainCircuit, ArrowUpRight, ArrowDown } from "lucide-react";
 import { DimensionContext } from "@/context/DimensionContext";
 import { personal, profile } from "@/data/portfolio";
@@ -7,6 +7,7 @@ import usePageMeta from "@/hooks/usePageMeta";
 import RunningHead from "@/components/kit/RunningHead";
 import { Marquee, PopIn, Slam, StrikeSwap } from "@/components/kit/Kinetic";
 import ReelPlayer from "@/components/kit/ReelPlayer";
+import VoiceBars from "@/components/kit/VoiceBars";
 import SketchGallery, { Sketch } from "@/components/kit/SketchGallery";
 
 // A cricket ball: lucide has no icon for it, so it's drawn here in the
@@ -73,6 +74,8 @@ export default function Personal() {
     "Hobbies, values, and the people behind the work — the personal dimension of Hemanth Naga Sai Chakka.",
   );
   const read = useReadingProgress("personal");
+  // The singing reel's live audio, while it plays.
+  const [voice, setVoice] = useState<AnalyserNode | null>(null);
 
   useEffect(() => {
     setDimension("personal");
@@ -88,12 +91,18 @@ export default function Personal() {
       {/* Opening — orange */}
       <section className="scene scene-orange">
         <div className="max-w-page mx-auto px-[var(--page-x)] pt-10 md:pt-16 pb-12">
-          <Slam as="h1" words={personal.heading} className="mega text-[clamp(3.75rem,12vw,10rem)]" />
+          <Slam
+            as="h1"
+            words={["Not the loudest", "in the room."]}
+            className="mega text-[clamp(3rem,8vw,7.5rem)]"
+            wordClassName={(i) => (i === 1 ? "outline-word" : "")}
+          />
           <blockquote className="lead text-[clamp(1.5rem,3vw,2.25rem)] mt-10 max-w-[30ch]" data-testid="personal-quote">
-            {personal.quote}
+            {/* The headline already says the first sentence; this is its payoff. */}
+            {personal.quote.replace(/^.*?\.\s+/, "")}
           </blockquote>
         </div>
-        <Marquee words={personal.heading.map((h) => h.replace(/\.$/, ""))} className="pb-6 mt-8" />
+        <Marquee words={personal.hobbies.map((h) => h.title)} className="pb-6 mt-8" />
       </section>
 
       {/* Story — cream */}
@@ -121,11 +130,8 @@ export default function Personal() {
               const look = hobbyLook[i % hobbyLook.length];
               return (
                 <li key={h.title} data-testid={`personal-hobby-${i}`}>
-                  <PopIn delay={i * 0.08} rotate={i % 2 ? 1.2 : -1.2} className="h-full">
-                    <article
-                      className={`card ${look.fill} p-6 md:p-7 h-full flex flex-col gap-6`}
-                      style={look.fill === "fill-ink" ? ({ ["--card-shadow" as string]: "var(--lime)" } as React.CSSProperties) : undefined}
-                    >
+                  <PopIn delay={i * 0.08} soft className="h-full">
+                    <article className={`tile ${look.fill} p-6 md:p-7 h-full flex flex-col gap-6`}>
                       <span className="flex items-start justify-between gap-4">
                         <h3 className="mega text-[clamp(2.25rem,4vw,3.25rem)]">{h.title}</h3>
                         {look.icon}
@@ -187,6 +193,7 @@ export default function Personal() {
             <p className="lead text-[clamp(1.25rem,2.4vw,1.75rem)] mt-8 max-w-[30rem]">
               Not professionally. Music is where I go when words aren't enough.
             </p>
+            <VoiceBars analyser={voice} className="mt-8" />
             <a
               href={profile.links.music}
               target="_blank"
@@ -204,6 +211,7 @@ export default function Personal() {
               poster="/media/music-reel-poster.webp"
               label="Hemanth singing a Telugu song"
               testId="music-reel"
+              onAnalyser={setVoice}
             />
           </div>
         </div>

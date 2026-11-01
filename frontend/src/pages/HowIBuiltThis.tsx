@@ -50,8 +50,8 @@ export default function HowIBuiltThis() {
       <ul className="grid grid-cols-2 gap-4 mb-16">
         {FACTS.map((f, i) => (
           <li key={f.label}>
-            <PopIn delay={i * 0.07} rotate={i % 2 ? 1 : -1} className="h-full">
-              <div className={`card ${factFills[i % factFills.length]} p-5 h-full flex flex-col justify-between gap-6`}>
+            <PopIn delay={i * 0.07} soft className="h-full">
+              <div className={`tile ${factFills[i % factFills.length]} p-5 h-full flex flex-col justify-between gap-6`}>
                 <Scramble text={f.value} className="mega text-[3rem] block" />
                 <span className="font-bold leading-snug">{f.label}</span>
               </div>

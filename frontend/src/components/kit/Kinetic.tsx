@@ -223,27 +223,33 @@ export function Dots({ filled, label, className = "" }: { filled: number; label:
   );
 }
 
-/** A card that springs in as it enters the viewport. */
+/**
+ * A card that springs in as it enters the viewport. `soft` is for
+ * information (grades, roles, notes): it rises into place without the
+ * spring, so the playful pop stays reserved for things you can press.
+ */
 export function PopIn({
   children,
   className = "",
   delay = 0,
   rotate = 0,
+  soft = false,
   ...rest
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   rotate?: number;
+  soft?: boolean;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "onAnimationStart" | "onDrag" | "onDragStart" | "onDragEnd">) {
   const reduced = useReducedMotion();
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : { opacity: 0, scale: 0.6, rotate: rotate - 6 }}
-      whileInView={{ opacity: 1, scale: 1, rotate }}
+      initial={reduced ? false : soft ? { opacity: 0, y: 18 } : { opacity: 0, scale: 0.6, rotate: rotate - 6 }}
+      whileInView={soft ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, rotate }}
       viewport={{ once: true, amount: 0.25 }}
-      transition={{ ...cardSpring, delay }}
+      transition={soft ? { duration: 0.5, delay, ease } : { ...cardSpring, delay }}
       {...rest}
     >
       {children}

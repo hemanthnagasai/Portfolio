@@ -163,7 +163,7 @@ export default function Recruiter() {
       <div className="max-w-3xl mx-auto px-6 md:px-10 pt-8 pb-28">
         {/* Top bar */}
         <div className="flex justify-between items-center mb-12 text-sm text-ink-soft">
-          <Link to="/" className="inline-flex items-center gap-2 no-underline hover:text-ink transition-colors" data-testid="recruiter-back-link">
+          <Link to="/" className="inline-flex items-center gap-2 py-3 -my-3 no-underline hover:text-ink transition-colors" data-testid="recruiter-back-link">
             <ArrowLeft size={15} strokeWidth={1.75} aria-hidden="true" /> Full portfolio
           </Link>
           <span>Recruiter view</span>

@@ -14,16 +14,51 @@ interface ReelPlayerProps {
   ambient?: boolean;
   className?: string;
   testId?: string;
+  /** Receives an analyser on the reel's own audio once it starts playing. */
+  onAnalyser?: (analyser: AnalyserNode | null) => void;
 }
 
 // One of his reels, in a phone-shaped card. Nothing downloads until the
 // reel is needed: ambient reels load when they scroll into view, the rest
 // when tapped.
-export default function ReelPlayer({ src, poster, label, ambient = false, className = "", testId }: ReelPlayerProps) {
+export default function ReelPlayer({ src, poster, label, ambient = false, className = "", testId, onAnalyser }: ReelPlayerProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const reduced = useReducedMotion();
   const [started, setStarted] = useState(false);
   const [muted, setMuted] = useState(ambient);
+  const graph = useRef<{ ctx: AudioContext; analyser: AnalyserNode } | null>(null);
+
+  // Route the reel's sound through an analyser (once per element: a media
+  // element can only ever have one source node). Same-origin video, so the
+  // audio data isn't locked away.
+  const listen = () => {
+    const v = ref.current;
+    if (!onAnalyser || !v) return;
+    try {
+      if (!graph.current) {
+        const ctx = new AudioContext();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 128;
+        analyser.smoothingTimeConstant = 0.78;
+        ctx.createMediaElementSource(v).connect(analyser);
+        analyser.connect(ctx.destination);
+        graph.current = { ctx, analyser };
+      }
+      graph.current.ctx.resume().catch(() => {});
+      onAnalyser(graph.current.analyser);
+    } catch {
+      onAnalyser(null);
+    }
+  };
+
+  // Let go of the audio context when the reel leaves the page.
+  useEffect(
+    () => () => {
+      graph.current?.ctx.close().catch(() => {});
+      graph.current = null;
+    },
+    [],
+  );
 
   // Ambient reels play only while visible, and never for reduced motion.
   useEffect(() => {
@@ -52,6 +87,7 @@ export default function ReelPlayer({ src, poster, label, ambient = false, classN
     if (!v) return;
     v.muted = false;
     setMuted(false);
+    listen();
     v.play().then(() => setStarted(true)).catch(() => {});
   };
 
@@ -79,7 +115,12 @@ export default function ReelPlayer({ src, poster, label, ambient = false, classN
         controls={!ambient && started}
         aria-label={label}
         className="absolute inset-0 h-full w-full object-cover"
-        onEnded={() => !ambient && setStarted(false)}
+        onEnded={() => {
+          if (!ambient) setStarted(false);
+          onAnalyser?.(null);
+        }}
+        onPause={() => onAnalyser?.(null)}
+        onPlay={() => graph.current && onAnalyser?.(graph.current.analyser)}
       />
 
       {!ambient && !started && (

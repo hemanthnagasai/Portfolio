@@ -7,25 +7,28 @@ import { profile } from "@/data/portfolio";
 import { getGreeting, SUBLINE } from "@/utils/greeting";
 import useUnlock, { ensureFirstVisit, getProgress, getVisited, OVER } from "@/hooks/useUnlock";
 import usePageMeta from "@/hooks/usePageMeta";
-import { readMinutes } from "@/lib/content";
 import TurnLink from "@/components/kit/TurnLink";
 import ReelPlayer from "@/components/kit/ReelPlayer";
-import { CycleWord, Dots, Marquee, PopIn, Scramble, StrikeSwap } from "@/components/kit/Kinetic";
+import SelfDrawingSketch from "@/components/kit/SelfDrawingSketch";
+import MilestoneScrub from "@/components/kit/MilestoneScrub";
+import { CycleWord, Dots, Marquee, PopIn, StrikeSwap } from "@/components/kit/Kinetic";
 
 interface World {
   key: string;
   name: string;
   verb: string;
   find: string;
+  /** What's actually on the page, shown on the card. */
+  inside: string;
   to: string;
   fill: string;
   scene: string;
 }
 
 const worlds: World[] = [
-  { key: "professional", name: "Professional", verb: "Build.", find: "The analyst, the builder.", to: "/professional", fill: "fill-orange", scene: "var(--cobalt)" },
-  { key: "personal", name: "Personal", verb: "Live.", find: "The human, the friend.", to: "/personal", fill: "fill-lime", scene: "var(--orange)" },
-  { key: "emotional", name: "Emotional", verb: "Feel.", find: "The heart, and a letter.", to: "/emotional", fill: "fill-cream", scene: "var(--ink)" },
+  { key: "professional", name: "Professional", verb: "Build.", find: "The analyst, the builder.", inside: "3 roles · 2 projects", to: "/professional", fill: "fill-orange", scene: "var(--cobalt)" },
+  { key: "personal", name: "Personal", verb: "Live.", find: "The human, the friend.", inside: "3 sketches · 1 song", to: "/personal", fill: "fill-lime", scene: "var(--orange)" },
+  { key: "emotional", name: "Emotional", verb: "Feel.", find: "The heart, and a letter.", inside: "1 letter", to: "/emotional", fill: "fill-cream", scene: "var(--ink)" },
 ];
 
 const milestones = [
@@ -36,7 +39,6 @@ const milestones = [
   { year: "2025", label: "EY · Senior Data Analyst" },
   { year: "2026", label: "EY · Associate Consultant" },
 ];
-const milestoneFills = ["fill-orange", "fill-cobalt", "fill-lime", "fill-ink", "fill-orange", "fill-cobalt"];
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -112,7 +114,6 @@ export default function Gateway() {
   const [progress] = useState(() => getProgress());
   const [visited] = useState(() => getVisited());
   const totalRead = worlds.reduce((n, w) => n + (progress[w.key] || 0), 0);
-  const totalMinutes = worlds.reduce((n, w) => n + readMinutes[w.key], 0);
   // Reading already done fills in just after arrival, so a returning reader
   // sees their own visit written back.
   const [inked, setInked] = useState(false);
@@ -209,12 +210,12 @@ export default function Gateway() {
                     to={w.to}
                     sheet={w.scene}
                     className={`card card-press ${w.fill} flex flex-col justify-between gap-8 p-6 md:p-7 min-h-[15rem] md:min-h-[17rem] no-underline`}
-                    aria-label={`${w.name}. ${w.find} ${readMinutes[w.key]} minute read, ${read} of 6 read.`}
+                    aria-label={`${w.name}. ${w.find} ${w.inside}. ${read} of 6 read.`}
                     data-testid={`portal-${w.key}`}
                   >
                     <span className="flex items-start justify-between gap-4">
                       <span className="lead text-xl">{w.name}</span>
-                      <span className="pill fill-ink text-xs !py-1.5">{readMinutes[w.key]} min</span>
+                      <span className="pill fill-ink text-xs !py-1.5">{w.inside}</span>
                     </span>
                     <span>
                       <span className="mega block text-[clamp(3.25rem,6.5vw,5.5rem)]">{w.verb}</span>
@@ -269,34 +270,20 @@ export default function Gateway() {
             <span className="pill fill-cream">
               {totalRead} of {OVER * worlds.length} read
             </span>
-            <span className="lead text-[var(--fg-soft)]">About {totalMinutes} minutes for all three.</span>
+            <span className="lead text-[var(--fg-soft)]">The dots fill in as you read each world.</span>
           </p>
         </div>
 
         <Marquee words={["Build", "Live", "Feel", "Stay"]} reverse className="mt-16 md:mt-24 pb-6" />
       </section>
 
-      {/* Scene 3 — cream: the route so far */}
-      <section className="scene scene-cream" aria-labelledby="milestones-head">
-        <div className="max-w-page mx-auto px-[var(--page-x)] py-20 md:py-28">
-          <h2 id="milestones-head" className="mega text-[clamp(3rem,8vw,7rem)]">
-            How I got
-            <span className="block text-cobalt">here.</span>
-          </h2>
-          <div role="list" className="mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-            {milestones.map((m, i) => (
-              <PopIn key={i} delay={i * 0.06} rotate={i % 2 ? 1.5 : -1.5}>
-                <div role="listitem" className={`card ${milestoneFills[i]} p-4 md:p-5 h-full flex flex-col justify-between gap-6 min-h-[9.5rem]`}>
-                  <Scramble text={m.year} className="mega text-[2.5rem] md:text-[2.75rem] block" />
-                  <span className="font-semibold leading-snug text-[0.9375rem]">{m.label}</span>
-                </div>
-              </PopIn>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Scene 3 — cream: the signature, one of his sketches drawing itself */}
+      <SelfDrawingSketch />
 
-      {/* Scene 4 — ink: the end card, the way every reel signs off */}
+      {/* Scene 4 — orange: the route so far, scrubbed sideways */}
+      <MilestoneScrub milestones={milestones} />
+
+      {/* Scene 5 — ink: the end card, the way every reel signs off */}
       <section className="scene scene-ink" aria-labelledby="end-head">
         <div className="max-w-page mx-auto px-[var(--page-x)] pt-20 md:pt-28 grid grid-cols-12 gap-x-6 gap-y-14 items-start">
           <div className="col-span-12 lg:col-span-8">
@@ -315,31 +302,33 @@ export default function Gateway() {
               </Link>{" "}
               is one page away.
             </p>
-            <p className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2">
-              <span className="lead text-orange text-[clamp(1.5rem,3vw,2.25rem)]">Follow for more</span>
-              <a
-                href={profile.links.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="lead text-[clamp(1.125rem,2vw,1.375rem)] text-cream underline decoration-lime decoration-[3px] underline-offset-4 hover:text-lime"
-                data-testid="gateway-instagram-link"
-              >
-                @hemanth_chakka
-              </a>
-              <span className="lead text-[var(--fg-soft)] text-[clamp(1rem,1.8vw,1.25rem)]">
-                for AI. Songs live on{" "}
-                <a
-                  href={profile.links.music}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-cream underline decoration-orange decoration-[3px] underline-offset-4 hover:text-lime"
-                  data-testid="gateway-music-link"
-                >
-                  @hemanth_.sings_
-                </a>
-                .
-              </span>
-            </p>
+            <div className="mt-10">
+              <p className="lead text-orange text-[clamp(1.5rem,3vw,2.25rem)]">Follow for more</p>
+              <ul className="mt-4 flex flex-wrap gap-3">
+                <li>
+                  <a
+                    href={profile.links.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn fill-cream text-[0.9375rem]"
+                    data-testid="gateway-instagram-link"
+                  >
+                    @hemanth_chakka <span className="font-semibold text-ink-soft">AI</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={profile.links.music}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn fill-cream text-[0.9375rem]"
+                    data-testid="gateway-music-link"
+                  >
+                    @hemanth_.sings_ <span className="font-semibold text-ink-soft">Songs</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
             <nav aria-label="More pages" className="mt-12 flex flex-wrap gap-3.5">
               {[
                 { to: "/now", label: "Now", id: "gateway-now-link" },
